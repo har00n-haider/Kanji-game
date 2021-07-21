@@ -8,17 +8,44 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class Stroke : MonoBehaviour
 {
-    public LineRenderer line;
-    public List<Vector2> refPoints;
-    public float width = 0.1f;
 
-    protected virtual void Awake()
+    public List<Vector2> refPoints;
+    public Plane kanjiPlane;
+    public KanjiManager kanjiManager;
+    public bool completed;
+    // line stuff
+    public Material lineMaterial;
+    public float width = 0.1f;
+    public LineRenderer line;
+
+
+    protected virtual void SetupLine(Color color) 
+    {
+        line.material = lineMaterial;
+
+        line.startWidth = width;
+        line.endWidth = width;
+
+        float alpha = 1.0f;
+        Gradient gradient = new Gradient();
+        Color startColor = color;
+        Color endColor   = color;
+        gradient.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(endColor, 1.0f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
+        );
+        line.colorGradient = gradient;
+    }
+
+    public virtual void Awake()
     {
         line = GetComponent<LineRenderer>();
     }
 
-    public virtual void Init() 
+    public virtual void Init(Plane kanjiPlane, KanjiManager kanjiManager)
     {
+        this.kanjiPlane = kanjiPlane;
+        this.kanjiManager = kanjiManager;
     }
 
 }

@@ -5,30 +5,62 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
 public class InputStroke : Stroke
 {
-    private List<Vector3> inputPoints;
+    private List<Vector3> inputPoints = new List<Vector3>();
+    private Camera mainCam;
 
-    protected override void Awake() 
+
+    public override void Init(Plane kanjiPlane, KanjiManager kanjiManager)
+    {
+        base.Init(kanjiPlane, kanjiManager);
+        base.SetupLine(Color.blue);
+        line.useWorldSpace = true;
+    }
+
+    public override void Awake() 
     {
         base.Awake();
-           
+
+        mainCam = Camera.main;
     }
 
     public void Update()
     {
-        if (Input.GetMouseButtonDown(0)) 
+        // populate line
+        if (Input.GetMouseButton(0)) 
         {
-            
-        
+            // convert mouse position to a point on the kanji plane 
+            Ray ray =  mainCam.ScreenPointToRay(Input.mousePosition);
+            bool hit = kanjiPlane.Raycast(ray, out float enter);
+            if (hit) 
+            {
+                Vector3 inputPoint = ray.direction * enter + ray.origin;
+                inputPoints.Add(inputPoint);
+            }
+            UpdateLine();
         }
-
-        //line.positionCount = rawStroke.points.Count;
-        //line.SetPositions(rawStroke.points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
-        //line.useWorldSpace = false;
-        //line.startWidth = width;
-        //line.endWidth = width;
+        // clear line
+        if (Input.GetMouseButtonUp(0)) 
+        {
+            refPoints = Utils.GenRefPntsForPnts(refPoints);
+            completed = true;
+        }
     }
+
+    private void UpdateLine() 
+    {
+        line.positionCount = inputPoints.Count;
+        line.SetPositions(inputPoints.ToArray());
+    }
+
+    public void ClearLine() 
+    {
+        inputPoints.Clear();
+        UpdateLine();
+    }
+
+
+
 }
 

@@ -145,3 +145,4 @@ MonoBehaviour:
   line: {fileID: 0}
   refPoints: []
   width: 0.1
+  lineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}

@@ -11,7 +11,7 @@ public class KanjiManager : MonoBehaviour
 
     public Kanji currKanji;
 
-    public float distanceInfrontOfCam;
+    public float distanceToKanji;
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +28,7 @@ public class KanjiManager : MonoBehaviour
     void GenKanji() 
     {
         var kanji = Instantiate(currKanji, transform).GetComponent<Kanji>();
-        kanji.gameObject.transform.Translate(new Vector3(0, 0, distanceInfrontOfCam));
-        kanji.Init(Path.Combine(Application.dataPath, "09920.svg"));
+        kanji.gameObject.transform.Translate(new Vector3(0, 0, distanceToKanji));
+        kanji.Init(Path.Combine(Application.dataPath, "09920.svg"), this);
     }
 }
