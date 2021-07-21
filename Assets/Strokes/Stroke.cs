@@ -9,10 +9,11 @@ using UnityEngine;
 public class Stroke : MonoBehaviour
 {
 
+    // on the in plane 
     public List<Vector2> refPoints;
     public Plane kanjiPlane;
     public KanjiManager kanjiManager;
-    public bool completed;
+    public bool completed = false;
     // line stuff
     public Material lineMaterial;
     public float width = 0.1f;

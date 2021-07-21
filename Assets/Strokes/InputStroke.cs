@@ -9,13 +9,13 @@ public class InputStroke : Stroke
 {
     private List<Vector3> inputPoints = new List<Vector3>();
     private Camera mainCam;
-
+    private float offsetFromRef = 0.1f;
 
     public override void Init(Plane kanjiPlane, KanjiManager kanjiManager)
     {
         base.Init(kanjiPlane, kanjiManager);
         base.SetupLine(Color.blue);
-        line.useWorldSpace = true;
+        line.useWorldSpace = false;
     }
 
     public override void Awake() 
@@ -27,6 +27,8 @@ public class InputStroke : Stroke
 
     public void Update()
     {
+        if (completed) return;
+
         // populate line
         if (Input.GetMouseButton(0)) 
         {
@@ -35,15 +37,19 @@ public class InputStroke : Stroke
             bool hit = kanjiPlane.Raycast(ray, out float enter);
             if (hit) 
             {
-                Vector3 inputPoint = ray.direction * enter + ray.origin;
-                inputPoints.Add(inputPoint);
+                Vector3 worldPoint = ray.direction * enter + ray.origin;
+                Vector3 localPoint = kanjiManager.transform.InverseTransformPoint(worldPoint);
+                localPoint.z -= offsetFromRef;
+                inputPoints.Add(localPoint);
             }
             UpdateLine();
         }
         // clear line
         if (Input.GetMouseButtonUp(0)) 
         {
-            refPoints = Utils.GenRefPntsForPnts(refPoints);
+            // TODO: should really project on to the plane as that is the reference
+            refPoints = Utils.GenRefPntsForPnts(
+                inputPoints.ConvertAll(p => new Vector2(p.x, p.y)));
             completed = true;
         }
     }
@@ -58,6 +64,7 @@ public class InputStroke : Stroke
     {
         inputPoints.Clear();
         UpdateLine();
+        completed = false;
     }
 
 

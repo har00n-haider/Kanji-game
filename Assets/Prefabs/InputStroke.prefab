@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7639516299239959350}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.5082989, y: -15.250068, z: 0.6159373}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -72,9 +72,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -142,7 +140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0e88ea4d7978154f805ce008712a5f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  line: {fileID: 0}
   refPoints: []
-  width: 0.1
+  kanjiManager: {fileID: 0}
+  completed: 0
   lineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  width: 0.1
+  line: {fileID: 0}
