@@ -3,14 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class KanjiCompletedEventArgs
-{
-    public string Text { get; set; } 
-}
-
-// Declare the delegate (if using non-generic pattern).
-public delegate void KanjiCompletedEventHandler(object sender, KanjiCompletedEventArgs e);
-
 /// <summary>
 /// Hosts all the input and reference strokes of the kanji.
 /// It compares them, and fires an event when its completed.
@@ -28,11 +20,9 @@ public class Kanji : MonoBehaviour
     public ReferenceStroke refStrokePrefab;
     public InputStroke inputStrokePrefab;
 
-    public event KanjiCompletedEventHandler completedEvent;
-
     private float comparisonThreshold = 0.5f;
 
-    private bool completed = false;
+    public bool completed = false;
          
     public Plane GetPlane() 
     {
@@ -53,11 +43,11 @@ public class Kanji : MonoBehaviour
         if(!completed) Compare();
     }
 
-    public void Init(string path)
+    public void Init(KanjiData kanjiData)
     {
 
         // pull a kanji
-        var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(path);
+        var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
         foreach (RawStroke rawStroke in rawStrokes)
         {
             // assuming we get these in order
@@ -95,11 +85,10 @@ public class Kanji : MonoBehaviour
             }
             if (isRefStrokeGood) 
             {
-                Debug.Log("Good!");
                 completedStrokes.Add(curInpStroke);
                 if(curRefStrokeIdx == (refStrokes.Count - 1))
                 {
-                    completedEvent?.Invoke(this, new KanjiCompletedEventArgs());
+                    completed = true;
                     return;
                 }
                 else 

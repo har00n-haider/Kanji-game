@@ -37,21 +37,16 @@ public class KanjiSVGParser
     /// <summary>
     /// Points are return in unity coordinate system.
     /// </summary>
-    /// <param name="pathToSvg"></param>
+    /// <param name="svgContent"></param>
     /// <param name="pntsInStroke">The number of points per stroke to use</param>
     /// <param name="scale"></param>
     /// <returns></returns>
-    public static List<RawStroke> GetStrokesFromSvg(string pathToSvg, int pntsInStroke = 50, float scale = 0.05f)
+    public static List<RawStroke> GetStrokesFromSvg(string svgContent, int pntsInStroke = 50, float scale = 0.05f)
     {
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(pathToSvg);
+        if (svgContent == "") return new List<RawStroke>();
 
-        var SvgInfo = new SvgInfo
-        (
-            width: int.Parse(xmlDoc.GetElementsByTagName("svg")[0].Attributes.GetNamedItem("width").Value),
-            height: int.Parse(xmlDoc.GetElementsByTagName("svg")[0].Attributes.GetNamedItem("height").Value),
-            scale: 1
-        );
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(svgContent);
 
         var pathElems = xmlDoc.GetElementsByTagName("path");
         // get stroke from raw data
