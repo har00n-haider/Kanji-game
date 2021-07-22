@@ -32,10 +32,16 @@ public class Kanji : MonoBehaviour
 
     private float comparisonThreshold = 0.5f;
 
-    private Plane kanjiPlane = new Plane();
-
     private bool completed = false;
-        
+         
+    public Plane GetPlane() 
+    {
+        // create the plane on which the kanji will be drawn
+        Vector3 planePoint = gameObject.transform.position;
+        Vector3 planeDir = -gameObject.transform.forward;        
+        return new Plane(planeDir.normalized, planePoint);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,10 +55,6 @@ public class Kanji : MonoBehaviour
 
     public void Init(string path)
     {
-        // create the plane on which the kanji will be drawn
-        Vector3 planePoint = gameObject.transform.position;
-        Vector3 planeDir = -gameObject.transform.forward;
-        kanjiPlane = new Plane(planeDir.normalized, planePoint);
 
         // pull a kanji
         var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(path);
@@ -62,7 +64,7 @@ public class Kanji : MonoBehaviour
             var stroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
             stroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
             stroke.rawStroke = rawStroke;
-            stroke.Init(kanjiPlane, this);
+            stroke.Init(this);
             refStrokes.Add(stroke);
             curRefStrokeIdx = 0;
         }
@@ -75,7 +77,7 @@ public class Kanji : MonoBehaviour
         // create the first input stroke 
         var inputStroke = Instantiate(inputStrokePrefab, transform).GetComponent<InputStroke>();
         inputStroke.gameObject.name = "Input stroke " + (curRefStrokeIdx + 1);
-        inputStroke.Init(kanjiPlane, this);
+        inputStroke.Init(this);
         return inputStroke;
     }
 
@@ -116,6 +118,7 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        Plane kanjiPlane = GetPlane();
         DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(Vector3.zero), new Color(0,0,1,0.1f));    
     }
 

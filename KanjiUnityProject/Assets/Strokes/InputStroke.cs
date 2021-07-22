@@ -11,9 +11,9 @@ public class InputStroke : Stroke
     private Camera mainCam;
     private float offsetFromRef = 0.1f;
 
-    public override void Init(Plane kanjiPlane, Kanji kanjiManager)
+    public override void Init(Kanji kanjiManager)
     {
-        base.Init(kanjiPlane, kanjiManager);
+        base.Init(kanjiManager);
         base.SetupLine(Color.blue);
         line.useWorldSpace = false;
     }
@@ -34,7 +34,7 @@ public class InputStroke : Stroke
         {
             // convert mouse position to a point on the kanji plane 
             Ray ray =  mainCam.ScreenPointToRay(Input.mousePosition);
-            bool hit = kanjiPlane.Raycast(ray, out float enter);
+            bool hit = kanji.GetPlane().Raycast(ray, out float enter);
             if (hit) 
             {
                 Vector3 worldPoint = ray.direction * enter + ray.origin;
