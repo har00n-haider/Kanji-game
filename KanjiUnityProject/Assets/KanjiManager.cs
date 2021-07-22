@@ -29,6 +29,6 @@ public class KanjiManager : MonoBehaviour
     {
         var kanji = Instantiate(currKanji, transform).GetComponent<Kanji>();
         kanji.gameObject.transform.Translate(new Vector3(0, 0, distanceToKanji));
-        kanji.Init(Path.Combine(Application.dataPath, "09920.svg"), this);
+        kanji.Init(Path.Combine(Application.dataPath, "09920.svg"));
     }
 }

@@ -11,9 +11,9 @@ public class ReferenceStroke : Stroke
 
     public RawStroke rawStroke;
 
-    public override void Init(Plane kanjiPlane, KanjiManager kanjiManager)
+    public override void Init(Plane kanjiPlane, Kanji kanji)
     {
-        base.Init(kanjiPlane, kanjiManager);
+        base.Init(kanjiPlane, kanji);
         base.SetupLine(Color.grey);
         // use the raw kanji data to create lines in the world
         line.positionCount = rawStroke.points.Count;
@@ -26,12 +26,12 @@ public class ReferenceStroke : Stroke
     private void OnDrawGizmos()
     {
         float distance = kanjiPlane.GetDistanceToPoint(
-            kanjiManager.gameObject.transform.position);
+            kanji.gameObject.transform.position);
 
         foreach(Vector2 pnt in refPoints) 
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(kanjiManager.gameObject.transform.
+            Gizmos.DrawSphere(kanji.gameObject.transform.
                 TransformPoint(new Vector3(pnt.x, pnt.y, distance)), 0.1f);
         }
     }

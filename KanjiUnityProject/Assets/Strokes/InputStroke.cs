@@ -11,7 +11,7 @@ public class InputStroke : Stroke
     private Camera mainCam;
     private float offsetFromRef = 0.1f;
 
-    public override void Init(Plane kanjiPlane, KanjiManager kanjiManager)
+    public override void Init(Plane kanjiPlane, Kanji kanjiManager)
     {
         base.Init(kanjiPlane, kanjiManager);
         base.SetupLine(Color.blue);
@@ -38,7 +38,7 @@ public class InputStroke : Stroke
             if (hit) 
             {
                 Vector3 worldPoint = ray.direction * enter + ray.origin;
-                Vector3 localPoint = kanjiManager.transform.InverseTransformPoint(worldPoint);
+                Vector3 localPoint = kanji.transform.InverseTransformPoint(worldPoint);
                 localPoint.z -= offsetFromRef;
                 inputPoints.Add(localPoint);
             }

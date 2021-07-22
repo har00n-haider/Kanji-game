@@ -30,12 +30,12 @@ public class Kanji : MonoBehaviour
 
     public event KanjiCompletedEventHandler completedEvent;
 
-
     private float comparisonThreshold = 0.5f;
 
     private Plane kanjiPlane = new Plane();
-    private KanjiManager kanjiManager;
 
+    private bool completed = false;
+        
     // Start is called before the first frame update
     void Start()
     {
@@ -44,17 +44,15 @@ public class Kanji : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Compare();
+        if(!completed) Compare();
     }
 
-    public void Init(string path, KanjiManager kanjiManager)
+    public void Init(string path)
     {
         // create the plane on which the kanji will be drawn
-        Vector3 planePoint = kanjiManager.gameObject.transform.position +
-            kanjiManager.gameObject.transform.forward * kanjiManager.distanceToKanji;
-        Vector3 planeDir = -kanjiManager.gameObject.transform.forward;
+        Vector3 planePoint = gameObject.transform.position;
+        Vector3 planeDir = -gameObject.transform.forward;
         kanjiPlane = new Plane(planeDir.normalized, planePoint);
-        this.kanjiManager = kanjiManager;
 
         // pull a kanji
         var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(path);
@@ -64,7 +62,7 @@ public class Kanji : MonoBehaviour
             var stroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
             stroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
             stroke.rawStroke = rawStroke;
-            stroke.Init(kanjiPlane, kanjiManager);
+            stroke.Init(kanjiPlane, this);
             refStrokes.Add(stroke);
             curRefStrokeIdx = 0;
         }
@@ -77,19 +75,20 @@ public class Kanji : MonoBehaviour
         // create the first input stroke 
         var inputStroke = Instantiate(inputStrokePrefab, transform).GetComponent<InputStroke>();
         inputStroke.gameObject.name = "Input stroke " + (curRefStrokeIdx + 1);
-        inputStroke.Init(kanjiPlane, kanjiManager);
+        inputStroke.Init(kanjiPlane, this);
         return inputStroke;
     }
 
     private void Compare() 
     {
-        
         if (curInpStroke.completed) 
         {
             bool isRefStrokeGood = true;
             for (int i = 0; i < curInpStroke.refPoints.Count; i++)
             {
-                float distance = Mathf.Abs((curInpStroke.refPoints[i] - curRefStroke.refPoints[i]).magnitude);
+                float distance = Mathf.Abs((
+                    curInpStroke.refPoints[i] - 
+                    curRefStroke.refPoints[i]).magnitude);
                 isRefStrokeGood &= distance < comparisonThreshold;
             }
             if (isRefStrokeGood) 
@@ -103,18 +102,15 @@ public class Kanji : MonoBehaviour
                 }
                 else 
                 {
-                    curInpStroke = GenerateInputStroke();
                     curRefStrokeIdx++;
+                    curInpStroke = GenerateInputStroke();
                 }
-                
             }
             else 
             {
                 curInpStroke.ClearLine();
             }
-        
         }
-    
     }
 
 #if UNITY_EDITOR

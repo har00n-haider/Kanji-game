@@ -12,7 +12,7 @@ public class Stroke : MonoBehaviour
     // on the in plane 
     public List<Vector2> refPoints;
     public Plane kanjiPlane;
-    public KanjiManager kanjiManager;
+    public Kanji kanji;
     public bool completed = false;
     // line stuff
     public Material lineMaterial;
@@ -43,10 +43,10 @@ public class Stroke : MonoBehaviour
         line = GetComponent<LineRenderer>();
     }
 
-    public virtual void Init(Plane kanjiPlane, KanjiManager kanjiManager)
+    public virtual void Init(Plane kanjiPlane, Kanji kanji)
     {
         this.kanjiPlane = kanjiPlane;
-        this.kanjiManager = kanjiManager;
+        this.kanji = kanji;
     }
 
 }
