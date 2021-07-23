@@ -40,8 +40,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2265220182066064464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 582dacb845c57154f9ef61ceab1ca6e7, type: 3}
+  m_Script: {fileID: 11500000, guid: 69ab34be4dcf3594cb9cf54092ef2a0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   refStrokePrefab: {fileID: 7154334785581781238, guid: 9e95d80fe5cd60f42810579758eeff91, type: 3}
   inputStrokePrefab: {fileID: 3349095090653122684, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
+  completed: 0

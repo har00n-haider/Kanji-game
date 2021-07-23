@@ -3,49 +3,68 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Xml;
+using System.Linq;
 
 public class KanjiManager : MonoBehaviour
 {
-    List<string> kanjiPathList = new List<string>();
-
+   
     public Kanji kanjiPrefab;
 
     private Kanji currKanji;
+    private List<KanjiData> kanjis = new List<KanjiData>();
+    private int kanjiIdx = 0;
+    private const string databaseFilename = "kanjigamedb.xml";
 
-    List<KanjiData> kanjis = new List<KanjiData>();
-    int kanjiIdx = 0;
-
-    const string databaseFilename = "kanjigamedb.xml";
+    private IKanjiHolder selectedKanjiHolder = null;
 
     // Start is called before the first frame update
     void Start()
     {
         kanjis = LoadDatabase();
-        if(kanjis.Count > 0) 
-        {
-            currKanji = GenKanji(kanjis[kanjiIdx]);
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (currKanji.completed) 
+        // see if user selected a kanji holder object
+        if (Input.GetMouseButtonUp(0)) 
         {
-            Destroy(currKanji?.gameObject);
-            kanjiIdx++;
-            if(kanjiIdx < kanjis.Count) 
+            if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo)) 
             {
-                currKanji = GenKanji(kanjis[kanjiIdx]);
+                var kanjiHolder = hitInfo.collider.gameObject.GetComponent<IKanjiHolder>();
+                if (kanjiHolder != null)
+                {
+                    selectedKanjiHolder = kanjiHolder;
+                    UpdateKanji(selectedKanjiHolder.kanji);
+                }
             }
+        }
+
+        if (currKanji != null && currKanji.completed)
+        {
+            selectedKanjiHolder.Destroy();
+            Destroy(currKanji.gameObject);
         }
     }
 
-    Kanji GenKanji(KanjiData kanjiData) 
+    public KanjiData GetKanjiData() 
     {
+        var remainingkanjis = kanjis.Where(k => k.stats.seen != true).ToList();
+        if(remainingkanjis.Count > 0) 
+        {
+            var idx = Random.Range(0, remainingkanjis.Count - 1);
+            remainingkanjis[idx].stats.seen = true;
+            return remainingkanjis[idx];
+        }
+        return null;
+    }
+
+    void UpdateKanji(KanjiData kanjiData) 
+    {
+        if (currKanji != null) Destroy(currKanji.gameObject);
         var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji>();
         kanji.Init(kanjiData);
-        return kanji;
+        currKanji = kanji;
     }
 
     List<KanjiData> LoadDatabase() 

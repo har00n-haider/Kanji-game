@@ -69,3 +69,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Kanji game stuff
+/Assets/EffectExamples/*
+/Assets/EffectExamples.meta
+/Assets/TextMesh\ Pro/*
+KanjiUnityProject/Assets/TextMesh Pro.meta

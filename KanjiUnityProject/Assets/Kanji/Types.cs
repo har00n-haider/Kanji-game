@@ -25,4 +25,17 @@ public class KanjiData
     public List<string> readingsKun = new List<string>();
     public string svgContent = string.Empty;
     public Tuple<CategoryType, string> category = null;
+    public KanjiStats stats = new KanjiStats();
+}
+
+public class KanjiStats 
+{
+    public bool seen = false;
+}
+
+public interface IKanjiHolder
+{
+    KanjiData kanji { get; set; }
+    bool selected { get; set; }
+    void Destroy();
 }
