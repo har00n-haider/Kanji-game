@@ -16,6 +16,7 @@ public class Kanji : MonoBehaviour
     private ReferenceStroke curRefStroke { get { return refStrokes[curRefStrokeIdx]; } }
     private InputStroke curInpStroke;
 
+    public KanjiData data { get; private set; }
 
     public ReferenceStroke refStrokePrefab;
     public InputStroke inputStrokePrefab;
@@ -60,6 +61,8 @@ public class Kanji : MonoBehaviour
         }
 
         curInpStroke = GenerateInputStroke();
+
+        data = kanjiData;
     }
 
     private InputStroke GenerateInputStroke() 
@@ -73,6 +76,8 @@ public class Kanji : MonoBehaviour
 
     private void Compare() 
     {
+        if (curInpStroke == null) return;
+
         if (curInpStroke.completed) 
         {
             bool isRefStrokeGood = true;

@@ -11,16 +11,18 @@ public class KanjiManager : MonoBehaviour
     public Kanji kanjiPrefab;
 
     private Kanji currKanji;
-    private List<KanjiData> kanjis = new List<KanjiData>();
-    private int kanjiIdx = 0;
+    private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
     private const string databaseFilename = "kanjigamedb.xml";
 
     private IKanjiHolder selectedKanjiHolder = null;
 
+    private int clearRequirement = 1;
+    public int kanjiToBeCleared = 0;
+
     // Start is called before the first frame update
     void Start()
     {
-        kanjis = LoadDatabase();
+        kanjis = LoadDatabase().ToDictionary( x => x.code, c => c);
     }
 
     // Update is called once per frame
@@ -29,7 +31,8 @@ public class KanjiManager : MonoBehaviour
         // see if user selected a kanji holder object
         if (Input.GetMouseButtonUp(0)) 
         {
-            if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo)) 
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo)) 
             {
                 var kanjiHolder = hitInfo.collider.gameObject.GetComponent<IKanjiHolder>();
                 if (kanjiHolder != null)
@@ -42,14 +45,23 @@ public class KanjiManager : MonoBehaviour
 
         if (currKanji != null && currKanji.completed)
         {
+            kanjis[currKanji.data.code].stats.timesCleared++;
             selectedKanjiHolder.Destroy();
             Destroy(currKanji.gameObject);
+        }
+
+        if(selectedKanjiHolder != null && selectedKanjiHolder.IsDestroyed()) 
+        {
+            if(currKanji != null) Destroy(currKanji.gameObject);
         }
     }
 
     public KanjiData GetKanjiData() 
     {
-        var remainingkanjis = kanjis.Where(k => k.stats.seen != true).ToList();
+        var kanjiList = kanjis.Values;
+        var remainingkanjis = kanjiList.Where(k => k.stats.timesCleared < clearRequirement).ToList();
+        kanjiToBeCleared = remainingkanjis.Count;
+        Debug.Log(string.Format("Remaining kanji {0}", kanjiToBeCleared));
         if(remainingkanjis.Count > 0) 
         {
             var idx = Random.Range(0, remainingkanjis.Count - 1);
@@ -57,6 +69,14 @@ public class KanjiManager : MonoBehaviour
             return remainingkanjis[idx];
         }
         return null;
+    }
+
+    public void IncrementClearRequirement() 
+    {
+        clearRequirement++;
+        var kanjiList = kanjis.Values;
+        var remainingkanjis = kanjiList.Where(k => k.stats.timesCleared < clearRequirement).ToList();
+        kanjiToBeCleared = remainingkanjis.Count;
     }
 
     void UpdateKanji(KanjiData kanjiData) 

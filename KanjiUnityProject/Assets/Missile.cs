@@ -41,9 +41,10 @@ public class Missile : MonoBehaviour, IKanjiHolder
         if (target != null) target.TakeDamage();
         Destroy();
     }
+
     public void Destroy()
     {
-        if (this == null) return;
+        if (IsDestroyed()) return;
 
         AudioSource.PlayClipAtPoint(explosionSound, gameObject.transform.position);
         ParticleSystem explosion = Instantiate(
@@ -52,6 +53,11 @@ public class Missile : MonoBehaviour, IKanjiHolder
             gameObject.transform.rotation);
         Destroy(gameObject);
         Destroy(explosion.gameObject, explosionPrefab.main.duration - 2);
+    }
+
+    public bool IsDestroyed()
+    {
+        return this == null;
     }
 }
     

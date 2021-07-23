@@ -31,6 +31,7 @@ public class KanjiData
 public class KanjiStats 
 {
     public bool seen = false;
+    public int timesCleared = 0;
 }
 
 public interface IKanjiHolder
@@ -38,4 +39,6 @@ public interface IKanjiHolder
     KanjiData kanji { get; set; }
     bool selected { get; set; }
     void Destroy();
+
+    bool IsDestroyed();
 }

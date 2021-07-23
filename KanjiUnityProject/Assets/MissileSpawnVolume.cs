@@ -7,13 +7,17 @@ public class MissileSpawnVolume : MonoBehaviour
 {
 
     public float intervalSeconds = 3;
-    public float elapsedSeconds = 0;
+    public float[] missileSpeeds = new float[4];
+    private int missileSpeedLevel = 0;
     public KanjiManager kanjiManager;
     public Target target;
 
     public Missile missilePrefab;
 
     private BoxCollider boxCollider;
+    private float elapsedSeconds = 0;
+
+    private bool canGenerate = true;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +30,8 @@ public class MissileSpawnVolume : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!canGenerate) return;
+
         if (elapsedSeconds < intervalSeconds)
         {
             elapsedSeconds += Time.deltaTime;
@@ -36,8 +42,31 @@ public class MissileSpawnVolume : MonoBehaviour
             elapsedSeconds = 0;
         }
 
-
+        if(kanjiManager.kanjiToBeCleared == 0) 
+        {
+            kanjiManager.IncrementClearRequirement();
+            bool completed = IncreaseDifficulty();
+            if (completed) 
+            {
+                canGenerate = false;
+                Debug.Log("COMPLETED!!!");
+            }
+        }
     }
+    
+    // return: true == have hit the speed limit
+    public bool IncreaseDifficulty() 
+    {
+        Debug.Log(string.Format("difficulty increased {0}", missileSpeedLevel));
+        if(missileSpeedLevel < (missileSpeeds.Length - 2)) 
+        {
+            intervalSeconds -= 1f;
+            missileSpeedLevel++;
+            return false;
+        }
+        return true;
+    }
+
     void SpawnMissile() 
     {
         if (target == null) return;
@@ -58,6 +87,10 @@ public class MissileSpawnVolume : MonoBehaviour
             new Quaternion()).GetComponent<Missile>();
         missile.gameObject.transform.LookAt(target.transform.position);
         missile.SetKanji(kanji);
+
+        missile.speed = Random.Range(
+            missileSpeeds[missileSpeedLevel], 
+            missileSpeeds[missileSpeedLevel + 1]);
 
     }
 
