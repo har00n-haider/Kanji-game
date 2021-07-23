@@ -108,7 +108,7 @@ public class Kanji : MonoBehaviour
     private void OnDrawGizmos()
     {
         Plane kanjiPlane = GetPlane();
-        DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(Vector3.zero), new Color(0,0,1,0.1f));    
+        DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(transform.position), new Color(0,0,1,0.1f));    
     }
 
     private void DrawPlane(Plane p, Vector3 center, Color color, float radius = 10)
