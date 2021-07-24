@@ -7,12 +7,12 @@ using System.Linq;
 
 public class KanjiManager : MonoBehaviour
 {
-   
+
+    public TextAsset dataBaseFile;
     public Kanji kanjiPrefab;
 
     private Kanji currKanji;
     private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
-    private const string databaseFilename = "kanjigamedb.xml";
 
     private IKanjiHolder selectedKanjiHolder = null;
 
@@ -90,9 +90,10 @@ public class KanjiManager : MonoBehaviour
     List<KanjiData> LoadDatabase() 
     {
         List<KanjiData> kanjis = new List<KanjiData>();
-        string dbPath = Path.Combine(Application.dataPath, "Database", databaseFilename);
+        string dbPath = dataBaseFile.text;
+
         XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(dbPath);
+        xmlDoc.LoadXml(dbPath);
         var kanjiElems = xmlDoc.GetElementsByTagName("kanji");
         foreach ( XmlNode kanjiElem in kanjiElems) 
         {

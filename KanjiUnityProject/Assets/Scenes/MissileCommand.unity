@@ -659,7 +659,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 739e0e9bd667d8e4bb59cc034fb299b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dataBaseFile: {fileID: 4900000, guid: b596e44a221d6c74a822d8ca9b82b0da, type: 3}
   kanjiPrefab: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+  kanjiToBeCleared: 0
 --- !u!4 &2082174379
 Transform:
   m_ObjectHideFlags: 0
