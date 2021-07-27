@@ -1,4 +1,4 @@
-## Links
+## Reference links
 
 ### Kanji strokes
 https://github.com/KanjiVG
