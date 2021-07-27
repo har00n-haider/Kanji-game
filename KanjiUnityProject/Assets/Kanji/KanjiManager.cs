@@ -19,10 +19,17 @@ public class KanjiManager : MonoBehaviour
     private int clearRequirement = 1;
     public int kanjiToBeCleared = 0;
 
+    public bool dataBaseLoaded = false;
+
+
+    private void Awake()
+    {
+        kanjis = LoadDatabase().ToDictionary( x => x.code, c => c);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        kanjis = LoadDatabase().ToDictionary( x => x.code, c => c);
     }
 
     // Update is called once per frame
@@ -61,7 +68,6 @@ public class KanjiManager : MonoBehaviour
         var kanjiList = kanjis.Values;
         var remainingkanjis = kanjiList.Where(k => k.stats.timesCleared < clearRequirement).ToList();
         kanjiToBeCleared = remainingkanjis.Count;
-        Debug.Log(string.Format("Remaining kanji {0}", kanjiToBeCleared));
         if(remainingkanjis.Count > 0) 
         {
             var idx = Random.Range(0, remainingkanjis.Count - 1);
@@ -77,6 +83,14 @@ public class KanjiManager : MonoBehaviour
         var kanjiList = kanjis.Values;
         var remainingkanjis = kanjiList.Where(k => k.stats.timesCleared < clearRequirement).ToList();
         kanjiToBeCleared = remainingkanjis.Count;
+    }
+
+    public KanjiData GetRandomKanji() 
+    {
+        if (!dataBaseLoaded) return null; 
+        var kanjiList = kanjis.Values.ToList();
+        var idx = Random.Range(0, kanjiList.Count - 1);
+        return kanjiList[idx];
     }
 
     void UpdateKanji(KanjiData kanjiData) 
@@ -120,6 +134,7 @@ public class KanjiManager : MonoBehaviour
                 (KanjiData.CategoryType.kanjipower, kanjiElem["category"].InnerText);
             kanjis.Add(kanji);
         }
+        dataBaseLoaded = true;
         return kanjis;
     }
 }

@@ -23,18 +23,23 @@ public class Stroke : MonoBehaviour
     {
         line.material = lineMaterial;
 
+        line.numCapVertices = 4;
+
+        SetLineWidth(width);
+
+        SetLineColor(color);
+    }
+
+    protected void SetLineColor(Color color)
+    {
+        line.startColor = color;
+        line.endColor = color;
+    }
+
+    protected void SetLineWidth (float width)
+    {
         line.startWidth = width;
         line.endWidth = width;
-
-        float alpha = 1.0f;
-        Gradient gradient = new Gradient();
-        Color startColor = color;
-        Color endColor   = color;
-        gradient.SetKeys(
-            new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(endColor, 1.0f) },
-            new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
-        );
-        line.colorGradient = gradient;
     }
 
     public virtual void Awake()
