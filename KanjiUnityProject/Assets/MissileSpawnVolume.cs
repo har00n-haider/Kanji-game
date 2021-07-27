@@ -6,17 +6,23 @@ using UnityEngine;
 public class MissileSpawnVolume : MonoBehaviour
 {
 
-    public float intervalSeconds = 3;
-    public float[] missileSpeeds = new float[4];
-    private int missileSpeedLevel = 0;
-    public KanjiManager kanjiManager;
-    public Target target;
+    // spawn timing
+    public float spawnPeriod = 3;
+    private float timeSinceLastSpawn = 0;
+    private float spawnPeriodInterval = 0.1f;
 
+    // unity references
+    public Target target;
+    public KanjiManager kanjiManager;
     public Missile missilePrefab;
 
-    private BoxCollider boxCollider;
-    private float elapsedSeconds = 0;
+    // speed
+    public float missileSpeed { get { return missileSpeeds[mIdx]; } }
+    public float[] missileSpeeds = new float[4];
+    public float missileSpeedRng;
+    private int mIdx = 0 ;
 
+    private BoxCollider boxCollider;
     private bool canGenerate = true;
 
     // Start is called before the first frame update
@@ -24,22 +30,23 @@ public class MissileSpawnVolume : MonoBehaviour
     {
         boxCollider = GetComponent<BoxCollider>();
 
-        elapsedSeconds = intervalSeconds;
+        timeSinceLastSpawn = spawnPeriod;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (!canGenerate) return;
+        if (target == null) return;
 
-        if (elapsedSeconds < intervalSeconds)
+        if (timeSinceLastSpawn < spawnPeriod)
         {
-            elapsedSeconds += Time.deltaTime;
+            timeSinceLastSpawn += Time.deltaTime;
         }
         else 
         {
             SpawnMissile();
-            elapsedSeconds = 0;
+            timeSinceLastSpawn = 0;
         }
 
         if(kanjiManager.kanjiToBeCleared == 0) 
@@ -57,11 +64,12 @@ public class MissileSpawnVolume : MonoBehaviour
     // return: true == have hit the speed limit
     public bool IncreaseDifficulty() 
     {
-        Debug.Log(string.Format("difficulty increased {0}", missileSpeedLevel));
-        if(missileSpeedLevel < (missileSpeeds.Length - 2)) 
+        if(mIdx < (missileSpeeds.Length - 2)) 
         {
-            intervalSeconds -= 1f;
-            missileSpeedLevel++;
+            float spawnPeriodNext = spawnPeriod - spawnPeriodInterval;
+            spawnPeriod = spawnPeriodNext > 0 ? spawnPeriodNext : spawnPeriod;
+            mIdx++;
+            Debug.Log(string.Format("level  {0} - speed {1}",  mIdx, missileSpeed));
             return false;
         }
         return true;
@@ -69,8 +77,6 @@ public class MissileSpawnVolume : MonoBehaviour
 
     void SpawnMissile() 
     {
-        if (target == null) return;
-
         KanjiData kanji = kanjiManager.GetKanjiData();
 
         if (kanji == null) return;
@@ -88,9 +94,10 @@ public class MissileSpawnVolume : MonoBehaviour
         missile.gameObject.transform.LookAt(target.transform.position);
         missile.SetKanji(kanji);
 
-        missile.speed = Random.Range(
-            missileSpeeds[missileSpeedLevel], 
-            missileSpeeds[missileSpeedLevel + 1]);
+        float speedMax = missileSpeed + missileSpeedRng;
+        float speedMin = missileSpeed - missileSpeedRng;
+        missile.speed = Random.Range(speedMin, speedMax);
+        missile.speed = Mathf.Clamp(missile.speed, 0 , speedMax);
 
     }
 

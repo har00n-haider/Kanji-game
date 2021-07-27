@@ -48,11 +48,12 @@ public class Missile : MonoBehaviour, IKanjiHolder
 
         AudioSource.PlayClipAtPoint(explosionSound, gameObject.transform.position);
         ParticleSystem explosion = Instantiate(
-            explosionPrefab, 
-            gameObject.transform.position, 
+            explosionPrefab,
+            gameObject.transform.position,
             gameObject.transform.rotation);
         Destroy(gameObject);
-        Destroy(explosion.gameObject, explosionPrefab.main.duration - 2);
+        //TODO: figure out to properly play an animation once
+        Destroy(explosion.gameObject, explosionPrefab.main.duration - 2.3f);
     }
 
     public bool IsDestroyed()

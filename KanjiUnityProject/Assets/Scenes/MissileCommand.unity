@@ -389,15 +389,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 635111d94e729dd48afd2fc1af0ec6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intervalSeconds: 7
+  spawnPeriod: 3
+  target: {fileID: 1220425784}
+  kanjiManager: {fileID: 2082174378}
+  missilePrefab: {fileID: 6307780528408150553, guid: 9b8dc272b0d61994e917c42c8a18420d, type: 3}
   missileSpeeds:
-  - 2
+  - 1.65
   - 4
   - 6
   - 8
-  kanjiManager: {fileID: 2082174378}
-  target: {fileID: 1220425784}
-  missilePrefab: {fileID: 6307780528408150553, guid: 9b8dc272b0d61994e917c42c8a18420d, type: 3}
+  missileSpeedRng: 0
 --- !u!65 &1020519823
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -662,6 +663,7 @@ MonoBehaviour:
   dataBaseFile: {fileID: 4900000, guid: b596e44a221d6c74a822d8ca9b82b0da, type: 3}
   kanjiPrefab: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
   kanjiToBeCleared: 0
+  dataBaseLoaded: 0
 --- !u!4 &2082174379
 Transform:
   m_ObjectHideFlags: 0

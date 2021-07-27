@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class Kanji : MonoBehaviour
 {
+
+    // current state of the kanji
     private List<InputStroke> completedStrokes = new List<InputStroke>();
     private List<ReferenceStroke> refStrokes = new List<ReferenceStroke>();
     private List<InputStroke> inputStrokes = new List<InputStroke>();
