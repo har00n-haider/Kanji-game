@@ -26,7 +26,7 @@ public class KanjiManager : MonoBehaviour
     {
         kanjis = LoadDatabase().ToDictionary(x => x.code, c => c);
 
-        var kanji = kanjis.First();
+        var kanji = kanjis.Last();
         kanjis.Clear();
         kanjis.Add(kanji.Key, kanji.Value);
     }

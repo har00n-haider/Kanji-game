@@ -106,6 +106,7 @@ public class Kanji : MonoBehaviour
                 }
                 else
                 {
+                    curInpStroke.Highlight();
                     curRefStrokeIdx++;
                     curInpStroke = GenerateInputStroke();
                 }

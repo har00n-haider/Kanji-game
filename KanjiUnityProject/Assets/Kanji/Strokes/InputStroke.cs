@@ -16,6 +16,9 @@ public class InputStroke : Stroke
         base.Init(kanjiManager);
         base.SetupLine(Color.blue);
         line.useWorldSpace = false;
+
+        highlightData.initialColor = Color.green;
+        highlightData.initialWidth = width * 3;
     }
 
     public override void Awake() 
