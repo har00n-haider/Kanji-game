@@ -26,9 +26,9 @@ public class KanjiManager : MonoBehaviour
     {
         kanjis = LoadDatabase().ToDictionary(x => x.code, c => c);
 
-        var kanji = kanjis.Last();
-        kanjis.Clear();
-        kanjis.Add(kanji.Key, kanji.Value);
+        //var kanji = kanjis.First();
+        //kanjis.Clear();
+        //kanjis.Add(kanji.Key, kanji.Value);
     }
 
     // Start is called before the first frame update

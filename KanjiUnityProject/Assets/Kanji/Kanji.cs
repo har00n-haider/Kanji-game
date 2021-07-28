@@ -23,7 +23,7 @@ public class Kanji : MonoBehaviour
     public ReferenceStroke refStrokePrefab;
     public InputStroke inputStrokePrefab;
 
-    private float comparisonThreshold = 0.5f;
+    private float comparisonThreshold = 0.6f;
 
     public bool completed = false;
 

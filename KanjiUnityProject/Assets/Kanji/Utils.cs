@@ -51,7 +51,6 @@ public class Utils
         return length;
     }
 
-
     private struct PathInfo 
     {
         public float[] lengths;
@@ -101,44 +100,43 @@ public class Utils
         return pnts;
     }
 
-    public static List<Vector2> GenRefPntsForPnts(List<Vector2> inpPoints)
+    public static List<Vector2> GenRefPntsForPnts(List<Vector2> inpPoints, int noOfPoints = 5)
     {
+        if (noOfPoints > inpPoints.Count || noOfPoints < 1) return null;
         List<Vector2> points = new List<Vector2>();
         inpPoints.ForEach(pnt => points.Add(new Vector2(pnt.x, pnt.y)));
         if (points.Count > 3)
         {
+            List<Vector2> refPnts = new List<Vector2>();
             // get total length of line
             float totalDist = 0;
             for (int i = 1; i < points.Count; i++)
             {
                 totalDist += (points[i] - points[i - 1]).magnitude;
             }
-
-            // first point
-            List<Vector2> refPnts = new List<Vector2>();
-            refPnts.Add(points[0]);
-
-            // middle point
-            float halfDist = totalDist / 2;
-            float currDist = 0;
-            for (int i = 1; i < points.Count; i++)
+            noOfPoints--; // add last point manually
+            float increment = totalDist / noOfPoints;
+            // add points
+            for (int j = 0; j < noOfPoints; j++)
             {
-                currDist += (points[i] - points[i - 1]).magnitude;
-                if (currDist > halfDist)
+                float currDist = 0;
+                float targetDist = j * increment;
+                for (int i = 1; i < points.Count; i++)
                 {
-                    refPnts.Add(points[i]);
-                    break;
+                    currDist += (points[i] - points[i - 1]).magnitude;
+                    if (currDist > targetDist)
+                    {
+                        refPnts.Add(points[i]);
+                        break;
+                    }
                 }
             }
-
-            // last point
             refPnts.Add(points[points.Count - 1]);
+
             return refPnts;
         }
         return points;
     }
-
-
 
     public static List<Vector2> SVGToUnityCoords(List<Vector2> points) 
     {
