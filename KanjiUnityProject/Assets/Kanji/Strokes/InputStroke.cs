@@ -53,7 +53,7 @@ public class InputStroke : Stroke
             // TODO: should really project on to the plane as that is the reference
             refPoints = Utils.GenRefPntsForPnts(
                 inputPoints.ConvertAll(p => new Vector2(p.x, p.y)));
-            completed = true;
+            completed = true ;
         }
     }
 
@@ -65,6 +65,7 @@ public class InputStroke : Stroke
 
     public void ClearLine() 
     {
+        refPoints.Clear();
         inputPoints.Clear();
         UpdateLine();
         completed = false;

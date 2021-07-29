@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
+
+
 
 /// <summary>
 /// Hosts all the input and reference strokes of the kanji.
@@ -10,13 +13,24 @@ using UnityEngine;
 public class Kanji : MonoBehaviour
 {
 
+    private class StrokeResult 
+    {
+        public bool pass = false;
+        // same order and size as the refpoints
+        public List<float> refPointDistances = new List<float>();
+        public int minDistIdx { get { return refPointDistances.IndexOf(refPointDistances.Min()); } }
+        public int maxDistIdx { get { return refPointDistances.IndexOf(refPointDistances.Max()); } }
+    }
+
     // current state of the kanji
     private List<InputStroke> completedStrokes = new List<InputStroke>();
     private List<ReferenceStroke> refStrokes = new List<ReferenceStroke>();
-    private List<InputStroke> inputStrokes = new List<InputStroke>();
+
     private int curRefStrokeIdx;
-    private ReferenceStroke curRefStroke { get { return refStrokes[curRefStrokeIdx]; } }
+    private ReferenceStroke curRefStroke { get { return refStrokes?.Count > curRefStrokeIdx ? refStrokes[curRefStrokeIdx] : null; } }
+    private bool curRefStrokeValid { get { return curRefStroke != null && curRefStroke.completed; } }
     private InputStroke curInpStroke;
+    private bool curInpStrokeValid { get { return curInpStroke != null && curInpStroke.completed && curInpStroke?.refPoints.Count == curRefStroke?.refPoints.Count; } }
 
     public KanjiData data { get; private set; }
 
@@ -28,9 +42,11 @@ public class Kanji : MonoBehaviour
     public bool completed = false;
 
     // for when your working on this go directly
+    // set these up in the editor
     public bool getRandomKanji = false;
     public KanjiManager kanjiManager;
 
+    // Get the plane on which the kanji lies
     public Plane GetPlane()
     {
         // create the plane on which the kanji will be drawn
@@ -51,7 +67,11 @@ public class Kanji : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!completed) Compare();
+        if (!completed && curInpStrokeValid)
+        {
+            StrokeResult result = EvaluateCurrentStroke();
+            ProcessCurrentStroke(result);
+        }
     }
 
     public void Init(KanjiData kanjiData)
@@ -81,49 +101,74 @@ public class Kanji : MonoBehaviour
         return inputStroke;
     }
 
-    private void Compare()
+    private StrokeResult EvaluateCurrentStroke()
     {
-        if (curInpStroke == null) return;
-
-        if (curInpStroke.completed)
+        StrokeResult result = new StrokeResult();
+        // compare all the refpoints
+        result.pass = true;
+        for (int i = 0; i < curInpStroke.refPoints.Count; i++)
         {
-            // compare all the refpoints
-            bool isRefStrokeGood = true;
-            for (int i = 0; i < curInpStroke.refPoints.Count; i++)
+            float distance = Mathf.Abs((
+                curInpStroke.refPoints[i] -
+                curRefStroke.refPoints[i]).magnitude);
+            result.refPointDistances.Add(distance);
+            result.pass &= distance < comparisonThreshold;
+        }
+        return result;
+    }
+
+    private void ProcessCurrentStroke(StrokeResult strokeResult) 
+    {
+        if (strokeResult.pass)
+        {
+            completedStrokes.Add(curInpStroke);
+            if (curRefStrokeIdx == (refStrokes.Count - 1))
             {
-                float distance = Mathf.Abs((
-                    curInpStroke.refPoints[i] -
-                    curRefStroke.refPoints[i]).magnitude);
-                isRefStrokeGood &= distance < comparisonThreshold;
-            }
-            if (isRefStrokeGood)
-            {
-                completedStrokes.Add(curInpStroke);
-                if (curRefStrokeIdx == (refStrokes.Count - 1))
-                {
-                    completed = true;
-                    return;
-                }
-                else
-                {
-                    curInpStroke.Highlight();
-                    curRefStrokeIdx++;
-                    curInpStroke = GenerateInputStroke();
-                }
+                Debug.Log(data.literal + " completed!");
+                completed = true;
+                return;
             }
             else
             {
-                curRefStroke.Highlight();
-                curInpStroke.ClearLine();
+                curInpStroke.Highlight();
+                curRefStrokeIdx++;
+                curInpStroke = GenerateInputStroke();
             }
+        }
+        else
+        {
+            curRefStroke.Highlight();
+            curInpStroke.ClearLine();
         }
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        // plane
         Plane kanjiPlane = GetPlane();
         DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(transform.position), new Color(0, 0, 1, 0.1f));
+
+        // ref points
+        if (curRefStrokeValid)
+        {
+            for (int i = 0; i < curRefStroke.refPoints.Count; i++)
+            {
+                Gizmos.color = Color.green;
+                var refPnt = transform.TransformPoint(new Vector3(curRefStroke.refPoints[i].x, curRefStroke.refPoints[i].y));
+                Gizmos.DrawSphere(refPnt, 0.1f);
+                if (curInpStrokeValid)
+                {
+                    Gizmos.color = Color.cyan;
+                    if (!curInpStrokeValid) continue;
+                    var inpPnt = transform.TransformPoint(new Vector3(curInpStroke.refPoints[i].x, curInpStroke.refPoints[i].y));
+                    Gizmos.DrawSphere(inpPnt, 0.1f);
+                    // connect the two
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(refPnt, inpPnt);
+                }
+            }
+        }
     }
 
     private void DrawPlane(Plane p, Vector3 center, Color color, float radius = 10)

@@ -102,8 +102,8 @@ public class Utils
 
     public static List<Vector2> GenRefPntsForPnts(List<Vector2> inpPoints, int noOfPoints = 5)
     {
-        if (noOfPoints > inpPoints.Count || noOfPoints < 1) return null;
         List<Vector2> points = new List<Vector2>();
+        if (noOfPoints > inpPoints.Count || noOfPoints < 1) return points;
         inpPoints.ForEach(pnt => points.Add(new Vector2(pnt.x, pnt.y)));
         if (points.Count > 3)
         {

@@ -1,13 +1,16 @@
 ﻿
 ## Doing
 
+Improve the kanji stroke detection ( increase number of ref points slightly + increase  tolerance?)
+
+
+
 Make it harder to get the kanji the more times you see it:
 - Remove the kanji drawing at a certain level of familiarity with the kanji.
 - fade out the drawing slowly over time and over stroke order ( )
 
-Improve the kanji stroke detection ( increase number of ref points slightly + increase tolerance?)
 
-
+Put the input manager into one place so that we can differentiate between a draw input and a select input
 
 ## Todo
 remove bug where a missile randomly flickers in and out of existence

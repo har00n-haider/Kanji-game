@@ -72,14 +72,15 @@ public class Stroke : MonoBehaviour
     {
         if (highlightData.co != null) StopCoroutine(highlightData.co);
         SetLineColor(highlightData.finalColor);
-        SetLineWidth(highlightData.finalWidth); highlightData.co = StartCoroutine(ApplyHighlight());
+        SetLineWidth(highlightData.finalWidth); 
+        highlightData.co = StartCoroutine(ApplyHighlight());
     }
 
     private IEnumerator ApplyHighlight()
     {
+        //Debug.Log("Running highlight coroutine");
         for (float highlightAlpha = 0; highlightAlpha <= 1; highlightAlpha += 0.05f)
         {
-            Debug.Log("ran coroutine once");
             SetLineColor(Color.Lerp(highlightData.initialColor, highlightData.finalColor, highlightAlpha));
             SetLineWidth(Mathf.Lerp(highlightData.initialWidth, highlightData.finalWidth, highlightAlpha));
             yield return new WaitForSeconds(0.01f);

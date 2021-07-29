@@ -26,19 +26,8 @@ public class ReferenceStroke : Stroke
         highlightData.initialColor = Color.red;
         highlightData.initialWidth = width * 3;
 
+        completed = true;
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        foreach(Vector2 pnt in refPoints) 
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(kanji.gameObject.transform.
-                TransformPoint(new Vector3(pnt.x, pnt.y)), 0.1f);
-        }
-    }
-#endif
 
 }
 
