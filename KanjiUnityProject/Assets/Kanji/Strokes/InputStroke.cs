@@ -52,7 +52,7 @@ public class InputStroke : Stroke
         {
             // TODO: should really project on to the plane as that is the reference
             refPoints = Utils.GenRefPntsForPnts(
-                inputPoints.ConvertAll(p => new Vector2(p.x, p.y)));
+                inputPoints.ConvertAll(p => new Vector2(p.x, p.y)), kanji.noRefPointsInStroke);
             completed = true ;
         }
     }

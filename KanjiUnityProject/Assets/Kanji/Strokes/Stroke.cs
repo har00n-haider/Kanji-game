@@ -27,6 +27,7 @@ public class Stroke : MonoBehaviour
     public Material lineMaterial;
     public float width = 0.1f;
     public LineRenderer line;
+    public bool isValid { get { return completed && refPoints?.Count == kanji.noRefPointsInStroke; } }
 
 
     protected virtual void SetupLine(Color color) 
@@ -66,6 +67,8 @@ public class Stroke : MonoBehaviour
         this.kanji = kanji;
     }
 
+
+        
     #region Highlight
 
     public void Highlight()

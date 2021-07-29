@@ -44,9 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69ab34be4dcf3594cb9cf54092ef2a0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  refStrokePrefab: {fileID: 7154334785581781238, guid: 9e95d80fe5cd60f42810579758eeff91, type: 3}
-  inputStrokePrefab: {fileID: 3349095090653122684, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
   completed: 0
+  refStrokePrefab: {fileID: 7154334785581781238, guid: 9e95d80fe5cd60f42810579758eeff91, type: 3}
+  inpStrokePrefab: {fileID: 3349095090653122684, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
+  getRandomKanji: 0
+  kanjiManager: {fileID: 0}
 --- !u!1 &6460547157364967351
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,3 +93,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridLinePrefab: {fileID: 7454153777236063110, guid: fd0583c84d56bdc4c97e8115c4b8f278, type: 3}
+  scale: 5

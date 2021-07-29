@@ -21,7 +21,7 @@ public class ReferenceStroke : Stroke
         line.positionCount = rawStroke.points.Count;
         line.SetPositions(rawStroke.points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
         line.useWorldSpace = false;
-        refPoints = Utils.GenRefPntsForPnts(rawStroke.points);
+        refPoints = Utils.GenRefPntsForPnts(rawStroke.points, kanji.noRefPointsInStroke);
 
         highlightData.initialColor = Color.red;
         highlightData.initialWidth = width * 3;

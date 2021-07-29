@@ -12,37 +12,40 @@ using UnityEngine;
 /// </summary>
 public class Kanji : MonoBehaviour
 {
-
-    private class StrokeResult 
+    private class StrokeResult
     {
         public bool pass = false;
         // same order and size as the refpoints
-        public List<float> refPointDistances = new List<float>();
-        public int minDistIdx { get { return refPointDistances.IndexOf(refPointDistances.Min()); } }
-        public int maxDistIdx { get { return refPointDistances.IndexOf(refPointDistances.Max()); } }
+        public List<float?> refPointDistances = new List<float?>();
+        public int tightPointIdx = -1;
+    }
+
+    private class StrokePair
+    {
+        public InputStroke inpStroke = null;
+        public ReferenceStroke refStroke = null;
+        public StrokeResult strokeResult = null;
+        public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
     }
 
     // current state of the kanji
-    private List<InputStroke> completedStrokes = new List<InputStroke>();
-    private List<ReferenceStroke> refStrokes = new List<ReferenceStroke>();
+    private Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
+    private int curStrokeIdx;
+    public bool completed = false;
 
-    private int curRefStrokeIdx;
-    private ReferenceStroke curRefStroke { get { return refStrokes?.Count > curRefStrokeIdx ? refStrokes[curRefStrokeIdx] : null; } }
-    private bool curRefStrokeValid { get { return curRefStroke != null && curRefStroke.completed; } }
-    private InputStroke curInpStroke;
-    private bool curInpStrokeValid { get { return curInpStroke != null && curInpStroke.completed && curInpStroke?.refPoints.Count == curRefStroke?.refPoints.Count; } }
+    // configuration for strokes
+    public int noRefPointsInStroke { get; private set; } = 5;
+    private float compThreshTight = 0.3f;
+    private float compThreshLoose = 0.7f;
+    private float lengthBuffer = 0.2f;
 
     public KanjiData data { get; private set; }
 
     public ReferenceStroke refStrokePrefab;
-    public InputStroke inputStrokePrefab;
+    public InputStroke inpStrokePrefab;
 
-    private float comparisonThreshold = 0.6f;
 
-    public bool completed = false;
-
-    // for when your working on this go directly
-    // set these up in the editor
+    // debug - set these in the editor
     public bool getRandomKanji = false;
     public KanjiManager kanjiManager;
 
@@ -67,79 +70,102 @@ public class Kanji : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!completed && curInpStrokeValid)
+        if (completed) return;
+        // process current stroke
+        StrokePair curStroke = strokes[curStrokeIdx];
+        if (curStroke.isValid)
         {
-            StrokeResult result = EvaluateCurrentStroke();
-            ProcessCurrentStroke(result);
-        }
+            EvaluateStroke(strokes[curStrokeIdx]);
+            if (curStroke.strokeResult.pass)
+            {
+                curStroke.inpStroke.Highlight();
+                MoveToNextStroke();
+            }
+            else
+            {
+                curStroke.refStroke.Highlight();
+                curStroke.inpStroke.ClearLine();
+            }
+        };
     }
 
     public void Init(KanjiData kanjiData)
     {
         // pull a kanji
         var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
-        foreach (RawStroke rawStroke in rawStrokes)
+
+        for (int sIdx = 0; sIdx < rawStrokes.Count; sIdx++)
         {
             // assuming we get these in order
-            var stroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
-            stroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
-            stroke.rawStroke = rawStroke;
-            stroke.Init(this);
-            refStrokes.Add(stroke);
-            curRefStrokeIdx = 0;
+            strokes.Add(
+                sIdx,
+                new StrokePair()
+                {
+                    refStroke = GenerateRefStroke(rawStrokes[sIdx]),
+                    inpStroke = GenerateInpStroke()
+                });
         }
-        curInpStroke = GenerateInputStroke();
+        curStrokeIdx = 0;
         data = kanjiData;
+        // start the looking for the first stroke
+        strokes[0].inpStroke.gameObject.SetActive(true);
     }
 
-    private InputStroke GenerateInputStroke()
+    private ReferenceStroke GenerateRefStroke(RawStroke rawStroke)
+    {
+        var refStroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
+        refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
+        refStroke.rawStroke = rawStroke;
+        refStroke.Init(this);
+        return refStroke;
+    }
+
+    private InputStroke GenerateInpStroke()
     {
         // create the first input stroke 
-        var inputStroke = Instantiate(inputStrokePrefab, transform).GetComponent<InputStroke>();
-        inputStroke.gameObject.name = "Input stroke " + (curRefStrokeIdx + 1);
+        var inputStroke = Instantiate(inpStrokePrefab, transform).GetComponent<InputStroke>();
+        inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
         inputStroke.Init(this);
+        inputStroke.gameObject.SetActive(false);
         return inputStroke;
     }
 
-    private StrokeResult EvaluateCurrentStroke()
+    private void MoveToNextStroke()
     {
-        StrokeResult result = new StrokeResult();
-        // compare all the refpoints
-        result.pass = true;
-        for (int i = 0; i < curInpStroke.refPoints.Count; i++)
+        if (curStrokeIdx == (strokes.Count - 1))
         {
-            float distance = Mathf.Abs((
-                curInpStroke.refPoints[i] -
-                curRefStroke.refPoints[i]).magnitude);
-            result.refPointDistances.Add(distance);
-            result.pass &= distance < comparisonThreshold;
-        }
-        return result;
-    }
-
-    private void ProcessCurrentStroke(StrokeResult strokeResult) 
-    {
-        if (strokeResult.pass)
-        {
-            completedStrokes.Add(curInpStroke);
-            if (curRefStrokeIdx == (refStrokes.Count - 1))
-            {
-                Debug.Log(data.literal + " completed!");
-                completed = true;
-                return;
-            }
-            else
-            {
-                curInpStroke.Highlight();
-                curRefStrokeIdx++;
-                curInpStroke = GenerateInputStroke();
-            }
+            Debug.Log(data.literal + " completed!");
+            completed = true;
+            return;
         }
         else
         {
-            curRefStroke.Highlight();
-            curInpStroke.ClearLine();
+            curStrokeIdx++;
+            strokes[curStrokeIdx].inpStroke.gameObject.SetActive(true);
         }
+    }
+
+    private void EvaluateStroke(StrokePair sp)
+    {
+        StrokeResult result = new StrokeResult();
+        // all points need to be under the loose threshold
+        result.pass = true;
+        for (int i = 0; i < sp.inpStroke.refPoints.Count; i++)
+        {
+            float distance = Mathf.Abs((
+                sp.inpStroke.refPoints[i] -
+                sp.refStroke.refPoints[i]).magnitude);
+            result.refPointDistances.Add(distance);
+            result.pass &= distance < compThreshLoose;
+        }
+        // at least one point needs to be under the tight thresh
+        float? tightDist = result.refPointDistances.FirstOrDefault(d => d < compThreshTight);
+        if(tightDist != null) 
+        {
+            result.tightPointIdx = result.refPointDistances.IndexOf(tightDist); 
+        }
+        result.pass &= result.tightPointIdx != -1;
+        sp.strokeResult = result;
     }
 
 #if UNITY_EDITOR
@@ -149,27 +175,40 @@ public class Kanji : MonoBehaviour
         Plane kanjiPlane = GetPlane();
         DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(transform.position), new Color(0, 0, 1, 0.1f));
 
-        // ref points
-        if (curRefStrokeValid)
+        // draw debug strokes
+        if (strokes.Count > 0)
         {
-            for (int i = 0; i < curRefStroke.refPoints.Count; i++)
+            for (int i = 0; i <= curStrokeIdx; i++)
             {
-                Gizmos.color = Color.green;
-                var refPnt = transform.TransformPoint(new Vector3(curRefStroke.refPoints[i].x, curRefStroke.refPoints[i].y));
-                Gizmos.DrawSphere(refPnt, 0.1f);
-                if (curInpStrokeValid)
-                {
-                    Gizmos.color = Color.cyan;
-                    if (!curInpStrokeValid) continue;
-                    var inpPnt = transform.TransformPoint(new Vector3(curInpStroke.refPoints[i].x, curInpStroke.refPoints[i].y));
-                    Gizmos.DrawSphere(inpPnt, 0.1f);
-                    // connect the two
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawLine(refPnt, inpPnt);
-                }
+                if(strokes[i].strokeResult != null) DrawStrokePair(strokes[i]);
             }
         }
     }
+
+    private void DrawStrokePair(StrokePair sp)
+    {
+        if (sp.isValid)
+        {
+            for (int i = 0; i < noRefPointsInStroke; i++)
+            {
+                Gizmos.color = Color.gray;
+                var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.refPoints[i].x, sp.refStroke.refPoints[i].y));
+                Gizmos.DrawSphere(refPnt, 0.1f);
+                Gizmos.color = new Color(0,0,0,0.1f);
+                Gizmos.DrawSphere(refPnt, compThreshLoose);
+                Gizmos.DrawSphere(refPnt, compThreshTight);
+                Gizmos.color = sp.strokeResult.pass ? Color.green : Color.red;
+                // tight dist color
+                Gizmos.color = sp.strokeResult.tightPointIdx == i ? new Color(1, 0, 1) : Gizmos.color; // purple
+                var inpPnt = transform.TransformPoint(new Vector3(sp.inpStroke.refPoints[i].x, sp.inpStroke.refPoints[i].y));
+                Gizmos.DrawSphere(inpPnt, 0.1f);
+                // connect the two
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(refPnt, inpPnt);
+            }
+        }
+    }
+
 
     private void DrawPlane(Plane p, Vector3 center, Color color, float radius = 10)
     {
