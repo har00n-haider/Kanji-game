@@ -18,7 +18,8 @@ public class Utils
 {
 
     // t must be a value from 0 - 1
-    private static Vector2 GetPntOnCubicBezier(float t, CubicBezier cB){
+    private static Vector2 GetPntOnCubicBezier(float t, CubicBezier cB)
+    {
         var ti = 1 - t;
         Vector2 term1 = cB.p1 * (ti * ti * ti);
         Vector2 term2 = cB.p2 * (3 * ti * ti * t);
@@ -33,7 +34,7 @@ public class Utils
         List<Vector2> pnts = new List<Vector2>();
         for (int i = 0; i < noOfPnts; i++)
         {
-            pnts.Add(GetPntOnCubicBezier(i / (float) noOfPnts, cB));
+            pnts.Add(GetPntOnCubicBezier(i / (float)noOfPnts, cB));
         }
         return pnts;
     }
@@ -51,7 +52,7 @@ public class Utils
         return length;
     }
 
-    private struct PathInfo 
+    private struct PathInfo
     {
         public float[] lengths;
         public float[] offsets;
@@ -85,7 +86,7 @@ public class Utils
         int pthIdx = 0;
         for (int i = 0; i < pntsInStroke; i++)
         {
-            float tPth = i / (float) pntsInStroke;
+            float tPth = i / (float)pntsInStroke;
             float pPthScaled = tPth * pthInfo.totLength;
             int nxtPthIdx = pthIdx + 1;
             if (nxtPthIdx != vectorPaths.Count &&
@@ -100,20 +101,25 @@ public class Utils
         return pnts;
     }
 
-    public static List<Vector2> GenRefPntsForPnts(List<Vector2> inpPoints, int noOfPoints = 5)
+    public static float GetLengthForPnts(List<Vector2> points)
     {
-        List<Vector2> points = new List<Vector2>();
-        if (noOfPoints > inpPoints.Count || noOfPoints < 1) return points;
-        inpPoints.ForEach(pnt => points.Add(new Vector2(pnt.x, pnt.y)));
+        // get total length of line
+        float totalDist = 0;
+        for (int i = 1; i < points.Count; i++)
+        {
+            totalDist += (points[i] - points[i - 1]).magnitude;
+        }
+        return totalDist;
+    }
+
+    public static List<Vector2> GenRefPntsForPnts(List<Vector2> points, int noOfPoints = 5)
+    {
+        if (noOfPoints > points.Count || noOfPoints < 1) return new List<Vector2>();
         if (points.Count > 3)
         {
             List<Vector2> refPnts = new List<Vector2>();
             // get total length of line
-            float totalDist = 0;
-            for (int i = 1; i < points.Count; i++)
-            {
-                totalDist += (points[i] - points[i - 1]).magnitude;
-            }
+            float totalDist = GetLengthForPnts(points);
             noOfPoints--; // add last point manually
             float increment = totalDist / noOfPoints;
             // add points
@@ -138,14 +144,14 @@ public class Utils
         return points;
     }
 
-    public static List<Vector2> SVGToUnityCoords(List<Vector2> points) 
+    public static List<Vector2> SVGToUnityCoords(List<Vector2> points)
     {
         return points.ConvertAll(p => new Vector2(p.x, -p.y));
     }
 
-    public static List<Vector2> ScaleCoords(List<Vector2> points, float scale) 
+    public static List<Vector2> ScaleCoords(List<Vector2> points, float scale)
     {
-        return points.ConvertAll(p => new Vector2(p.x*scale, p.y*scale));
+        return points.ConvertAll(p => new Vector2(p.x * scale, p.y * scale));
     }
 
 

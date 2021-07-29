@@ -37,17 +37,18 @@ public class Kanji : MonoBehaviour
     public int noRefPointsInStroke { get; private set; } = 5;
     private float compThreshTight = 0.3f;
     private float compThreshLoose = 0.7f;
-    private float lengthBuffer = 0.2f;
+    private float lengthBuffer = 1f;
 
     public KanjiData data { get; private set; }
 
     public ReferenceStroke refStrokePrefab;
     public InputStroke inpStrokePrefab;
 
-
+#if UNITY_EDITOR
     // debug - set these in the editor
-    public bool getRandomKanji = false;
+    public bool debug = false;
     public KanjiManager kanjiManager;
+#endif 
 
     // Get the plane on which the kanji lies
     public Plane GetPlane()
@@ -61,10 +62,12 @@ public class Kanji : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (getRandomKanji)
+#if UNITY_EDITOR
+        if (debug)
         {
             Init(kanjiManager.GetRandomKanji());
         }
+#endif
     }
 
     // Update is called once per frame
@@ -165,12 +168,17 @@ public class Kanji : MonoBehaviour
             result.tightPointIdx = result.refPointDistances.IndexOf(tightDist); 
         }
         result.pass &= result.tightPointIdx != -1;
+        // total length needs to be within limits
+        float minVal = sp.refStroke.length - lengthBuffer;
+        float maxVal = sp.refStroke.length + lengthBuffer;
+        result.pass &= sp.inpStroke.length > minVal && sp.inpStroke.length < maxVal;
         sp.strokeResult = result;
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        if (!debug) return;
         // plane
         Plane kanjiPlane = GetPlane();
         DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(transform.position), new Color(0, 0, 1, 0.1f));

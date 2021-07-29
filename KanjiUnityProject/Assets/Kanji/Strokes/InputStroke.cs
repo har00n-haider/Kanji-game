@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class InputStroke : Stroke
 {
-    private List<Vector3> inputPoints = new List<Vector3>();
     private Camera mainCam;
     private float offsetFromRef = 0.1f;
 
@@ -42,32 +41,24 @@ public class InputStroke : Stroke
             {
                 Vector3 worldPoint = ray.direction * enter + ray.origin;
                 Vector3 localPoint = kanji.transform.InverseTransformPoint(worldPoint);
-                localPoint.z -= offsetFromRef;
-                inputPoints.Add(localPoint);
+                points.Add(localPoint);
+                SetLinePoints();
             }
-            UpdateLine();
         }
         // clear line
         if (Input.GetMouseButtonUp(0)) 
         {
             // TODO: should really project on to the plane as that is the reference
-            refPoints = Utils.GenRefPntsForPnts(
-                inputPoints.ConvertAll(p => new Vector2(p.x, p.y)), kanji.noRefPointsInStroke);
+            length = Utils.GetLengthForPnts(points);
+            refPoints = Utils.GenRefPntsForPnts(points, kanji.noRefPointsInStroke);
             completed = true ;
         }
     }
 
-    private void UpdateLine() 
-    {
-        line.positionCount = inputPoints.Count;
-        line.SetPositions(inputPoints.ToArray());
-    }
-
     public void ClearLine() 
     {
-        refPoints.Clear();
-        inputPoints.Clear();
-        UpdateLine();
+        points.Clear();
+        SetLinePoints();
         completed = false;
     }
 

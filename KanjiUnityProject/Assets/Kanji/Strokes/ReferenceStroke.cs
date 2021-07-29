@@ -18,10 +18,11 @@ public class ReferenceStroke : Stroke
         base.Init(kanji);
         base.SetupLine(Color.grey);
         // use the raw kanji data to create lines in the world
-        line.positionCount = rawStroke.points.Count;
-        line.SetPositions(rawStroke.points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
-        line.useWorldSpace = false;
+        points = rawStroke.points;
         refPoints = Utils.GenRefPntsForPnts(rawStroke.points, kanji.noRefPointsInStroke);
+        length = Utils.GetLengthForPnts(points);
+        SetLinePoints();
+        line.useWorldSpace = false;
 
         highlightData.initialColor = Color.red;
         highlightData.initialWidth = width * 3;

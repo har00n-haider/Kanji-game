@@ -16,33 +16,37 @@ public class Stroke : MonoBehaviour
         public Color finalColor;
         public Coroutine co;
     }
-
     protected HighlightData highlightData;
 
-    // on the in plane 
-    public List<Vector2> refPoints;
+    // kanji related stuff
+    public List<Vector2> refPoints; // key points in the stroke used for evaluation
+    public List<Vector2> points;    // points used for visualising the line on screen
     public Kanji kanji;
     public bool completed = false;
+    public float length { get; protected set; }
+
     // line stuff
     public Material lineMaterial;
     public float width = 0.1f;
     public LineRenderer line;
+
     public bool isValid { get { return completed && refPoints?.Count == kanji.noRefPointsInStroke; } }
-
-
+  
     protected virtual void SetupLine(Color color) 
     {
         line.material = lineMaterial;
-
         line.numCapVertices = 4;
-
         SetLineWidth(width);
-
         SetLineColor(color);
-
         // highlight configuration
         highlightData.finalColor = line.startColor;
         highlightData.finalWidth = line.startWidth;
+    }
+
+    protected void SetLinePoints()
+    {
+        line.positionCount = points.Count;
+        line.SetPositions(points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
     }
 
     protected void SetLineColor(Color color)
