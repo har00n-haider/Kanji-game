@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Missile : MonoBehaviour, IKanjiHolder
 {
     public float speed = 0.1f;
-    public TextMeshPro textMeshPro;
     public AudioClip explosionSound;
 
     public ParticleSystem explosionPrefab;
@@ -15,6 +15,24 @@ public class Missile : MonoBehaviour, IKanjiHolder
     public bool selected { get ; set ; }
 
     public System.Action onDestroy;
+
+    public GameObject label;
+    private RectTransform labelRect;
+    private Text labelText;
+    private Image labelImage;
+    public Color labelColor;
+
+    public float labelOffsetY;
+
+    void Awake() 
+    {
+        labelRect = label.GetComponentInChildren<RectTransform>();
+        labelText = label.GetComponentInChildren<Text>();
+        labelImage = label.GetComponentInChildren<Image>();
+
+        labelText.supportRichText = true;
+        labelImage.color = labelColor;
+    }
 
 
     // Start is called before the first frame update
@@ -26,15 +44,19 @@ public class Missile : MonoBehaviour, IKanjiHolder
     void Update()
     {
         gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
-        textMeshPro.transform.rotation = Quaternion.LookRotation(
-            Camera.main.transform.forward,
-            Camera.main.transform.up);
+
+        // update the location of the label on the screen
+        var screenpoint = Camera.main.WorldToScreenPoint(transform.position);
+        if (screenpoint.z >= 0)
+        {
+            labelRect.position = new Vector2(screenpoint.x, screenpoint.y + labelOffsetY);
+        }
     }
 
     public void SetKanji(KanjiData kanji) 
     {
         this.kanji = kanji;
-        textMeshPro.text = kanji.meanings[0];
+        labelText.text = kanji.meanings[0];
     }
 
     private void OnTriggerEnter(Collider other)
@@ -63,5 +85,6 @@ public class Missile : MonoBehaviour, IKanjiHolder
     {
         return this == null;
     }
+
 }
     
