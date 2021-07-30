@@ -10,10 +10,8 @@ public class Stroke : MonoBehaviour
 {
     protected struct HighlightData
     {
-        public float initialWidth;
-        public float finalWidth;
-        public Color initialColor;
-        public Color finalColor;
+        public float fromWidth;
+        public Color fromColor;
         public Coroutine co;
     }
     protected HighlightData highlightData;
@@ -25,37 +23,47 @@ public class Stroke : MonoBehaviour
     public bool completed = false;
     public float length { get; protected set; }
 
-    // line stuff
+    // persistent line configuration
     public Material lineMaterial;
-    public float width = 0.1f;
     public LineRenderer line;
+    public float lineWidth = 0.1f;
+    public Color lineColor;
 
     public bool isValid { get { return completed && refPoints?.Count == kanji.noRefPointsInStroke; } }
   
-    protected virtual void SetupLine(Color color) 
+    protected virtual void SetupLine() 
     {
         line.material = lineMaterial;
         line.numCapVertices = 4;
-        SetLineWidth(width);
-        SetLineColor(color);
-        // highlight configuration
-        highlightData.finalColor = line.startColor;
-        highlightData.finalWidth = line.startWidth;
+        ResetLineWidth();
+        ResetLineColor();
     }
 
-    protected void SetLinePoints()
+    protected void UpdateLinePoints()
     {
         line.positionCount = points.Count;
         line.SetPositions(points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
     }
 
-    protected void SetLineColor(Color color)
+    public void ResetLineColor()
+    {
+        line.startColor = lineColor;
+        line.endColor = lineColor;
+    }
+
+    private void ResetLineWidth ()
+    {
+        line.startWidth = lineWidth;
+        line.endWidth = lineWidth;
+    }
+
+    public void SetLineColor(Color color)
     {
         line.startColor = color;
         line.endColor = color;
     }
 
-    protected void SetLineWidth (float width)
+    private void SetLineWidth(float width)
     {
         line.startWidth = width;
         line.endWidth = width;
@@ -70,16 +78,21 @@ public class Stroke : MonoBehaviour
     {
         this.kanji = kanji;
     }
-
-
         
     #region Highlight
+
+    public void SetHightlight(Color color, float width = 0.3f) 
+    {
+        highlightData.fromColor = color;
+        highlightData.fromWidth = width;
+    }
 
     public void Highlight()
     {
         if (highlightData.co != null) StopCoroutine(highlightData.co);
-        SetLineColor(highlightData.finalColor);
-        SetLineWidth(highlightData.finalWidth); 
+        // reset the state of the line
+        ResetLineColor();
+        ResetLineWidth(); 
         highlightData.co = StartCoroutine(ApplyHighlight());
     }
 
@@ -88,10 +101,12 @@ public class Stroke : MonoBehaviour
         //Debug.Log("Running highlight coroutine");
         for (float highlightAlpha = 0; highlightAlpha <= 1; highlightAlpha += 0.05f)
         {
-            SetLineColor(Color.Lerp(highlightData.initialColor, highlightData.finalColor, highlightAlpha));
-            SetLineWidth(Mathf.Lerp(highlightData.initialWidth, highlightData.finalWidth, highlightAlpha));
+            SetLineColor(Color.Lerp(highlightData.fromColor, lineColor, highlightAlpha));
+            SetLineWidth(Mathf.Lerp(highlightData.fromWidth, lineWidth, highlightAlpha));
             yield return new WaitForSeconds(0.01f);
         }
+        ResetLineColor();
+        ResetLineWidth();
     }
 
     #endregion

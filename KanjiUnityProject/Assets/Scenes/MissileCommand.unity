@@ -183,9 +183,37 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: kanjiManager
       value: 
       objectReference: {fileID: 2082174378}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: wrongColor.b
+      value: 0.25943398
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: wrongColor.g
+      value: 0.25943398
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: wrongColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: correctColor.b
+      value: 0.24679601
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: correctColor.g
+      value: 0.8867924
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: correctColor.r
+      value: 0.28598693
+      objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: getRandomKanji
       value: 1

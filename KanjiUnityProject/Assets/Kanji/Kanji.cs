@@ -32,12 +32,19 @@ public class Kanji : MonoBehaviour
     private Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
     private int curStrokeIdx;
     public bool completed = false;
+    public bool pass = false;
+    public float score { get; private set; }
 
     // configuration for strokes
     public int noRefPointsInStroke { get; private set; } = 5;
-    private float compThreshTight = 0.3f;
-    private float compThreshLoose = 0.7f;
-    private float lengthBuffer = 1f;
+    public float compThreshTight = 0.3f;
+    public float compThreshLoose = 0.7f;
+    public float lengthBuffer = 1f;
+    public Color wrongColor;
+    public Color correctColor;
+    public Color hintColor;
+    public Color completedColor;
+    public Color drawnColor;
 
     public KanjiData data { get; private set; }
 
@@ -81,15 +88,27 @@ public class Kanji : MonoBehaviour
             EvaluateStroke(strokes[curStrokeIdx]);
             if (curStroke.strokeResult.pass)
             {
-                curStroke.inpStroke.Highlight();
+                curStroke.inpStroke.gameObject.SetActive(false);
+                curStroke.refStroke.lineColor = completedColor;
+                curStroke.refStroke.SetHightlight(correctColor);
+                curStroke.refStroke.Highlight();
                 MoveToNextStroke();
             }
             else
             {
+                curStroke.inpStroke.gameObject.SetActive(false);
+                curStroke.refStroke.lineColor = wrongColor;
+                curStroke.refStroke.SetHightlight(wrongColor);
                 curStroke.refStroke.Highlight();
-                curStroke.inpStroke.ClearLine();
+                MoveToNextStroke();
             }
         };
+        if (completed) 
+        {
+            score = strokes.Count(sp => sp.Value.strokeResult.pass) / (float) strokes.Count;
+            pass = score > 0;
+            Debug.Log(string.Format("{0} completed, pass: {1}, score: {2:0.00}",data.literal, pass, score));
+        }
     }
 
     public void Init(KanjiData kanjiData)
@@ -118,6 +137,7 @@ public class Kanji : MonoBehaviour
     {
         var refStroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
         refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
+        refStroke.lineColor = hintColor;
         refStroke.rawStroke = rawStroke;
         refStroke.Init(this);
         return refStroke;
@@ -128,6 +148,7 @@ public class Kanji : MonoBehaviour
         // create the first input stroke 
         var inputStroke = Instantiate(inpStrokePrefab, transform).GetComponent<InputStroke>();
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
+        inputStroke.lineColor = drawnColor;
         inputStroke.Init(this);
         inputStroke.gameObject.SetActive(false);
         return inputStroke;
@@ -137,7 +158,6 @@ public class Kanji : MonoBehaviour
     {
         if (curStrokeIdx == (strokes.Count - 1))
         {
-            Debug.Log(data.literal + " completed!");
             completed = true;
             return;
         }

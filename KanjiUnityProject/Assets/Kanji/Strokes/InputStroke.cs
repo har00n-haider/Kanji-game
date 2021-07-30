@@ -13,11 +13,8 @@ public class InputStroke : Stroke
     public override void Init(Kanji kanjiManager)
     {
         base.Init(kanjiManager);
-        base.SetupLine(Color.blue);
+        base.SetupLine();
         line.useWorldSpace = false;
-
-        highlightData.initialColor = Color.green;
-        highlightData.initialWidth = width * 3;
     }
 
     public override void Awake() 
@@ -42,7 +39,7 @@ public class InputStroke : Stroke
                 Vector3 worldPoint = ray.direction * enter + ray.origin;
                 Vector3 localPoint = kanji.transform.InverseTransformPoint(worldPoint);
                 points.Add(localPoint);
-                SetLinePoints();
+                UpdateLinePoints();
             }
         }
         // clear line
@@ -58,7 +55,7 @@ public class InputStroke : Stroke
     public void ClearLine() 
     {
         points.Clear();
-        SetLinePoints();
+        UpdateLinePoints();
         completed = false;
     }
 

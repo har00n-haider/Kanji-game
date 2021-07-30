@@ -16,17 +16,13 @@ public class ReferenceStroke : Stroke
     public override void Init(Kanji kanji)
     {
         base.Init(kanji);
-        base.SetupLine(Color.grey);
+        base.SetupLine();
         // use the raw kanji data to create lines in the world
         points = rawStroke.points;
         refPoints = Utils.GenRefPntsForPnts(rawStroke.points, kanji.noRefPointsInStroke);
         length = Utils.GetLengthForPnts(points);
-        SetLinePoints();
+        UpdateLinePoints();
         line.useWorldSpace = false;
-
-        highlightData.initialColor = Color.red;
-        highlightData.initialWidth = width * 3;
-
         completed = true;
     }
 
