@@ -14,6 +14,8 @@ public class Missile : MonoBehaviour, IKanjiHolder
     public KanjiData kanji { get ; set ; }
     public bool selected { get ; set ; }
 
+    public System.Action onDestroy;
+
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +56,7 @@ public class Missile : MonoBehaviour, IKanjiHolder
         Destroy(gameObject);
         //TODO: figure out to properly play an animation once
         Destroy(explosion.gameObject, explosionPrefab.main.duration - 2.3f);
+        onDestroy?.Invoke();
     }
 
     public bool IsDestroyed()

@@ -25,13 +25,13 @@ public class KanjiData
     public List<string> readingsKun = new List<string>();
     public string svgContent = string.Empty;
     public Tuple<CategoryType, string> category = null;
-    public KanjiStats stats = new KanjiStats();
+    public KanjiProgress progress = new KanjiProgress();
 }
 
-public class KanjiStats 
+public class KanjiProgress 
 {
-    public bool seen = false;
-    public int timesCleared = 0;
+    public int clears = 0;
+    public int flawlessClears = 0;
 }
 
 public interface IKanjiHolder

@@ -4,12 +4,6 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-
-
-/// <summary>
-/// Hosts all the input and reference strokes of the kanji.
-/// It compares them, and fires an event when its completed.
-/// </summary>
 public class Kanji : MonoBehaviour
 {
     private class StrokeResult
@@ -46,7 +40,7 @@ public class Kanji : MonoBehaviour
     public Color completedColor;
     public Color drawnColor;
 
-    public KanjiData data { get; private set; }
+    public KanjiData kanjiData { get; private set; }
 
     public ReferenceStroke refStrokePrefab;
     public InputStroke inpStrokePrefab;
@@ -72,7 +66,7 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
         if (debug)
         {
-            Init(kanjiManager.GetRandomKanji());
+            Init(kanjiManager.GetKanji('七'));
         }
 #endif
     }
@@ -89,6 +83,7 @@ public class Kanji : MonoBehaviour
             if (curStroke.strokeResult.pass)
             {
                 curStroke.inpStroke.gameObject.SetActive(false);
+                curStroke.refStroke.SetVisibility(true);
                 curStroke.refStroke.lineColor = completedColor;
                 curStroke.refStroke.SetHightlight(correctColor);
                 curStroke.refStroke.Highlight();
@@ -97,6 +92,7 @@ public class Kanji : MonoBehaviour
             else
             {
                 curStroke.inpStroke.gameObject.SetActive(false);
+                curStroke.refStroke.SetVisibility(true);
                 curStroke.refStroke.lineColor = wrongColor;
                 curStroke.refStroke.SetHightlight(wrongColor);
                 curStroke.refStroke.Highlight();
@@ -107,7 +103,17 @@ public class Kanji : MonoBehaviour
         {
             score = strokes.Count(sp => sp.Value.strokeResult.pass) / (float) strokes.Count;
             pass = score > 0;
-            Debug.Log(string.Format("{0} completed, pass: {1}, score: {2:0.00}",data.literal, pass, score));
+            Debug.Log(string.Format("{0} completed, pass: {1}, score: {2:0.00}", kanjiData.literal, pass, score));
+            // update progress for the kanji
+            if (score >= 1) 
+            {
+                kanjiData.progress.flawlessClears++;
+                kanjiData.progress.clears++;
+            }
+            else if( score > 0)
+            {
+                kanjiData.progress.clears++;
+            }
         }
     }
 
@@ -115,7 +121,7 @@ public class Kanji : MonoBehaviour
     {
         // pull a kanji
         var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
-
+        bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiManager.hideReferenceThreshold;
         for (int sIdx = 0; sIdx < rawStrokes.Count; sIdx++)
         {
             // assuming we get these in order
@@ -123,19 +129,20 @@ public class Kanji : MonoBehaviour
                 sIdx,
                 new StrokePair()
                 {
-                    refStroke = GenerateRefStroke(rawStrokes[sIdx]),
+                    refStroke = GenerateRefStroke(rawStrokes[sIdx], refKanjiHidden),
                     inpStroke = GenerateInpStroke()
                 });
         }
         curStrokeIdx = 0;
-        data = kanjiData;
+        this.kanjiData = kanjiData;
         // start the looking for the first stroke
         strokes[0].inpStroke.gameObject.SetActive(true);
     }
 
-    private ReferenceStroke GenerateRefStroke(RawStroke rawStroke)
+    private ReferenceStroke GenerateRefStroke(RawStroke rawStroke, bool isHidden = false)
     {
         var refStroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
+        refStroke.SetVisibility(!isHidden);
         refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
         refStroke.lineColor = hintColor;
         refStroke.rawStroke = rawStroke;

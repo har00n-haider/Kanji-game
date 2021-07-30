@@ -7,24 +7,19 @@ using System.Linq;
 
 public class KanjiManager : MonoBehaviour
 {
+    // settings for scoring behaviour
+    public static readonly int hideReferenceThreshold = 3;
 
     public TextAsset dataBaseFile;
-    public Kanji kanjiPrefab;
 
-    private Kanji currKanji;
     private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
-
-    private IKanjiHolder selectedKanjiHolder = null;
-
-    private int clearRequirement = 1;
-    public int kanjiToBeCleared = 0;
-
     public bool dataBaseLoaded = false;
-
 
     private void Awake()
     {
         kanjis = LoadDatabase().ToDictionary(x => x.code, c => c);
+
+        kanjis = kanjis.Take(1).ToDictionary(i => i.Key, i => i.Value);
     }
 
     // Start is called before the first frame update
@@ -35,71 +30,89 @@ public class KanjiManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // see if user selected a kanji holder object
-        if (Input.GetMouseButtonUp(0)) 
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hitInfo)) 
-            {
-                var kanjiHolder = hitInfo.collider.gameObject.GetComponent<IKanjiHolder>();
-                if (kanjiHolder != null)
-                {
-                    selectedKanjiHolder = kanjiHolder;
-                    UpdateKanji(selectedKanjiHolder.kanji);
-                }
-            }
-        }
-
-        if (currKanji != null && currKanji.completed)
-        {
-            kanjis[currKanji.data.code].stats.timesCleared++;
-            selectedKanjiHolder.Destroy();
-            Destroy(currKanji.gameObject);
-        }
-
-        if(selectedKanjiHolder != null && selectedKanjiHolder.IsDestroyed()) 
-        {
-            if(currKanji != null) Destroy(currKanji.gameObject);
-        }
+        UpdateKanjiSelection();
     }
 
-    public KanjiData GetKanjiData() 
+    public KanjiData GetRandomKanji()
     {
-        var kanjiList = kanjis.Values;
-        var remainingkanjis = kanjiList.Where(k => k.stats.timesCleared < clearRequirement).ToList();
-        kanjiToBeCleared = remainingkanjis.Count;
-        if(remainingkanjis.Count > 0) 
-        {
-            var idx = Random.Range(0, remainingkanjis.Count - 1);
-            remainingkanjis[idx].stats.seen = true;
-            return remainingkanjis[idx];
-        }
-        return null;
-    }
-
-    public void IncrementClearRequirement() 
-    {
-        clearRequirement++;
-        var kanjiList = kanjis.Values;
-        var remainingkanjis = kanjiList.Where(k => k.stats.timesCleared < clearRequirement).ToList();
-        kanjiToBeCleared = remainingkanjis.Count;
-    }
-
-    public KanjiData GetRandomKanji() 
-    {
-        if (!dataBaseLoaded) return null; 
+        if (!dataBaseLoaded) return null;
         var kanjiList = kanjis.Values.ToList();
         var idx = Random.Range(0, kanjiList.Count - 1);
         return kanjiList[idx];
     }
 
-    void UpdateKanji(KanjiData kanjiData) 
+    public KanjiData GetRandomKanjiFiltered(System.Func<KanjiData, bool> filter) 
     {
-        if (currKanji != null) Destroy(currKanji.gameObject);
+        if (!dataBaseLoaded) return null;
+        var kanjiList = kanjis.Values;
+        var remainingkanjis = kanjiList.Where(filter).ToList();
+        if(remainingkanjis.Count > 0) 
+        {
+            var idx = Random.Range(0, remainingkanjis.Count - 1);
+            return remainingkanjis[idx];
+        }
+        return null;
+    }
+
+    public int CountKanji(System.Func<KanjiData, bool> filter) 
+    {
+        if (!dataBaseLoaded) return 0;
+        var kanjiList = kanjis.Values;
+        return kanjiList.Where(filter).Count();
+    }
+
+    public KanjiData GetKanji(char kanji) 
+    {
+        KanjiData result = kanjis.Values.FirstOrDefault(k => k.literal == kanji.ToString());
+        return result;
+    }
+
+    #region Kanji selection in the world
+    // TODO: split out this from the database stuff
+
+    public Kanji inputKanji;
+    private IKanjiHolder selectedKanjiHolder = null;
+    public Kanji kanjiPrefab;
+
+    void UpdateKanjiSelection() 
+    {
+        // see if user selected a kanji holder object
+        if (Input.GetMouseButtonUp(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo))
+            {
+                var kanjiHolder = hitInfo.collider.gameObject.GetComponent<IKanjiHolder>();
+                if (kanjiHolder != null)
+                {
+                    selectedKanjiHolder = kanjiHolder;
+                    UpdateInputKanji(selectedKanjiHolder.kanji);
+                }
+            }
+        }
+
+        if (inputKanji != null && inputKanji.completed)
+        {
+            kanjis[inputKanji.kanjiData.code].progress.clears++;
+            selectedKanjiHolder.Destroy();
+            Destroy(inputKanji.gameObject);
+        }
+
+        if (selectedKanjiHolder != null && selectedKanjiHolder.IsDestroyed())
+        {
+            if (inputKanji != null) Destroy(inputKanji.gameObject);
+        }
+    }
+
+    public void UpdateInputKanji(KanjiData kanjiData) 
+    {
+        if (inputKanji != null) Destroy(inputKanji.gameObject);
         var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji>();
         kanji.Init(kanjiData);
-        currKanji = kanji;
+        inputKanji = kanji;
     }
+
+    #endregion
 
     List<KanjiData> LoadDatabase() 
     {
