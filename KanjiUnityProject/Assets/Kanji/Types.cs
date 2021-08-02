@@ -41,4 +41,8 @@ public interface IKanjiHolder
     void Destroy();
 
     bool IsDestroyed();
+
+    Transform transform { get; }
 }
+
+

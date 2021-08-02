@@ -1,80 +1,40 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.IO;
-using System.Xml;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
 
+
+// Manages what objects in the scene hold kanjis
+// and what kanji to display on screen.
+// Should be the central place to manage how the 
+// kanji interact with the rest of the game
 public class KanjiManager : MonoBehaviour
 {
     // settings for scoring behaviour
     public static readonly int hideReferenceThreshold = 3;
 
-    public TextAsset dataBaseFile;
-
-    private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
-    public bool dataBaseLoaded = false;
-
-    private void Awake()
-    {
-        kanjis = LoadDatabase().ToDictionary(x => x.code, c => c);
-
-        kanjis = kanjis.Take(1).ToDictionary(i => i.Key, i => i.Value);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        UpdateKanjiSelection();
-    }
-
-    public KanjiData GetRandomKanji()
-    {
-        if (!dataBaseLoaded) return null;
-        var kanjiList = kanjis.Values.ToList();
-        var idx = Random.Range(0, kanjiList.Count - 1);
-        return kanjiList[idx];
-    }
-
-    public KanjiData GetRandomKanjiFiltered(System.Func<KanjiData, bool> filter) 
-    {
-        if (!dataBaseLoaded) return null;
-        var kanjiList = kanjis.Values;
-        var remainingkanjis = kanjiList.Where(filter).ToList();
-        if(remainingkanjis.Count > 0) 
-        {
-            var idx = Random.Range(0, remainingkanjis.Count - 1);
-            return remainingkanjis[idx];
-        }
-        return null;
-    }
-
-    public int CountKanji(System.Func<KanjiData, bool> filter) 
-    {
-        if (!dataBaseLoaded) return 0;
-        var kanjiList = kanjis.Values;
-        return kanjiList.Where(filter).Count();
-    }
-
-    public KanjiData GetKanji(char kanji) 
-    {
-        KanjiData result = kanjis.Values.FirstOrDefault(k => k.literal == kanji.ToString());
-        return result;
-    }
-
-    #region Kanji selection in the world
-    // TODO: split out this from the database stuff
-
-    public Kanji inputKanji;
+    private Kanji inputKanji;
     private IKanjiHolder selectedKanjiHolder = null;
     public Kanji kanjiPrefab;
 
-    void UpdateKanjiSelection() 
+    public KanjiDatabase database;
+    public TextAsset dataBaseFile;
+
+    public GameObject reticule;
+    private RectTransform reticuleTransform;
+    public float reticuleRotationrate = 0.12f;
+
+    private void Awake()
+    {
+        database = new KanjiDatabase();
+        database.Load(dataBaseFile);
+
+        reticuleTransform = reticule.GetComponent<RectTransform>();
+    }
+
+    void Update()
     {
         // see if user selected a kanji holder object
         if (Input.GetMouseButtonUp(0))
@@ -91,9 +51,10 @@ public class KanjiManager : MonoBehaviour
             }
         }
 
+        // destroy the kanji when completed
         if (inputKanji != null && inputKanji.completed)
         {
-            kanjis[inputKanji.kanjiData.code].progress.clears++;
+            inputKanji.kanjiData.progress.clears++;
             selectedKanjiHolder.Destroy();
             Destroy(inputKanji.gameObject);
         }
@@ -102,9 +63,11 @@ public class KanjiManager : MonoBehaviour
         {
             if (inputKanji != null) Destroy(inputKanji.gameObject);
         }
+
+        UpdateReticule();
     }
 
-    public void UpdateInputKanji(KanjiData kanjiData) 
+    public void UpdateInputKanji(KanjiData kanjiData)
     {
         if (inputKanji != null) Destroy(inputKanji.gameObject);
         var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji>();
@@ -112,42 +75,20 @@ public class KanjiManager : MonoBehaviour
         inputKanji = kanji;
     }
 
-    #endregion
 
-    List<KanjiData> LoadDatabase() 
+    private void UpdateReticule() 
     {
-        List<KanjiData> kanjis = new List<KanjiData>();
-        string dbPath = dataBaseFile.text;
-
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(dbPath);
-        var kanjiElems = xmlDoc.GetElementsByTagName("kanji");
-        foreach ( XmlNode kanjiElem in kanjiElems) 
+        if(selectedKanjiHolder != null && !selectedKanjiHolder.IsDestroyed()) 
         {
-            KanjiData kanji = new KanjiData();
-            kanji.literal = kanjiElem["literal"].InnerText;
-            kanji.code = kanjiElem.Attributes["code"].InnerText;
-            foreach (XmlNode meaningNode in kanjiElem["meaning_group"]) 
-            {
-                kanji.meanings.Add(meaningNode.InnerText);
-            }
-            foreach (XmlNode readingNode in kanjiElem["reading_group"])
-            {
-                if(readingNode.Attributes["r_type"].InnerText == "ja_kun") 
-                {
-                    kanji.readingsKun.Add(readingNode.InnerText);
-                }
-                else if(readingNode.Attributes["r_type"].InnerText == "ja_on") 
-                {
-                    kanji.readingsOn.Add(readingNode.InnerText);
-                }
-            }
-            kanji.svgContent = kanjiElem["svg"].InnerXml;
-            kanji.category = new System.Tuple<KanjiData.CategoryType, string>
-                (KanjiData.CategoryType.kanjipower, kanjiElem["category"].InnerText);
-            kanjis.Add(kanji);
+            reticule.SetActive(true);
+            reticuleTransform.position = 
+                Camera.main.WorldToScreenPoint(selectedKanjiHolder.transform.position);
+            reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate*Time.deltaTime);
         }
-        dataBaseLoaded = true;
-        return kanjis;
+        else 
+        {
+            reticule.SetActive(false);
+        }
     }
 }
+

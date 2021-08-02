@@ -48,7 +48,7 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
     // debug - set these in the editor
     public bool debug = false;
-    public KanjiManager kanjiManager;
+    public KanjiDatabase kanjiManager;
 #endif 
 
     // Get the plane on which the kanji lies
@@ -121,7 +121,7 @@ public class Kanji : MonoBehaviour
     {
         // pull a kanji
         var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
-        bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiManager.hideReferenceThreshold;
+        bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiDatabase.hideReferenceThreshold;
         for (int sIdx = 0; sIdx < rawStrokes.Count; sIdx++)
         {
             // assuming we get these in order

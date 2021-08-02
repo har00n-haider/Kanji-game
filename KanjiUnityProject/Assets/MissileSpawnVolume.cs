@@ -70,7 +70,7 @@ public class MissileSpawnVolume : MonoBehaviour
 
     void SpawnMissile()
     {
-        KanjiData kanji = kanjiManager.GetRandomKanji();
+        KanjiData kanji = kanjiManager.database.GetRandomKanji();
 
         if (kanji == null) return;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Debugger : MonoBehaviour
 {
 
-    public KanjiManager kanjiManager;
+    public KanjiDatabase kanjiManager;
 
     public Kanji kanjiPrefab;
     private Kanji currentKanji;
@@ -18,18 +18,18 @@ public class Debugger : MonoBehaviour
 
     private void GetNewKanji() 
     {
-        KanjiData kanji = kanjiManager.GetKanji('七');
-        kanjiManager.UpdateInputKanji(kanji);
+        //KanjiData kanji = kanjiManager.GetKanji('七');
+        //kanjiManager.UpdateInputKanji(kanji);
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (kanjiManager.inputKanji.completed) 
-        {
-            GetNewKanji();   
-        }
+        //if (kanjiManager.inputKanji.completed) 
+        //{
+        //    GetNewKanji();   
+        //}
         
     }
 }
