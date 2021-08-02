@@ -1,24 +1,28 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+using Random = UnityEngine.Random;
+
 [RequireComponent(typeof(BoxCollider))]
 public class MissileSpawnVolume : MonoBehaviour
 {
-    private class MissileSpawnConfig 
+    [Serializable]
+    public class MissileSpawnConfig 
     {
         // spawn timing
-        public float spawnPeriod = 3;
-        public float spawnPeriodInc = 0.07f;
+        public float spawnPeriod = 4.3f;
+        public float spawnPeriodInc = 0.03f;
         // speed
-        public float missileSpeed = 3;
-        public float missileSpeedInc = 0.2f;
-        public float missileSpeedRng = 1.5f;
+        public float missileSpeed = 2;
+        public float missileSpeedInc = 0.1f;
+        public float missileSpeedRng = 0.5f;
         public int noOfMissilesToDestroy = 10;
     }
 
-    private MissileSpawnConfig config = new MissileSpawnConfig();
+    public MissileSpawnConfig config = new MissileSpawnConfig();
     private float timeSinceLastSpawn = 0;
     private BoxCollider boxCollider;
     private bool canGenerate = true;

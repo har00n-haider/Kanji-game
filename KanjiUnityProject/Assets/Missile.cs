@@ -15,6 +15,7 @@ public class Missile : MonoBehaviour, IKanjiHolder
     public AudioClip explosionSound;
     public AudioClip ricochetSound;
     public ParticleSystem explosionPrefab;
+    //public ParticleSystem ricochetPrefab;
     public GameObject label;
     public HealthBar healthBar;
     private RectTransform healthRect;
@@ -82,6 +83,11 @@ public class Missile : MonoBehaviour, IKanjiHolder
         }
         else
         {
+            //ParticleSystem ricochet = Instantiate(
+            //    ricochetPrefab,
+            //    gameObject.transform.position,
+            //    gameObject.transform.rotation);
+            //Destroy(ricochet.gameObject, ricochetPrefab.main.duration);
             AudioSource.PlayClipAtPoint(ricochetSound, gameObject.transform.position);
         }
     }
@@ -95,7 +101,6 @@ public class Missile : MonoBehaviour, IKanjiHolder
             gameObject.transform.position,
             gameObject.transform.rotation);
         Destroy(gameObject);
-        //TODO: figure out to properly play an animation once
         Destroy(explosion.gameObject, explosionPrefab.main.duration - 2.3f);
         onDestroy?.Invoke();
     }

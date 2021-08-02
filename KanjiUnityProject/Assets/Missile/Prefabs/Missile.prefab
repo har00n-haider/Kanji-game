@@ -67,6 +67,7 @@ MonoBehaviour:
   explosionSound: {fileID: 8300000, guid: 49c2332cc03a64249bf28cc6bd2f9a70, type: 3}
   ricochetSound: {fileID: 8300000, guid: a5b7d913072ad7c428f8789be3491a45, type: 3}
   explosionPrefab: {fileID: 198000012942003240, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
+  ricochetPrefab: {fileID: 198000013440722320, guid: 02a509a7fa70ed740ba4197e20c5d32d, type: 3}
   label: {fileID: 5500596094083005021}
   healthBar: {fileID: 9078608591841260415}
   healthOffsetYPercentage: 0.05
