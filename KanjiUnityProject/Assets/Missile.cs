@@ -21,8 +21,13 @@ public class Missile : MonoBehaviour, IKanjiHolder
     private Text labelText;
     private Image labelImage;
     public Color labelColor;
+    public Color textColor;
 
-    public float labelOffsetY;
+    public float labelOffsetYPercentage;
+
+
+    public bool canMove = true;
+
 
     void Awake() 
     {
@@ -31,39 +36,29 @@ public class Missile : MonoBehaviour, IKanjiHolder
         labelImage = label.GetComponentInChildren<Image>();
 
         labelText.supportRichText = true;
+        labelText.color = textColor;
         labelImage.color = labelColor;
+        
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
+        UpdateLabel();
     }
 
     // Update is called once per frame
     void Update()
     {
-        gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
-
-        // update the location of the label on the screen
-        var screenpoint = Camera.main.WorldToScreenPoint(transform.position);
-        if (screenpoint.z >= 0)
-        {
-            labelRect.position = new Vector2(screenpoint.x, screenpoint.y + labelOffsetY);
-        }
+        if(canMove) gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
+        UpdateLabel();
     }
 
     public void SetKanji(KanjiData kanji) 
     {
         this.kanji = kanji;
         labelText.text = kanji.meanings[0];
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Target target = other.gameObject.GetComponent<Target>();
-        if (target != null) target.TakeDamage();
-        Destroy();
     }
 
     public void Destroy()
@@ -85,6 +80,29 @@ public class Missile : MonoBehaviour, IKanjiHolder
     {
         return this == null;
     }
+
+
+    private void UpdateLabel() 
+    {
+        // update the location of the label on the screen
+        var screenpoint = Camera.main.WorldToScreenPoint(transform.position);
+        if (screenpoint.z >= 0)
+        {
+            float labelYOffset = labelOffsetYPercentage * Screen.height;
+            labelRect.position = new Vector2(screenpoint.x, screenpoint.y + labelYOffset);
+        }
+        //Canvas.ForceUpdateCanvases();
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Target target = other.gameObject.GetComponent<Target>();
+        if (target != null) target.TakeDamage();
+        Destroy();
+    }
+
+
 
 }
     
