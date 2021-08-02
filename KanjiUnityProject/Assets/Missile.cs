@@ -6,30 +6,32 @@ using UnityEngine.UI;
 
 public class Missile : MonoBehaviour, IKanjiHolder
 {
-    public float health = 1f;
+    // configuration
+    public float maxHealth = 1f;
+    public float curHealth;
     public float speed = 0.1f;
+
+    // unity references
     public AudioClip explosionSound;
     public AudioClip ricochetSound;
-
     public ParticleSystem explosionPrefab;
-
-    public KanjiData kanjiData { get ; set ; }
-    public bool selected { get ; set ; }
-
-    public System.Action onDestroy;
-
     public GameObject label;
+    public HealthBar healthBar;
+    private RectTransform healthRect;
+    public float healthOffsetYPercentage;
+
+    // label stuff
     private RectTransform labelRect;
     private Text labelText;
     private Image labelImage;
     public Color labelColor;
     public Color textColor;
-
     public float labelOffsetYPercentage;
 
-
+    public KanjiData kanjiData { get; set; }
+    public bool selected { get; set; }
     public bool canMove = true;
-
+    public System.Action onDestroy;
 
     void Awake() 
     {
@@ -40,21 +42,26 @@ public class Missile : MonoBehaviour, IKanjiHolder
         labelText.supportRichText = true;
         labelText.color = textColor;
         labelImage.color = labelColor;
-        
+
+        healthRect = healthBar.GetComponent<RectTransform>();
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        UpdateLabel();
+        curHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
+        UpdateLabel(healthRect, healthOffsetYPercentage);
+        UpdateLabel(labelRect, labelOffsetYPercentage);
     }
 
     // Update is called once per frame
     void Update()
     {
         if(canMove) gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
-        UpdateLabel();
+        UpdateLabel(healthRect, healthOffsetYPercentage);
+        UpdateLabel(labelRect, labelOffsetYPercentage);
     }
 
     public void SetKanji(KanjiData kanji) 
@@ -65,10 +72,11 @@ public class Missile : MonoBehaviour, IKanjiHolder
 
     public void TakeDamage(float damage)
     {
-        if (health < 0) return;
+        if (curHealth < 0) return;
 
-        health -= damage;
-        if(health <= 0) 
+        curHealth -= damage;
+        healthBar.SetHealth(curHealth);
+        if(curHealth <= 0) 
         {
             Destroy();
         }
@@ -98,10 +106,10 @@ public class Missile : MonoBehaviour, IKanjiHolder
     }
 
 
-    private void UpdateLabel() 
+    private void UpdateLabel(RectTransform lRect, float yOffsetPercentage) 
     {
-        float labelRectW = labelRect.rect.width;
-        float labelRectH = labelRect.rect.height;
+        float labelRectW = lRect.rect.width;
+        float labelRectH = lRect.rect.height;
         float sH = Camera.main.pixelHeight;
         float sW = Camera.main.pixelWidth;
         // update the location of the label on the screen
@@ -110,8 +118,8 @@ public class Missile : MonoBehaviour, IKanjiHolder
         float labelY = GeometryUtils.ClampLengthToRegion(screenpoint.y, labelRectH, sH);
         float labelX = GeometryUtils.ClampLengthToRegion(screenpoint.x, labelRectW, sW);
         // apply vertical offset to label
-        float labelYOffset = labelOffsetYPercentage * sH;
-        labelRect.position = new Vector2(labelX, labelY + labelYOffset);
+        float labelYOffset = yOffsetPercentage * sH;
+        lRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
 
 
