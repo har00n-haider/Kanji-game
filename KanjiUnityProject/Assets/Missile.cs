@@ -84,25 +84,44 @@ public class Missile : MonoBehaviour, IKanjiHolder
 
     private void UpdateLabel() 
     {
+        float labelRectW = labelRect.rect.width;
+        float labelRectH = labelRect.rect.height;
+        float sH = Camera.main.pixelHeight;
+        float sW = Camera.main.pixelWidth;
         // update the location of the label on the screen
         var screenpoint = Camera.main.WorldToScreenPoint(transform.position);
-        if (screenpoint.z >= 0)
-        {
-            float labelYOffset = labelOffsetYPercentage * Screen.height;
-            labelRect.position = new Vector2(screenpoint.x, screenpoint.y + labelYOffset);
-        }
-        //Canvas.ForceUpdateCanvases();
+        // smooth clamp rect to the screen dimensions
+        float labelY = GeometryUtils.ClampLengthToRegion(screenpoint.y, labelRectH, sH);
+        float labelX = GeometryUtils.ClampLengthToRegion(screenpoint.x, labelRectW, sW);
+        // apply vertical offset to label
+        float labelYOffset = labelOffsetYPercentage * sH;
+        labelRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-        Target target = other.gameObject.GetComponent<Target>();
-        if (target != null) target.TakeDamage();
-        Destroy();
+        if (canMove) 
+        {
+            Target target = other.gameObject.GetComponent<Target>();
+            if (target != null) target.TakeDamage();
+            Destroy();
+        }
     }
 
+#if UNITY_EDITOR
 
+    void OnDrawGizmos() 
+    {
+        float sphereRadius = 0.3f;
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position, sphereRadius);
+
+
+
+    }
+
+#endif
 
 }
-    
