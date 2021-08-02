@@ -36,9 +36,11 @@ public class KanjiProgress
 
 public interface IKanjiHolder
 {
-    KanjiData kanji { get; set; }
+    KanjiData kanjiData { get; set; }
     bool selected { get; set; }
     void Destroy();
+
+    void TakeDamage(float damage);
 
     bool IsDestroyed();
 

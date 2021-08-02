@@ -6,12 +6,14 @@ using UnityEngine.UI;
 
 public class Missile : MonoBehaviour, IKanjiHolder
 {
+    public float health = 1f;
     public float speed = 0.1f;
     public AudioClip explosionSound;
+    public AudioClip ricochetSound;
 
     public ParticleSystem explosionPrefab;
 
-    public KanjiData kanji { get ; set ; }
+    public KanjiData kanjiData { get ; set ; }
     public bool selected { get ; set ; }
 
     public System.Action onDestroy;
@@ -57,14 +59,28 @@ public class Missile : MonoBehaviour, IKanjiHolder
 
     public void SetKanji(KanjiData kanji) 
     {
-        this.kanji = kanji;
+        this.kanjiData = kanji;
         labelText.text = kanji.meanings[0];
+    }
+
+    public void TakeDamage(float damage)
+    {
+        if (health < 0) return;
+
+        health -= damage;
+        if(health <= 0) 
+        {
+            Destroy();
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(ricochetSound, gameObject.transform.position);
+        }
     }
 
     public void Destroy()
     {
         if (IsDestroyed()) return;
-
         AudioSource.PlayClipAtPoint(explosionSound, gameObject.transform.position);
         ParticleSystem explosion = Instantiate(
             explosionPrefab,
@@ -121,6 +137,7 @@ public class Missile : MonoBehaviour, IKanjiHolder
 
 
     }
+
 
 #endif
 

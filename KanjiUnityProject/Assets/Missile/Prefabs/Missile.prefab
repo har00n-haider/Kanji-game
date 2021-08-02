@@ -68,11 +68,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   explosionSound: {fileID: 8300000, guid: 49c2332cc03a64249bf28cc6bd2f9a70, type: 3}
+  ricochetSound: {fileID: 8300000, guid: a5b7d913072ad7c428f8789be3491a45, type: 3}
   explosionPrefab: {fileID: 198000012942003240, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
   label: {fileID: 5500596094083005021}
   labelColor: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
   textColor: {r: 0.9339623, g: 0.7807536, b: 0.15419187, a: 1}
   labelOffsetYPercentage: 0.09
+  canMove: 1
 --- !u!54 &7268091030688672846
 Rigidbody:
   m_ObjectHideFlags: 0

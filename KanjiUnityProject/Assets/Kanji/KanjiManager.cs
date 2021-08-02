@@ -46,19 +46,20 @@ public class KanjiManager : MonoBehaviour
                 if (kanjiHolder != null)
                 {
                     selectedKanjiHolder = kanjiHolder;
-                    UpdateInputKanji(selectedKanjiHolder.kanji);
+                    UpdateInputKanji(selectedKanjiHolder.kanjiData);
                 }
             }
         }
 
-        // destroy the kanji when completed
+        // Apply damage once the kanji is completed
         if (inputKanji != null && inputKanji.completed)
         {
-            inputKanji.kanjiData.progress.clears++;
-            selectedKanjiHolder.Destroy();
+            selectedKanjiHolder.TakeDamage(inputKanji.score);
             Destroy(inputKanji.gameObject);
+            inputKanji = null;
         }
 
+        // remove the kanji display once the selected kanji is destroyed
         if (selectedKanjiHolder != null && selectedKanjiHolder.IsDestroyed())
         {
             if (inputKanji != null) Destroy(inputKanji.gameObject);

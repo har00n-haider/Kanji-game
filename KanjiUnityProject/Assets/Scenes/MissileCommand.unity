@@ -933,6 +933,7 @@ MonoBehaviour:
   kanjiPrefab: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
   dataBaseFile: {fileID: 4900000, guid: b596e44a221d6c74a822d8ca9b82b0da, type: 3}
   reticule: {fileID: 804771514}
+  reticuleRotationrate: 90
 --- !u!4 &2082174379
 Transform:
   m_ObjectHideFlags: 0
