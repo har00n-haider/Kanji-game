@@ -45,9 +45,6 @@ public class Button : MonoBehaviour
             image = gameOject.GetComponent<Image>();
             imageRect = gameOject.GetComponent<RectTransform>();
             buttonRect = gameOject.GetComponentInParent<RectTransform>();
-
-            Debug.Log(buttonRect.rect.width + " " + buttonRect.rect.width);
-            Debug.Log(imageRect.anchoredPosition);
             initalPosScale.x = buttonRect.rect.width / imageRect.anchoredPosition.x;
             initalPosScale.y = buttonRect.rect.height / imageRect.anchoredPosition.y;
         }
