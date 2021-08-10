@@ -14,7 +14,7 @@ public class CubicBezier
     public Vector2 p4 = new Vector2();
 }
 
-public class Utils
+public class KanjiUtils
 {
 
     // t must be a value from 0 - 1

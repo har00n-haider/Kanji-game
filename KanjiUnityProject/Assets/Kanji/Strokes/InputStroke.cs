@@ -46,8 +46,8 @@ public class InputStroke : Stroke
         if (Input.GetMouseButtonUp(0)) 
         {
             // TODO: should really project on to the plane as that is the reference
-            length = Utils.GetLengthForPnts(points);
-            refPoints = Utils.GenRefPntsForPnts(points, kanji.noRefPointsInStroke);
+            length = KanjiUtils.GetLengthForPnts(points);
+            refPoints = KanjiUtils.GenRefPntsForPnts(points, kanji.noRefPointsInStroke);
             completed = true ;
         }
     }

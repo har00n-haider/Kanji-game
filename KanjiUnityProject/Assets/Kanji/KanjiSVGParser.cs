@@ -58,10 +58,10 @@ public class KanjiSVGParser
             RawStroke rawStroke = new RawStroke
             {
                 orderNo = int.Parse(pathElem.Attributes.GetNamedItem("id").Value.Split('-')[1].Replace("s", "")),
-                points = Utils.GetPointsForVectorStroke(vectorPaths, pntsInStroke),
+                points = KanjiUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke),
             };
-            rawStroke.points = Utils.SVGToUnityCoords(rawStroke.points);
-            rawStroke.points = Utils.ScaleCoords(rawStroke.points, scale);
+            rawStroke.points = KanjiUtils.SVGToUnityCoords(rawStroke.points);
+            rawStroke.points = KanjiUtils.ScaleCoords(rawStroke.points, scale);
             strokes.Add(rawStroke);
         }
         return strokes;

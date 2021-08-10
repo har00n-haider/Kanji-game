@@ -1,10 +1,8 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
-using System;
 
 public class Button : MonoBehaviour
 {
@@ -17,14 +15,21 @@ public class Button : MonoBehaviour
         Center
     }
 
+    // currently designed to match a hierarchy of
+    // - button (top level game object)
+    //  - flick button (with image, i.e. instance of this class)
+    //   - text mesh 
+    //  ... (more flick buttons)
     private class FlickButton
     {
-        private RectTransform buttonRect;
+        private RectTransform buttonRect; 
         private RectTransform imageRect;
-        public GameObject gameObject; // top level game object
+        private GameObject gameObject;
         private TextMeshProUGUI textMesh;
         private Image image;
-        private Vector2 initalPosScale;
+        private FlickType type;
+        public Vector2 relativePosScale;
+
         public char character
         {
             get
@@ -38,34 +43,69 @@ public class Button : MonoBehaviour
                 textMesh.text = value.ToString();
             }
         }
-        public FlickButton(GameObject gameOject)
+
+        public FlickButton(GameObject flickButtonGameObject, FlickType type)
         {
-            this.gameObject = gameOject;
-            textMesh = gameOject.GetComponentInChildren<TextMeshProUGUI>();
-            image = gameOject.GetComponent<Image>();
-            imageRect = gameOject.GetComponent<RectTransform>();
-            buttonRect = gameOject.GetComponentInParent<RectTransform>();
-            initalPosScale.x = buttonRect.rect.width / imageRect.anchoredPosition.x;
-            initalPosScale.y = buttonRect.rect.height / imageRect.anchoredPosition.y;
+            this.type = type;
+            this.gameObject = flickButtonGameObject;
+            textMesh = flickButtonGameObject.GetComponentInChildren<TextMeshProUGUI>();
+            image = flickButtonGameObject.GetComponent<Image>();
+            imageRect = flickButtonGameObject.GetComponent<RectTransform>();
+            buttonRect = flickButtonGameObject.GetComponentInParent<RectTransform>();
+            relativePosScale.x = buttonRect.rect.width / imageRect.anchoredPosition.x;
+            relativePosScale.y = buttonRect.rect.height / imageRect.anchoredPosition.y;
         }
+
         public void SetVisibility(bool value, bool exceptText = false)
         {
             image.enabled = value;
             textMesh.enabled = value;
         }
-        // assumes that the flick buttons are in stretch mode
-        public void Resize()
+
+        public void SetColors(Color imageColor, Color? textColor = null) 
         {
-            // old
-            float buttonHeight = buttonRect.rect.height;
-            float buttonWidth = buttonRect.rect.width;
-            Vector2 newPos = new Vector2(
-               buttonWidth / initalPosScale.x,
-               buttonHeight / initalPosScale.y
-            );
-            imageRect.anchoredPosition = newPos;
-            textMesh.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, buttonHeight / 3);
-            textMesh.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, buttonWidth / 3);
+            image.color = imageColor;
+            if (textColor.HasValue) 
+            {
+                textMesh.color =  textColor.Value;
+            }
+        }
+
+        public void Resize(float distFromCenter, float padding)
+        {
+            SetRelativePosScale(distFromCenter);
+            imageRect.ScalePosRelativeToParentSize(buttonRect, relativePosScale);
+            textMesh.rectTransform.SetPadding(padding, padding, padding, padding);
+        }
+
+        public void SetActive(bool state) 
+        {
+            gameObject.SetActive(state);
+        }
+
+        private void SetRelativePosScale(float distance) 
+        {
+            switch (type) 
+            {
+                case FlickType.Up:
+                    relativePosScale.x = 0;
+                    relativePosScale.y = distance;
+                    break;
+                case FlickType.Down:
+                    relativePosScale.x = 0;
+                    relativePosScale.y = -distance;
+                    break;
+                case FlickType.Left:
+                    relativePosScale.x = -distance;
+                    relativePosScale.y = 0;
+                    break;
+                case FlickType.Right:
+                    relativePosScale.x = distance;
+                    relativePosScale.y = 0;
+                    break;
+                case FlickType.Center:
+                    break;
+            }
         }
     }
 
@@ -84,6 +124,19 @@ public class Button : MonoBehaviour
         public char rightChar;
         [SerializeField]
         public float flickThreshold;
+        [SerializeField]
+        public float relativeDistToCenter;
+        [SerializeField]
+        public float padding;
+        [SerializeField]
+        public Color centerButtonColor;
+        [SerializeField]
+        public Color centerButtonHighlightColor;
+        [SerializeField]
+        public Color flickButtonColor;
+        [SerializeField]
+        public Color textColor;
+
     }
 
     Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
@@ -100,28 +153,29 @@ public class Button : MonoBehaviour
 
     private void Awake()
     {
-        flickMap.Add(FlickType.Up, new FlickButton(transform.Find("FlickUp").gameObject));
-        flickMap.Add(FlickType.Down, new FlickButton(transform.Find("FlickDown").gameObject));
-        flickMap.Add(FlickType.Left, new FlickButton(transform.Find("FlickLeft").gameObject));
-        flickMap.Add(FlickType.Right, new FlickButton(transform.Find("FlickRight").gameObject));
-        flickMap.Add(FlickType.Center, new FlickButton(transform.Find("Center").gameObject));
+        flickMap.Add(FlickType.Up, new FlickButton(transform.Find("FlickUp").gameObject, FlickType.Up));
+        flickMap.Add(FlickType.Down, new FlickButton(transform.Find("FlickDown").gameObject, FlickType.Down));
+        flickMap.Add(FlickType.Left, new FlickButton(transform.Find("FlickLeft").gameObject, FlickType.Left));
+        flickMap.Add(FlickType.Right, new FlickButton(transform.Find("FlickRight").gameObject, FlickType.Right));
+        flickMap.Add(FlickType.Center, new FlickButton(transform.Find("Center").gameObject, FlickType.Center));
 
         ResetFlicks();
 
         foreach (var flick in flickMap.Values)
         {
-            flick.gameObject.SetActive(true);
+            flick.SetActive(true);
         }
+
+        SetColors();
+
+        SetChars();
+
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        flickMap[FlickType.Up].character = buttonConfig.upChar;
-        flickMap[FlickType.Down].character = buttonConfig.downChar;
-        flickMap[FlickType.Left].character = buttonConfig.leftChar;
-        flickMap[FlickType.Right].character = buttonConfig.rightChar;
-        flickMap[FlickType.Center].character = buttonConfig.centerChar;
+
     }
 
 
@@ -140,18 +194,34 @@ public class Button : MonoBehaviour
 
     public void PointerUp()
     {
-
         pressed = false;
         Debug.Log(GetCurrentChar());
         ResetFlicks();
+    }
 
+    void SetColors() 
+    {
+        flickMap[FlickType.Up].SetColors(buttonConfig.flickButtonColor,   buttonConfig.textColor);
+        flickMap[FlickType.Down].SetColors(buttonConfig.flickButtonColor, buttonConfig.textColor);
+        flickMap[FlickType.Left].SetColors(buttonConfig.flickButtonColor, buttonConfig.textColor);
+        flickMap[FlickType.Right].SetColors(buttonConfig.flickButtonColor, buttonConfig.textColor);
+        flickMap[FlickType.Center].SetColors(buttonConfig.centerButtonColor, buttonConfig.textColor);
+    }
+
+    void SetChars() 
+    {
+        flickMap[FlickType.Up].character = buttonConfig.upChar;
+        flickMap[FlickType.Down].character = buttonConfig.downChar;
+        flickMap[FlickType.Left].character = buttonConfig.leftChar;
+        flickMap[FlickType.Right].character = buttonConfig.rightChar;
+        flickMap[FlickType.Center].character = buttonConfig.centerChar;
     }
 
     void ResizeFlickButtons()
     {
         foreach (var flick in flickMap.Values)
         {
-            flick.Resize();
+            flick.Resize(buttonConfig.relativeDistToCenter, buttonConfig.padding);
         }
     }
 
@@ -163,15 +233,18 @@ public class Button : MonoBehaviour
         }
         flickMap[FlickType.Center].SetVisibility(true);
         currFlick = FlickType.Center;
+        SetColors();
     }
 
     void UpdateFlick()
     {
         // figure out current flick type
         if (!pressed) return;
+        flickMap[FlickType.Center].SetColors(buttonConfig.centerButtonHighlightColor);
         Vector2 mousePosEnd = Input.mousePosition;
         Vector2 mouseDelta = mousePosEnd - mousePosStart;
         if (mouseDelta.magnitude < buttonConfig.flickThreshold) return;
+        // flick occured
         if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
         {
             currFlick = mouseDelta.x > 0 ? FlickType.Right : FlickType.Left;
@@ -186,7 +259,7 @@ public class Button : MonoBehaviour
             ResetFlicks();
             return;
         }
-        // set only the current flick visible
+        // set only the current flick/center visible
         else
         {
             foreach (var flickPair in flickMap)
@@ -194,6 +267,7 @@ public class Button : MonoBehaviour
                 flickPair.Value.SetVisibility(false);
             }
             flickMap[currFlick].SetVisibility(true);
+            flickMap[FlickType.Center].SetVisibility(true);
         }
 
     }

@@ -19,8 +19,8 @@ public class ReferenceStroke : Stroke
         base.SetupLine();
         // use the raw kanji data to create lines in the world
         points = rawStroke.points;
-        refPoints = Utils.GenRefPntsForPnts(rawStroke.points, kanji.noRefPointsInStroke);
-        length = Utils.GetLengthForPnts(points);
+        refPoints = KanjiUtils.GenRefPntsForPnts(rawStroke.points, kanji.noRefPointsInStroke);
+        length = KanjiUtils.GetLengthForPnts(points);
         UpdateLinePoints();
         line.useWorldSpace = false;
         completed = true;
