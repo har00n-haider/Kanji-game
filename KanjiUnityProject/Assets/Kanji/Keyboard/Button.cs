@@ -4,6 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+
+
 public class Button : MonoBehaviour
 {
     private enum FlickType
@@ -49,6 +52,7 @@ public class Button : MonoBehaviour
             this.type = type;
             this.gameObject = flickButtonGameObject;
             textMesh = flickButtonGameObject.GetComponentInChildren<TextMeshProUGUI>();
+            textMesh.font = Resources.Load<TMP_FontAsset>("Fonts/NotoSansJP-Regular SDF");
             image = flickButtonGameObject.GetComponent<Image>();
             imageRect = flickButtonGameObject.GetComponent<RectTransform>();
             buttonRect = flickButtonGameObject.GetComponentInParent<RectTransform>();
@@ -110,24 +114,14 @@ public class Button : MonoBehaviour
     }
 
     [Serializable]
-    private class ButtonConfig
+    public class Config
     {
         [SerializeField]
-        public char centerChar;
+        public float flickThreshold = 0.5f;
         [SerializeField]
-        public char upChar;
+        public float relativeDistToCenter = 0.7f;
         [SerializeField]
-        public char downChar;
-        [SerializeField]
-        public char leftChar;
-        [SerializeField]
-        public char rightChar;
-        [SerializeField]
-        public float flickThreshold;
-        [SerializeField]
-        public float relativeDistToCenter;
-        [SerializeField]
-        public float padding;
+        public float textPadding = 0.07f;
         [SerializeField]
         public Color centerButtonColor;
         [SerializeField]
@@ -136,15 +130,30 @@ public class Button : MonoBehaviour
         public Color flickButtonColor;
         [SerializeField]
         public Color textColor;
+    }
 
+    [Serializable]
+    public class CharSetup 
+    {
+        [SerializeField]
+        public char centerChar = 'a';
+        [SerializeField]
+        public char upChar = 'b';
+        [SerializeField]
+        public char downChar = 'c';
+        [SerializeField]
+        public char leftChar = 'd';
+        [SerializeField]
+        public char rightChar = 'e';
     }
 
     Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
 
+    public Config config;
+    public CharSetup charSetup;
+
     [SerializeField]
     private GameObject centerButton;
-    [SerializeField]
-    private ButtonConfig buttonConfig;
 
     private Vector2 mousePosStart;
     private FlickType currFlick;
@@ -153,33 +162,14 @@ public class Button : MonoBehaviour
 
     private void Awake()
     {
-        flickMap.Add(FlickType.Up, new FlickButton(transform.Find("FlickUp").gameObject, FlickType.Up));
-        flickMap.Add(FlickType.Down, new FlickButton(transform.Find("FlickDown").gameObject, FlickType.Down));
-        flickMap.Add(FlickType.Left, new FlickButton(transform.Find("FlickLeft").gameObject, FlickType.Left));
-        flickMap.Add(FlickType.Right, new FlickButton(transform.Find("FlickRight").gameObject, FlickType.Right));
-        flickMap.Add(FlickType.Center, new FlickButton(transform.Find("Center").gameObject, FlickType.Center));
-
-        ResetFlicks();
-
-        foreach (var flick in flickMap.Values)
-        {
-            flick.SetActive(true);
-        }
-
-        SetColors();
-
-        SetChars();
-
+        Init();
     }
 
-    // Start is called before the first frame update
     void Start()
     {
 
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         ResizeFlickButtons();
@@ -199,29 +189,33 @@ public class Button : MonoBehaviour
         ResetFlicks();
     }
 
-    void SetColors() 
+    public void Init()
     {
-        flickMap[FlickType.Up].SetColors(buttonConfig.flickButtonColor,   buttonConfig.textColor);
-        flickMap[FlickType.Down].SetColors(buttonConfig.flickButtonColor, buttonConfig.textColor);
-        flickMap[FlickType.Left].SetColors(buttonConfig.flickButtonColor, buttonConfig.textColor);
-        flickMap[FlickType.Right].SetColors(buttonConfig.flickButtonColor, buttonConfig.textColor);
-        flickMap[FlickType.Center].SetColors(buttonConfig.centerButtonColor, buttonConfig.textColor);
-    }
+        flickMap.Clear();
+        flickMap.Add(FlickType.Up, new FlickButton(transform.Find("FlickUp").gameObject, FlickType.Up));
+        flickMap.Add(FlickType.Down, new FlickButton(transform.Find("FlickDown").gameObject, FlickType.Down));
+        flickMap.Add(FlickType.Left, new FlickButton(transform.Find("FlickLeft").gameObject, FlickType.Left));
+        flickMap.Add(FlickType.Right, new FlickButton(transform.Find("FlickRight").gameObject, FlickType.Right));
+        flickMap.Add(FlickType.Center, new FlickButton(transform.Find("Center").gameObject, FlickType.Center));
 
-    void SetChars() 
-    {
-        flickMap[FlickType.Up].character = buttonConfig.upChar;
-        flickMap[FlickType.Down].character = buttonConfig.downChar;
-        flickMap[FlickType.Left].character = buttonConfig.leftChar;
-        flickMap[FlickType.Right].character = buttonConfig.rightChar;
-        flickMap[FlickType.Center].character = buttonConfig.centerChar;
+        ResetFlicks();
+
+        // make sure all the game objects are active (prefab might be different)
+        foreach (var flick in flickMap.Values)
+        {
+            flick.SetActive(true);
+        }
+
+        SetColors();
+
+        SetChars();
     }
 
     void ResizeFlickButtons()
     {
         foreach (var flick in flickMap.Values)
         {
-            flick.Resize(buttonConfig.relativeDistToCenter, buttonConfig.padding);
+            flick.Resize(config.relativeDistToCenter, config.textPadding);
         }
     }
 
@@ -236,14 +230,32 @@ public class Button : MonoBehaviour
         SetColors();
     }
 
+    void SetColors()
+    {
+        flickMap[FlickType.Up].SetColors(config.flickButtonColor, config.textColor);
+        flickMap[FlickType.Down].SetColors(config.flickButtonColor, config.textColor);
+        flickMap[FlickType.Left].SetColors(config.flickButtonColor, config.textColor);
+        flickMap[FlickType.Right].SetColors(config.flickButtonColor, config.textColor);
+        flickMap[FlickType.Center].SetColors(config.centerButtonColor, config.textColor);
+    }
+
+    void SetChars()
+    {
+        flickMap[FlickType.Up].character     = charSetup.upChar;
+        flickMap[FlickType.Down].character   = charSetup.downChar;
+        flickMap[FlickType.Left].character   = charSetup.leftChar;
+        flickMap[FlickType.Right].character  = charSetup.rightChar;
+        flickMap[FlickType.Center].character = charSetup.centerChar;
+    }
+
     void UpdateFlick()
     {
         // figure out current flick type
         if (!pressed) return;
-        flickMap[FlickType.Center].SetColors(buttonConfig.centerButtonHighlightColor);
+        UpdatePressed();
         Vector2 mousePosEnd = Input.mousePosition;
         Vector2 mouseDelta = mousePosEnd - mousePosStart;
-        if (mouseDelta.magnitude < buttonConfig.flickThreshold) return;
+        if (mouseDelta.magnitude < config.flickThreshold) return;
         // flick occured
         if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
         {
@@ -270,6 +282,12 @@ public class Button : MonoBehaviour
             flickMap[FlickType.Center].SetVisibility(true);
         }
 
+    }
+
+    void UpdatePressed() 
+    {
+        flickMap[FlickType.Center].SetColors(config.centerButtonHighlightColor);
+        transform.SetAsLastSibling();
     }
 
     char? GetCurrentChar()
