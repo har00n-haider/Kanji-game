@@ -48,8 +48,9 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
     // debug - set these in the editor
     public bool debug = false;
-    public KanjiDatabase kanjiManager;
-#endif 
+    public KanjiManager kanjiManager;
+    public char debugChar = '一';
+#endif
 
     // Get the plane on which the kanji lies
     public Plane GetPlane()
@@ -66,7 +67,7 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
         if (debug)
         {
-            Init(kanjiManager.GetKanji('七'));
+            Init(kanjiManager.database.GetKanji(debugChar));
         }
 #endif
     }
@@ -74,7 +75,7 @@ public class Kanji : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (completed) return;
+        if (completed || strokes.Count == 0) return;
         // process current stroke
         StrokePair curStroke = strokes[curStrokeIdx];
         if (curStroke.isValid)

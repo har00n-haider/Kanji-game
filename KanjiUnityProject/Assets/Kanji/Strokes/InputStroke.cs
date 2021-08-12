@@ -8,7 +8,6 @@ using UnityEngine;
 public class InputStroke : Stroke
 {
     private Camera mainCam;
-    private float offsetFromRef = 0.1f;
 
     public override void Init(Kanji kanjiManager)
     {

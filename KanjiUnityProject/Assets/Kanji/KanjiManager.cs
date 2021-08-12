@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
-// Manages what objects in the scene hold kanjis
-// and what kanji to display on screen.
-// Should be the central place to manage how the 
-// kanji interact with the rest of the game
+/// <summary>
+/// Manages what objects in the scene hold kanjis
+/// and what kanji to display on screen.
+/// Should be the central place to manage how the 
+/// kanji interact with the rest of the game
+/// 
+/// Deals with the connection between Kanji holder and kanji object
+/// </summary>
 public class KanjiManager : MonoBehaviour
 {
     // settings for scoring behaviour
