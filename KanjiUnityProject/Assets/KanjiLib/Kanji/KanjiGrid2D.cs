@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI.Extensions;
 
-
-public class KanjiGrid : MonoBehaviour
+public class KanjiGrid2D : MonoBehaviour
 {
-    public LineRenderer gridLinePrefab;
+    public UILineRenderer gridLinePrefab;
+    public float thickness;
 
     // Start is called before the first frame update
     void Start()
@@ -50,12 +51,9 @@ public class KanjiGrid : MonoBehaviour
 
     }
 
-    void SetupLineRenderer(LineRenderer line, Vector2[] pnts, int sIdx, int eIdx) 
+    void SetupLineRenderer(UILineRenderer line, Vector2[] pnts, int sIdx, int eIdx) 
     {
-        float width = 0.2f;
-        line.positionCount = 2;
-        line.SetPositions(new Vector3[] { pnts[sIdx], pnts[eIdx] });
-        line.startWidth = width;
-        line.endWidth = width;
+        line.Points = new Vector2[] { pnts[sIdx], pnts[eIdx] };
+        line.LineThickness = thickness;
     }
 }

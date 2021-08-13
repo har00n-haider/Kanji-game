@@ -4,17 +4,14 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-public class KanjiUI : Kanji
+public class Kanji2D : Kanji
 {
+    private KanjiGrid2D kanjiGrid;
 
-    void Start()
+
+    protected override void UpdateInput()
     {
-        
+
     }
 
-    private void Update()
-    {
-        
-
-    }
 }

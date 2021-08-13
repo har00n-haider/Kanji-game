@@ -15,9 +15,9 @@ public class ParsedKanjiData
     public float centerYOffset;
     public float scaledWidth;
     public float scaledHeight;
-    public List<RawStroke> strokes = new List<RawStroke>();
+    public List<RawStroke> strokes = new List<RawStroke>();   
 
-    public ParsedKanjiData(float width, float height, float scale, List<RawStroke> strokes)
+    public ParsedKanjiData(float width, float height, float scale, List<RawStroke> strokes = null)
     {
         this.width = width;
         this.height = height;
