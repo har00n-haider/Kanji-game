@@ -5,6 +5,31 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+
+public class ParsedKanjiData
+{
+    public float width;
+    public float height;
+    public float scale;
+    public float centerXOffset;
+    public float centerYOffset;
+    public float scaledWidth;
+    public float scaledHeight;
+    public List<RawStroke> strokes = new List<RawStroke>();
+
+    public ParsedKanjiData(float width, float height, float scale, List<RawStroke> strokes)
+    {
+        this.width = width;
+        this.height = height;
+        this.scale = scale;
+        centerXOffset = width / 2;
+        centerYOffset = height / 2;
+        scaledWidth = width * scale;
+        scaledHeight = height * scale;
+        this.strokes = strokes;
+    }
+}
+
 public class RawStroke 
 {
     public int orderNo;

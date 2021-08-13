@@ -75,3 +75,7 @@ crashlytics-build.properties
 /Assets/EffectExamples.meta
 /Assets/TextMesh\ Pro/*
 KanjiUnityProject/Assets/TextMesh Pro.meta
+
+# Libs 
+/Assets/com.unity.uiextensions/*
+/Assets/com.unity.uiextensions.meta

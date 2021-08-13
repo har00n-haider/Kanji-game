@@ -5,9 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-
-
-public class Button : MonoBehaviour
+public class KeyboardButton : MonoBehaviour
 {
     private enum FlickType
     {

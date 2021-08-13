@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid : MonoBehaviour
+
+public class KanjiGrid : MonoBehaviour
 {
     public LineRenderer gridLinePrefab;
-    public float scale = 5;
 
     // Start is called before the first frame update
     void Start()
     {
-        GenerateGrid(scale);
     }
 
     // Update is called once per frame
@@ -19,8 +18,13 @@ public class Grid : MonoBehaviour
 
     }
 
+    public void Init(ParsedKanjiData parsedKanji) 
+    {
+        GenerateGrid(parsedKanji);
+    }
 
-    void GenerateGrid(float scale = 1)
+
+    void GenerateGrid(ParsedKanjiData parsedKanji)
     {
         Vector2[] gridPnts = new Vector2[]{
         new Vector2( 0.0f, 0.0f), new Vector2( 0.5f, 0.0f), new Vector2( 1.0f, 0.0f),
@@ -30,7 +34,8 @@ public class Grid : MonoBehaviour
 
         for (int i = 0; i < gridPnts.Length; i++)
         {
-            gridPnts[i] *= scale;
+            // assuming width/height are the same
+            gridPnts[i] *=  parsedKanji.scale*parsedKanji.height;
         }
 
         // horizontal lines

@@ -45,6 +45,8 @@ public class Kanji : MonoBehaviour
     public ReferenceStroke refStrokePrefab;
     public InputStroke inpStrokePrefab;
 
+    private KanjiGrid kanjiGrid;
+
 #if UNITY_EDITOR
     // debug - set these in the editor
     public bool debug = false;
@@ -121,21 +123,24 @@ public class Kanji : MonoBehaviour
     public void Init(KanjiData kanjiData)
     {
         // pull a kanji
-        var rawStrokes = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
+        ParsedKanjiData parsedKanji = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
         bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiManager.hideReferenceThreshold;
-        for (int sIdx = 0; sIdx < rawStrokes.Count; sIdx++)
+        for (int sIdx = 0; sIdx < parsedKanji.strokes.Count; sIdx++)
         {
             // assuming we get these in order
             strokes.Add(
                 sIdx,
                 new StrokePair()
                 {
-                    refStroke = GenerateRefStroke(rawStrokes[sIdx], refKanjiHidden),
+                    refStroke = GenerateRefStroke(parsedKanji.strokes[sIdx], refKanjiHidden),
                     inpStroke = GenerateInpStroke()
                 });
         }
         curStrokeIdx = 0;
         this.kanjiData = kanjiData;
+        // setup the grid
+        kanjiGrid = GetComponentInChildren<KanjiGrid>();
+        kanjiGrid.Init(parsedKanji);
         // start the looking for the first stroke
         strokes[0].inpStroke.gameObject.SetActive(true);
     }

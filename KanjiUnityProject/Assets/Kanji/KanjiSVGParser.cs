@@ -12,28 +12,6 @@ public class KanjiSVGParser
 
     #region  public 
 
-    private class SvgInfo
-    {
-        public float width;
-        public float height;
-        public float scale;
-        public float widthOffset;
-        public float heightOffset;
-        public float scaledWidth;
-        public float scaledHeight;
-
-        public SvgInfo(float width, float height, float scale)
-        {
-            this.width = width;
-            this.height = height;
-            this.scale = scale;
-            widthOffset = width / 2;
-            heightOffset = height / 2;
-            scaledWidth = width * scale;
-            scaledHeight = height * scale;
-        }
-    }
-
     /// <summary>
     /// Points are return in unity coordinate system.
     /// </summary>
@@ -41,14 +19,15 @@ public class KanjiSVGParser
     /// <param name="pntsInStroke">The number of points per stroke to use</param>
     /// <param name="scale"></param>
     /// <returns></returns>
-    public static List<RawStroke> GetStrokesFromSvg(string svgContent, int pntsInStroke = 50, float scale = 0.05f)
+    public static ParsedKanjiData GetStrokesFromSvg(string svgContent, int pntsInStroke = 50, float scale = 0.05f)
     {
-        if (svgContent == "") return new List<RawStroke>();
+        if (svgContent == "") return null;
 
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.LoadXml(svgContent);
 
         var pathElems = xmlDoc.GetElementsByTagName("path");
+
         // get stroke from raw data
         List<RawStroke> strokes = new List<RawStroke>();
         foreach (XmlNode pathElem in pathElems)
@@ -64,7 +43,10 @@ public class KanjiSVGParser
             rawStroke.points = KanjiUtils.ScaleCoords(rawStroke.points, scale);
             strokes.Add(rawStroke);
         }
-        return strokes;
+        
+        // Hardcoded for now as it doesn't seem that these values change in the
+        // source kanji svg files
+        return new ParsedKanjiData(109, 109, scale, strokes);
     }
 
     #endregion

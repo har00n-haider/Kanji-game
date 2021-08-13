@@ -20,7 +20,7 @@ public class Keyboard : MonoBehaviour
 
 
     [SerializeField]
-    private Button.Config buttonConfig;
+    private KeyboardButton.Config buttonConfig;
 
     private void Awake()
     {
@@ -53,7 +53,7 @@ public class Keyboard : MonoBehaviour
                 else 
                 {
                     // make buttont
-                    Button button = Instantiate(buttonPrefab, transform).GetComponent<Button>();
+                    KeyboardButton button = Instantiate(buttonPrefab, transform).GetComponent<KeyboardButton>();
                     button.name = "button " + buttNo;
                     SetUpButton(button, r, c);
                     button.config = buttonConfig;
@@ -69,18 +69,18 @@ public class Keyboard : MonoBehaviour
         }
     }
 
-    void SetUpButton(Button button, int r, int c)
+    void SetUpButton(KeyboardButton button, int r, int c)
     {
-        if (r == 0 && c == 1) { button.charSetup = new Button.CharSetup() { centerChar = 'わ', upChar = 'ん', downChar = '　', leftChar = 'を', rightChar = 'ー' }; }
-        if (r == 1 && c == 0) { button.charSetup = new Button.CharSetup() { centerChar = 'ま', upChar = 'む', downChar = 'も', leftChar = 'み', rightChar = 'め' }; }
-        if (r == 1 && c == 1) { button.charSetup = new Button.CharSetup() { centerChar = 'や', upChar = 'ゆ', downChar = 'よ', leftChar = '　', rightChar = '　' }; }
-        if (r == 1 && c == 2) { button.charSetup = new Button.CharSetup() { centerChar = 'ら', upChar = 'る', downChar = 'ろ', leftChar = 'り', rightChar = 'れ' }; }
-        if (r == 2 && c == 0) { button.charSetup = new Button.CharSetup() { centerChar = 'た', upChar = 'つ', downChar = 'と', leftChar = 'ち', rightChar = 'て' }; }
-        if (r == 2 && c == 1) { button.charSetup = new Button.CharSetup() { centerChar = 'な', upChar = 'ぬ', downChar = 'の', leftChar = 'に', rightChar = 'ね' }; }
-        if (r == 2 && c == 2) { button.charSetup = new Button.CharSetup() { centerChar = 'は', upChar = 'ふ', downChar = 'ほ', leftChar = 'ひ', rightChar = 'へ' }; }
-        if (r == 3 && c == 0) { button.charSetup = new Button.CharSetup() { centerChar = 'あ', upChar = 'う', downChar = 'お', leftChar = 'い', rightChar = 'え' }; }
-        if (r == 3 && c == 1) { button.charSetup = new Button.CharSetup() { centerChar = 'か', upChar = 'く', downChar = 'こ', leftChar = 'き', rightChar = 'け' }; }
-        if (r == 3 && c == 2) { button.charSetup = new Button.CharSetup() { centerChar = 'さ', upChar = 'す', downChar = 'そ', leftChar = 'し', rightChar = 'せ' }; }
+        if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'わ', upChar = 'ん', downChar = '　', leftChar = 'を', rightChar = 'ー' }; }
+        if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ま', upChar = 'む', downChar = 'も', leftChar = 'み', rightChar = 'め' }; }
+        if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'や', upChar = 'ゆ', downChar = 'よ', leftChar = '　', rightChar = '　' }; }
+        if (r == 1 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ら', upChar = 'る', downChar = 'ろ', leftChar = 'り', rightChar = 'れ' }; }
+        if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'た', upChar = 'つ', downChar = 'と', leftChar = 'ち', rightChar = 'て' }; }
+        if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'な', upChar = 'ぬ', downChar = 'の', leftChar = 'に', rightChar = 'ね' }; }
+        if (r == 2 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'は', upChar = 'ふ', downChar = 'ほ', leftChar = 'ひ', rightChar = 'へ' }; }
+        if (r == 3 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'あ', upChar = 'う', downChar = 'お', leftChar = 'い', rightChar = 'え' }; }
+        if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'か', upChar = 'く', downChar = 'こ', leftChar = 'き', rightChar = 'け' }; }
+        if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'さ', upChar = 'す', downChar = 'そ', leftChar = 'し', rightChar = 'せ' }; }
     }
 
     void Update()
