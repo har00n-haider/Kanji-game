@@ -146,9 +146,9 @@ public class Kanji : MonoBehaviour
     {
         var refStroke = Instantiate(strokePrefab, transform).GetComponent<Stroke>();
         refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
+        refStroke.Init(this);
         refStroke.strokeRenderer.SetVisibility(!isHidden);
         refStroke.strokeRenderer.lineColor = hintColor;
-        refStroke.Init(this);
         refStroke.AddPoints(rawStroke.points);
         refStroke.Complete();
         return refStroke;

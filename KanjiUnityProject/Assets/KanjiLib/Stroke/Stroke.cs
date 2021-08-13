@@ -4,8 +4,10 @@ using UnityEngine;
 
 /// <summary>
 /// Holds the data relevant to a kanji stroke. Uses 2D coordinates.
+/// Designed to be used directly from the Kanji class.
+/// 
+/// strokeRenderer should be set up in the prefab
 /// </summary>
-[RequireComponent(typeof(StrokeRenderer))]
 public class Stroke : MonoBehaviour
 {
     // stats/data for the stroke

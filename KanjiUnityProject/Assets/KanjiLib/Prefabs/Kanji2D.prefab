@@ -59,7 +59,7 @@ MonoBehaviour:
   hintColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   completedColor: {r: 0.13333334, g: 0.13333334, b: 0.13333334, a: 1}
   drawnColor: {r: 0.19215687, g: 0.35686275, b: 0.8980392, a: 1}
-  strokePrefab: {fileID: 0}
+  strokePrefab: {fileID: 2117448921355055488, guid: 690c72815e92faf4aa3f77cc3d144e53, type: 3}
   debug: 0
   kanjiManager: {fileID: 0}
   debugChar: 19968
