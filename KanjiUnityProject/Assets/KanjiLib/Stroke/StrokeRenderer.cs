@@ -47,10 +47,10 @@ public abstract class StrokeRenderer : MonoBehaviour
 
     protected abstract void ResetLineColor();
 
-    public void SetHightlight(Color color, float width = 0.3f)
+    public void SetHightlight(Color color, float widthScale = 2)
     {
         highlightData.fromColor = color;
-        highlightData.fromWidth = width;
+        highlightData.fromWidth = lineWidth*widthScale;
     }
 
     public void Highlight()

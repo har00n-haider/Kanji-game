@@ -47,6 +47,7 @@ public class Kanji : MonoBehaviour
     public Color hintColor;
     public Color completedColor;
     public Color drawnColor;
+    public float thickness;
 
     // refs
     public Stroke strokePrefab;
@@ -57,6 +58,7 @@ public class Kanji : MonoBehaviour
     public bool debug = false;
     public KanjiManager kanjiManager;
     public char debugChar = '一';
+    public float debugScale = 0.5f;
 #endif
 
     // Start is called before the first frame update
@@ -65,7 +67,7 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
         if (debug)
         {
-            Init(kanjiManager.database.GetKanji(debugChar));
+            Init(kanjiManager.database.GetKanji(debugChar), debugScale);
         }
 #endif
     }
@@ -77,10 +79,10 @@ public class Kanji : MonoBehaviour
         UpdateEvaluation();
     }
 
-    public virtual void Init(KanjiData kanjiData)
+    public virtual void Init(KanjiData kanjiData, float scale)
     {
         // pull a kanji
-        parsedKanjiData = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
+        parsedKanjiData = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent, scale);
         bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiManager.hideReferenceThreshold;
         for (int sIdx = 0; sIdx < parsedKanjiData.strokes.Count; sIdx++)
         {
@@ -149,6 +151,7 @@ public class Kanji : MonoBehaviour
         refStroke.Init(this);
         refStroke.strokeRenderer.SetVisibility(!isHidden);
         refStroke.strokeRenderer.lineColor = hintColor;
+        refStroke.strokeRenderer.lineWidth = thickness;
         refStroke.AddPoints(rawStroke.points);
         refStroke.Complete();
         return refStroke;
@@ -161,6 +164,7 @@ public class Kanji : MonoBehaviour
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
         inputStroke.Init(this);
         inputStroke.strokeRenderer.lineColor = drawnColor;
+        inputStroke.strokeRenderer.lineWidth = thickness;
         inputStroke.gameObject.SetActive(false);
         return inputStroke;
     }

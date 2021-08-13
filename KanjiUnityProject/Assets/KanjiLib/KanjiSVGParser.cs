@@ -19,7 +19,7 @@ public class KanjiSVGParser
     /// <param name="pntsInStroke">The number of points per stroke to use</param>
     /// <param name="scale"></param>
     /// <returns></returns>
-    public static ParsedKanjiData GetStrokesFromSvg(string svgContent, int pntsInStroke = 50, float scale = 0.05f)
+    public static ParsedKanjiData GetStrokesFromSvg(string svgContent, float scale = 0.05f, int pntsInStroke = 50)
     {
         if (svgContent == "") return null;
 
