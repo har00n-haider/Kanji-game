@@ -31,19 +31,19 @@ class StrokeRenderer3D : StrokeRenderer
         line.SetPositions(points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
     }
 
-    public override void ResetLineColor()
+    protected override void ResetLineColor()
     {
         line.startColor = lineColor;
         line.endColor = lineColor;
     }
 
-    protected override void SetLineColor(Color color)
+    protected override void SetLineColorTemp(Color color)
     {
         line.startColor = color;
         line.endColor = color;
     }
 
-    protected override void SetLineWidth(float width)
+    protected override void SetLineWidthTemp(float width)
     {
         line.startWidth = width;
         line.endWidth = width;

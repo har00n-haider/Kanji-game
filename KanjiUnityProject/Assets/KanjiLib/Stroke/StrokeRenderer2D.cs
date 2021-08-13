@@ -29,7 +29,7 @@ class StrokeRenderer2D : StrokeRenderer
         line.Points = points.ToArray();
     }
 
-    public override void ResetLineColor()
+    protected override void ResetLineColor()
     {
         line.color = lineColor;
     }
@@ -39,12 +39,12 @@ class StrokeRenderer2D : StrokeRenderer
         line.LineThickness = lineWidth;
     }
 
-    protected override void SetLineColor(Color color)
+    protected override void SetLineColorTemp(Color color)
     {
         line.color = color;
     }
 
-    protected override void SetLineWidth(float width)
+    protected override void SetLineWidthTemp(float width)
     {
         line.LineThickness = width;
     }

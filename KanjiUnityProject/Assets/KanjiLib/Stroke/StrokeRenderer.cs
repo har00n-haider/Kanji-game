@@ -16,8 +16,10 @@ public abstract class StrokeRenderer : MonoBehaviour
     protected Material lineMaterial;
 
     // persistent line configuration
-    public Color lineColor;
-    public float lineWidth = 0.1f;
+    protected Color _lineColor = Color.red;
+    public Color lineColor { get { return _lineColor; } set { _lineColor = value;  ResetLineColor(); }  }
+    protected float _lineWidth = 0.1f;
+    public float lineWidth { get { return _lineWidth; } set { _lineWidth = value; ResetLineWidth(); } }
 
     public abstract void SetupLine();
 
@@ -25,7 +27,6 @@ public abstract class StrokeRenderer : MonoBehaviour
 
     public abstract void UpdateLinePoints(List<Vector2> points);
 
-    public abstract void ResetLineColor();
 
     #region Highlights
 
@@ -38,11 +39,13 @@ public abstract class StrokeRenderer : MonoBehaviour
 
     protected HighlightData highlightData;
 
-    protected abstract void SetLineColor(Color color); 
+    protected abstract void SetLineColorTemp(Color color); 
 
-    protected abstract void SetLineWidth(float width);
+    protected abstract void SetLineWidthTemp(float width);
 
     protected abstract void ResetLineWidth();
+
+    protected abstract void ResetLineColor();
 
     public void SetHightlight(Color color, float width = 0.3f)
     {
@@ -64,8 +67,8 @@ public abstract class StrokeRenderer : MonoBehaviour
         //Debug.Log("Running highlight coroutine");
         for (float highlightAlpha = 0; highlightAlpha <= 1; highlightAlpha += 0.05f)
         {
-            SetLineColor(Color.Lerp(highlightData.fromColor, lineColor, highlightAlpha));
-            SetLineWidth(Mathf.Lerp(highlightData.fromWidth, lineWidth, highlightAlpha));
+            SetLineColorTemp(Color.Lerp(highlightData.fromColor, lineColor, highlightAlpha));
+            SetLineWidthTemp(Mathf.Lerp(highlightData.fromWidth, lineWidth, highlightAlpha));
             yield return new WaitForSeconds(0.01f);
         }
         ResetLineColor();

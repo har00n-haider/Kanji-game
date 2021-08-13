@@ -159,8 +159,8 @@ public class Kanji : MonoBehaviour
         // create the first input stroke 
         var inputStroke = Instantiate(strokePrefab, transform).GetComponent<Stroke>();
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
-        inputStroke.strokeRenderer.lineColor = drawnColor;
         inputStroke.Init(this);
+        inputStroke.strokeRenderer.lineColor = drawnColor;
         inputStroke.gameObject.SetActive(false);
         return inputStroke;
     }
