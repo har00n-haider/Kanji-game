@@ -49,6 +49,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b043227ad720b4043b8a78ddc9e34a4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  completed: 0
+  pass: 0
+  compThreshTight: 0.3
+  compThreshLoose: 0.7
+  lengthBuffer: 1
+  wrongColor: {r: 1, g: 0.043137256, b: 0.043137256, a: 1}
+  correctColor: {r: 0.07450981, g: 0.9137255, b: 0.07450981, a: 1}
+  hintColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+  completedColor: {r: 0.13333334, g: 0.13333334, b: 0.13333334, a: 1}
+  drawnColor: {r: 0.19215687, g: 0.35686275, b: 0.8980392, a: 1}
+  strokePrefab: {fileID: 0}
+  debug: 0
+  kanjiManager: {fileID: 0}
+  debugChar: 19968
 --- !u!1 &2353348184240695469
 GameObject:
   m_ObjectHideFlags: 0
