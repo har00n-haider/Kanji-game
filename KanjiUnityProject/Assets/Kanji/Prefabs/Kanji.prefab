@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   completed: 0
+  pass: 0
   compThreshTight: 0.3
   compThreshLoose: 0.7
   lengthBuffer: 1
@@ -53,10 +54,10 @@ MonoBehaviour:
   hintColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   completedColor: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 1}
   drawnColor: {r: 0.19023676, g: 0.35515183, b: 0.8962264, a: 1}
-  refStrokePrefab: {fileID: 7154334785581781238, guid: 9e95d80fe5cd60f42810579758eeff91, type: 3}
-  inpStrokePrefab: {fileID: 3349095090653122684, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
+  strokePrefab: {fileID: 7339372506368467193, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
   debug: 0
   kanjiManager: {fileID: 0}
+  debugChar: 19968
 --- !u!1 &6460547157364967351
 GameObject:
   m_ObjectHideFlags: 0
@@ -101,4 +102,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridLinePrefab: {fileID: 7454153777236063110, guid: fd0583c84d56bdc4c97e8115c4b8f278, type: 3}
-  scale: 5

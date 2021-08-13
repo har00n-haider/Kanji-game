@@ -27,8 +27,7 @@ public class Kanji3D : Kanji
 
     public KanjiData kanjiData { get; private set; }
 
-    public ReferenceStroke refStrokePrefab;
-    public InputStroke inpStrokePrefab;
+    public Stroke strokePrefab;
 
     private KanjiGrid kanjiGrid;
 
@@ -121,21 +120,22 @@ public class Kanji3D : Kanji
         strokes[0].inpStroke.gameObject.SetActive(true);
     }
 
-    private ReferenceStroke GenerateRefStroke(RawStroke rawStroke, bool isHidden = false)
+    private Stroke GenerateRefStroke(RawStroke rawStroke, bool isHidden = false)
     {
-        var refStroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
+        var refStroke = Instantiate(strokePrefab, transform).GetComponent<Stroke>();
         refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
         refStroke.strokeRenderer.SetVisibility(!isHidden);
         refStroke.strokeRenderer.lineColor = hintColor;
-        refStroke.rawStroke = rawStroke;
         refStroke.Init(this);
+        refStroke.AddPoints(rawStroke.points);
+        refStroke.Complete();
         return refStroke;
     }
 
-    private InputStroke GenerateInpStroke()
+    private Stroke GenerateInpStroke()
     {
         // create the first input stroke 
-        var inputStroke = Instantiate(inpStrokePrefab, transform).GetComponent<InputStroke>();
+        var inputStroke = Instantiate(strokePrefab, transform).GetComponent<Stroke>();
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
         inputStroke.strokeRenderer.lineColor = drawnColor;
         inputStroke.Init(this);

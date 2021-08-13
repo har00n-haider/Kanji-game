@@ -19,8 +19,8 @@ public class Kanji : MonoBehaviour
 
     public class StrokePair
     {
-        public InputStroke inpStroke = null;
-        public ReferenceStroke refStroke = null;
+        public Stroke inpStroke = null;
+        public Stroke refStroke = null;
         public StrokeResult strokeResult = null;
         public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
     }

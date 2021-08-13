@@ -33,7 +33,6 @@ public class ParsedKanjiData
 public class RawStroke 
 {
     public int orderNo;
-    public List<Vector2> keyPoints = new List<Vector2>();
     public List<Vector2> points = new List<Vector2>();
 }
 
