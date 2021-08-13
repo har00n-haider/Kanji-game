@@ -10,8 +10,7 @@ public class InputStroke : Stroke
     public override void Init(Kanji kanjiManager)
     {
         base.Init(kanjiManager);
-        base.SetupLine();
-        line.useWorldSpace = false;
+        strokeRenderer.SetupLine();
     }
 
     public override void Awake() 
@@ -21,7 +20,12 @@ public class InputStroke : Stroke
 
     public void Update()
     {
-        if (completed) return;
+    }
+
+    public void AddPoint(Vector2 point) 
+    {
+        points.Add(point);
+        strokeRenderer.UpdateLinePoints(points);
     }
 
     public void Complete()
@@ -35,11 +39,8 @@ public class InputStroke : Stroke
     public void ClearLine() 
     {
         points.Clear();
-        UpdateLinePoints();
+        strokeRenderer.UpdateLinePoints(points);
         completed = false;
     }
-
-
-
 }
 

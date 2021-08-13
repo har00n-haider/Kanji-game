@@ -8,6 +8,23 @@ using UnityEngine;
 
 public class Kanji : MonoBehaviour
 {
+
+    public class StrokeResult
+    {
+        public bool pass = false;
+        // same order and size as the refpoints
+        public List<float?> refPointDistances = new List<float?>();
+        public int tightPointIdx = -1;
+    }
+
+    public class StrokePair
+    {
+        public InputStroke inpStroke = null;
+        public ReferenceStroke refStroke = null;
+        public StrokeResult strokeResult = null;
+        public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
+    }
+
     // config
     public int noRefPointsInStroke { get; private set; } = 5;
 

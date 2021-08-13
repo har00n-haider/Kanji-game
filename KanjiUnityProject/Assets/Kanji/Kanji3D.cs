@@ -6,21 +6,6 @@ using UnityEngine;
 
 public class Kanji3D : Kanji
 {
-    private class StrokeResult
-    {
-        public bool pass = false;
-        // same order and size as the refpoints
-        public List<float?> refPointDistances = new List<float?>();
-        public int tightPointIdx = -1;
-    }
-
-    private class StrokePair
-    {
-        public InputStroke inpStroke = null;
-        public ReferenceStroke refStroke = null;
-        public StrokeResult strokeResult = null;
-        public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
-    }
 
     // current state of the kanji
     private Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
@@ -54,15 +39,6 @@ public class Kanji3D : Kanji
     public char debugChar = '一';
 #endif
 
-    // Get the plane on which the kanji lies
-    public Plane GetPlane()
-    {
-        // create the plane on which the kanji will be drawn
-        Vector3 planePoint = gameObject.transform.position;
-        Vector3 planeDir = -gameObject.transform.forward;
-        return new Plane(planeDir.normalized, planePoint);
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -86,19 +62,19 @@ public class Kanji3D : Kanji
             if (curStroke.strokeResult.pass)
             {
                 curStroke.inpStroke.gameObject.SetActive(false);
-                curStroke.refStroke.SetVisibility(true);
-                curStroke.refStroke.lineColor = completedColor;
-                curStroke.refStroke.SetHightlight(correctColor);
-                curStroke.refStroke.Highlight();
+                curStroke.refStroke.strokeRenderer.SetVisibility(true);
+                curStroke.refStroke.strokeRenderer.lineColor = completedColor;
+                curStroke.refStroke.strokeRenderer.SetHightlight(correctColor);
+                curStroke.refStroke.strokeRenderer.Highlight();
                 MoveToNextStroke();
             }
             else
             {
                 curStroke.inpStroke.gameObject.SetActive(false);
-                curStroke.refStroke.SetVisibility(true);
-                curStroke.refStroke.lineColor = wrongColor;
-                curStroke.refStroke.SetHightlight(wrongColor);
-                curStroke.refStroke.Highlight();
+                curStroke.refStroke.strokeRenderer.SetVisibility(true);
+                curStroke.refStroke.strokeRenderer.lineColor = wrongColor;
+                curStroke.refStroke.strokeRenderer.SetHightlight(wrongColor);
+                curStroke.refStroke.strokeRenderer.Highlight();
                 MoveToNextStroke();
             }
         };
@@ -148,9 +124,9 @@ public class Kanji3D : Kanji
     private ReferenceStroke GenerateRefStroke(RawStroke rawStroke, bool isHidden = false)
     {
         var refStroke = Instantiate(refStrokePrefab, transform).GetComponent<ReferenceStroke>();
-        refStroke.SetVisibility(!isHidden);
         refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
-        refStroke.lineColor = hintColor;
+        refStroke.strokeRenderer.SetVisibility(!isHidden);
+        refStroke.strokeRenderer.lineColor = hintColor;
         refStroke.rawStroke = rawStroke;
         refStroke.Init(this);
         return refStroke;
@@ -161,7 +137,7 @@ public class Kanji3D : Kanji
         // create the first input stroke 
         var inputStroke = Instantiate(inpStrokePrefab, transform).GetComponent<InputStroke>();
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
-        inputStroke.lineColor = drawnColor;
+        inputStroke.strokeRenderer.lineColor = drawnColor;
         inputStroke.Init(this);
         inputStroke.gameObject.SetActive(false);
         return inputStroke;
@@ -221,8 +197,7 @@ public class Kanji3D : Kanji
             {
                 Vector3 worldPoint = ray.direction * enter + ray.origin;
                 Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
-                curStroke.inpStroke.points.Add(localPoint);
-                curStroke.inpStroke.UpdateLinePoints();
+                curStroke.inpStroke.AddPoint(localPoint);
             }
         }
         // clear line
@@ -230,6 +205,15 @@ public class Kanji3D : Kanji
         {
             curStroke.inpStroke.Complete();
         }
+    }
+
+    // Get the plane on which the the 3d kanji lies
+    private Plane GetPlane()
+    {
+        // create the plane on which the kanji will be drawn
+        Vector3 planePoint = gameObject.transform.position;
+        Vector3 planeDir = -gameObject.transform.forward;
+        return new Plane(planeDir.normalized, planePoint);
     }
 
 #if UNITY_EDITOR

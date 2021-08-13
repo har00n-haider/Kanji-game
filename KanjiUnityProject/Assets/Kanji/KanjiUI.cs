@@ -7,4 +7,14 @@ using UnityEngine;
 public class KanjiUI : Kanji
 {
 
+    void Start()
+    {
+        
+    }
+
+    private void Update()
+    {
+        
+
+    }
 }

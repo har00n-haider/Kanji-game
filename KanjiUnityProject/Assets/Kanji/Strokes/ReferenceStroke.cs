@@ -9,22 +9,18 @@ using UnityEngine;
 
 public class ReferenceStroke : Stroke
 {
-
-
     public RawStroke rawStroke;
 
     public override void Init(Kanji kanji)
     {
         base.Init(kanji);
-        base.SetupLine();
+        strokeRenderer.SetupLine();
         // use the raw kanji data to create lines in the world
         points = rawStroke.points;
         refPoints = KanjiUtils.GenRefPntsForPnts(rawStroke.points, kanji.noRefPointsInStroke);
         length = KanjiUtils.GetLengthForPnts(points);
-        UpdateLinePoints();
-        line.useWorldSpace = false;
+        strokeRenderer.UpdateLinePoints(points);
         completed = true;
     }
-
 }
 
