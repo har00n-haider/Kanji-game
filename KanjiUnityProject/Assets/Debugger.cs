@@ -7,8 +7,8 @@ public class Debugger : MonoBehaviour
 
     public KanjiDatabase kanjiManager;
 
-    public Kanji kanjiPrefab;
-    private Kanji currentKanji;
+    public Kanji3D kanjiPrefab;
+    private Kanji3D currentKanji;
 
     // Start is called before the first frame update
     void Start()

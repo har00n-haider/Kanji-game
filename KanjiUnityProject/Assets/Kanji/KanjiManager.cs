@@ -18,9 +18,9 @@ public class KanjiManager : MonoBehaviour
     // settings for scoring behaviour
     public static readonly int hideReferenceThreshold = 3;
 
-    private Kanji inputKanji;
+    private Kanji3D inputKanji;
     private IKanjiHolder selectedKanjiHolder = null;
-    public Kanji kanjiPrefab;
+    public Kanji3D kanjiPrefab;
 
     public KanjiDatabase database;
     public TextAsset dataBaseFile;
@@ -74,7 +74,7 @@ public class KanjiManager : MonoBehaviour
     public void UpdateInputKanji(KanjiData kanjiData)
     {
         if (inputKanji != null) Destroy(inputKanji.gameObject);
-        var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji>();
+        var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji3D>();
         kanji.Init(kanjiData);
         inputKanji = kanji;
     }

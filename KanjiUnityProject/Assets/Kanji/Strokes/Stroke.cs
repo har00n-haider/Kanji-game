@@ -41,7 +41,7 @@ public class Stroke : MonoBehaviour
         ResetLineColor();
     }
 
-    protected void UpdateLinePoints()
+    public void UpdateLinePoints()
     {
         line.positionCount = points.Count;
         line.SetPositions(points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
