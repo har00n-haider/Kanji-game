@@ -33,17 +33,6 @@ public class StrokeRenderer : MonoBehaviour
         line = GetComponent<LineRenderer>();
     }
 
-    private void SetLineWidth(float width)
-    {
-        line.startWidth = width;
-        line.endWidth = width;
-    }
-
-    public void SetVisibility(bool visibility)
-    {
-        line.enabled = visibility;
-    }
-
     public virtual void SetupLine()
     {
         line.useWorldSpace = false;
@@ -51,6 +40,11 @@ public class StrokeRenderer : MonoBehaviour
         line.numCapVertices = 4;
         ResetLineWidth();
         ResetLineColor();
+    }
+
+    public void SetVisibility(bool visibility)
+    {
+        line.enabled = visibility;
     }
 
     public void UpdateLinePoints(List<Vector2> points)
@@ -65,20 +59,11 @@ public class StrokeRenderer : MonoBehaviour
         line.endColor = lineColor;
     }
 
-    private void ResetLineWidth()
-    {
-        line.startWidth = lineWidth;
-        line.endWidth = lineWidth;
-    }
-
     public void SetLineColor(Color color)
     {
         line.startColor = color;
         line.endColor = color;
     }
-
-
-    #region Highlight
 
     public void SetHightlight(Color color, float width = 0.3f)
     {
@@ -95,6 +80,18 @@ public class StrokeRenderer : MonoBehaviour
         highlightData.co = StartCoroutine(ApplyHighlight());
     }
 
+    private void SetLineWidth(float width)
+    {
+        line.startWidth = width;
+        line.endWidth = width;
+    }
+
+    private void ResetLineWidth()
+    {
+        line.startWidth = lineWidth;
+        line.endWidth = lineWidth;
+    }
+
     private IEnumerator ApplyHighlight()
     {
         //Debug.Log("Running highlight coroutine");
@@ -107,7 +104,5 @@ public class StrokeRenderer : MonoBehaviour
         ResetLineColor();
         ResetLineWidth();
     }
-
-    #endregion
 
 }
