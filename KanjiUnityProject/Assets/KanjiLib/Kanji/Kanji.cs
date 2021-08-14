@@ -25,29 +25,36 @@ public class Kanji : MonoBehaviour
         public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
     }
 
+    [Serializable]
+    public class KanjiConfig
+    {
+        // configuration for strokes
+        public int noRefPointsInStroke { get; private set; } = 5;
+        public float compThreshTight = 0.3f;
+        public float compThreshLoose = 0.7f;
+        public float lengthBuffer = 1f;
+        public Color wrongColor;
+        public Color correctColor;
+        public Color hintColor;
+        public Color completedColor;
+        public Color drawnColor;
+        public float thickness;
+    }
+
     // current state of the kanji
     protected Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
-    protected int curStrokeIdx;
-    public bool completed = false;
-    public bool pass = false;
-    public float score { get; private set; }
     protected StrokePair curStroke { get { return strokes[curStrokeIdx]; } }
+    protected int curStrokeIdx = 0;
+    public bool completed { get; private set; } = false;
+    public bool pass { get; private set; } = false;
+    public float score { get; private set; } = 0;
 
     // kanji data
-    public KanjiData kanjiData { get; private set; }
-    protected ParsedKanjiData parsedKanjiData;
-
-    // configuration for strokes
-    public int noRefPointsInStroke { get; private set; } = 5;
-    public float compThreshTight = 0.3f;
-    public float compThreshLoose = 0.7f;
-    public float lengthBuffer = 1f;
-    public Color wrongColor;
-    public Color correctColor;
-    public Color hintColor;
-    public Color completedColor;
-    public Color drawnColor;
-    public float thickness;
+    [SerializeField]
+    private KanjiConfig _config;
+    public KanjiConfig config { get { return _config; } private set { _config = value; } }
+    public KanjiData kanjiData { get; private set; } = null;
+    protected ParsedKanjiData parsedKanjiData = null;
 
     // refs
     public Stroke strokePrefab;
@@ -79,6 +86,11 @@ public class Kanji : MonoBehaviour
         UpdateEvaluation();
     }
 
+    /// <summary>
+    /// Handles the loading of a kanji from the parser
+    /// </summary>
+    /// <param name="kanjiData"></param>
+    /// <param name="scale"></param>
     public virtual void Init(KanjiData kanjiData, float scale)
     {
         // pull a kanji
@@ -101,6 +113,19 @@ public class Kanji : MonoBehaviour
         strokes[0].inpStroke.gameObject.SetActive(true);
     }
 
+    public virtual void Reset()
+    {
+        // state
+        strokes.Clear();
+        curStrokeIdx = 0;
+        completed = false;
+        pass = false;
+
+        // data
+        kanjiData = null;
+        parsedKanjiData = null;
+    }
+
     protected void UpdateEvaluation()
     {
         // process current stroke
@@ -111,8 +136,8 @@ public class Kanji : MonoBehaviour
             {
                 curStroke.inpStroke.gameObject.SetActive(false);
                 curStroke.refStroke.strokeRenderer.SetVisibility(true);
-                curStroke.refStroke.strokeRenderer.lineColor = completedColor;
-                curStroke.refStroke.strokeRenderer.SetHightlight(correctColor);
+                curStroke.refStroke.strokeRenderer.lineColor = config.completedColor;
+                curStroke.refStroke.strokeRenderer.SetHightlight(config.correctColor);
                 curStroke.refStroke.strokeRenderer.Highlight();
                 MoveToNextStroke();
             }
@@ -120,8 +145,8 @@ public class Kanji : MonoBehaviour
             {
                 curStroke.inpStroke.gameObject.SetActive(false);
                 curStroke.refStroke.strokeRenderer.SetVisibility(true);
-                curStroke.refStroke.strokeRenderer.lineColor = wrongColor;
-                curStroke.refStroke.strokeRenderer.SetHightlight(wrongColor);
+                curStroke.refStroke.strokeRenderer.lineColor = config.wrongColor;
+                curStroke.refStroke.strokeRenderer.SetHightlight(config.wrongColor);
                 curStroke.refStroke.strokeRenderer.Highlight();
                 MoveToNextStroke();
             }
@@ -150,8 +175,8 @@ public class Kanji : MonoBehaviour
         refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
         refStroke.Init(this);
         refStroke.strokeRenderer.SetVisibility(!isHidden);
-        refStroke.strokeRenderer.lineColor = hintColor;
-        refStroke.strokeRenderer.lineWidth = thickness;
+        refStroke.strokeRenderer.lineColor = config.hintColor;
+        refStroke.strokeRenderer.lineWidth = config.thickness;
         refStroke.AddPoints(rawStroke.points);
         refStroke.Complete();
         return refStroke;
@@ -163,8 +188,8 @@ public class Kanji : MonoBehaviour
         var inputStroke = Instantiate(strokePrefab, transform).GetComponent<Stroke>();
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
         inputStroke.Init(this);
-        inputStroke.strokeRenderer.lineColor = drawnColor;
-        inputStroke.strokeRenderer.lineWidth = thickness;
+        inputStroke.strokeRenderer.lineColor = config.drawnColor;
+        inputStroke.strokeRenderer.lineWidth = config.thickness;
         inputStroke.gameObject.SetActive(false);
         return inputStroke;
     }
@@ -194,23 +219,23 @@ public class Kanji : MonoBehaviour
                 sp.inpStroke.refPoints[i] -
                 sp.refStroke.refPoints[i]).magnitude);
             result.refPointDistances.Add(distance);
-            result.pass &= distance < compThreshLoose;
+            result.pass &= distance < config.compThreshLoose;
         }
         // at least one point needs to be under the tight thresh
-        float? tightDist = result.refPointDistances.FirstOrDefault(d => d < compThreshTight);
+        float? tightDist = result.refPointDistances.FirstOrDefault(d => d < config.compThreshTight);
         if (tightDist != null)
         {
             result.tightPointIdx = result.refPointDistances.IndexOf(tightDist);
         }
         result.pass &= result.tightPointIdx != -1;
         // total length needs to be within limits
-        float minVal = sp.refStroke.length - lengthBuffer;
-        float maxVal = sp.refStroke.length + lengthBuffer;
+        float minVal = sp.refStroke.length - config.lengthBuffer;
+        float maxVal = sp.refStroke.length + config.lengthBuffer;
         result.pass &= sp.inpStroke.length > minVal && sp.inpStroke.length < maxVal;
         sp.strokeResult = result;
     }
 
-    protected virtual void UpdateInput() {}
+    protected virtual void UpdateInput() { }
 
 }
 

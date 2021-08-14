@@ -44,22 +44,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69ab34be4dcf3594cb9cf54092ef2a0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  completed: 0
-  pass: 0
-  compThreshTight: 0.3
-  compThreshLoose: 0.7
-  lengthBuffer: 1
-  wrongColor: {r: 1, g: 0.042452812, b: 0.042452812, a: 1}
-  correctColor: {r: 0.07338022, g: 0.9150943, b: 0.07525216, a: 1}
-  hintColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  completedColor: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 1}
-  drawnColor: {r: 0.19023676, g: 0.35515183, b: 0.8962264, a: 1}
-  thickness: 0.1
+  _config:
+    compThreshTight: 0.3
+    compThreshLoose: 0.7
+    lengthBuffer: 1
+    wrongColor: {r: 0.9245283, g: 0.14478466, b: 0.14478466, a: 1}
+    correctColor: {r: 0.4095268, g: 1, b: 0.37358493, a: 1}
+    hintColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+    completedColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
+    drawnColor: {r: 0.23011754, g: 0.47521275, b: 0.9528302, a: 1}
+    thickness: 0.03
   strokePrefab: {fileID: 7339372506368467193, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
-  debug: 0
+  debug: 1
   kanjiManager: {fileID: 0}
   debugChar: 19968
-  debugScale: 0.5
+  debugScale: 0.08
 --- !u!1 &6460547157364967351
 GameObject:
   m_ObjectHideFlags: 0

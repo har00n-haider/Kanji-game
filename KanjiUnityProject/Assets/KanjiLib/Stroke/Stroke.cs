@@ -15,7 +15,7 @@ public class Stroke : MonoBehaviour
     public List<Vector2> points;    // points used for visualising the line on screen
     private bool completed = false;
     public float length { get; protected set; }
-    public bool isValid { get { return completed && refPoints?.Count == kanji.noRefPointsInStroke; } }  
+    public bool isValid { get { return completed && refPoints?.Count == kanji.config.noRefPointsInStroke; } }  
 
     // refs
     public StrokeRenderer strokeRenderer { get; private set; }
@@ -45,7 +45,7 @@ public class Stroke : MonoBehaviour
 
     public void Complete()
     {
-        refPoints = KanjiUtils.GenRefPntsForPnts(points, kanji.noRefPointsInStroke);
+        refPoints = KanjiUtils.GenRefPntsForPnts(points, kanji.config.noRefPointsInStroke);
         length = KanjiUtils.GetLengthForPnts(points);
         completed = true;
     }

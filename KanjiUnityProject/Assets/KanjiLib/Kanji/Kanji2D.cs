@@ -29,6 +29,11 @@ public class Kanji2D : Kanji
         {
             curStroke.inpStroke.Complete();
         }
+
+        if ((Input.GetKeyDown(KeyCode.Space))) 
+        {
+            Reset();
+        }
     }
 
 }

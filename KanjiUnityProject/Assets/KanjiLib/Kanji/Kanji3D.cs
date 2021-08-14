@@ -70,14 +70,14 @@ public class Kanji3D : Kanji
     {
         if (sp.isValid)
         {
-            for (int i = 0; i < noRefPointsInStroke; i++)
+            for (int i = 0; i < config.noRefPointsInStroke; i++)
             {
                 Gizmos.color = Color.gray;
                 var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.refPoints[i].x, sp.refStroke.refPoints[i].y));
                 Gizmos.DrawSphere(refPnt, 0.1f);
                 Gizmos.color = new Color(0,0,0,0.1f);
-                Gizmos.DrawSphere(refPnt, compThreshLoose);
-                Gizmos.DrawSphere(refPnt, compThreshTight);
+                Gizmos.DrawSphere(refPnt, config.compThreshLoose);
+                Gizmos.DrawSphere(refPnt, config.compThreshTight);
                 Gizmos.color = sp.strokeResult.pass ? Color.green : Color.red;
                 // tight dist color
                 Gizmos.color = sp.strokeResult.tightPointIdx == i ? new Color(1, 0, 1) : Gizmos.color; // purple
