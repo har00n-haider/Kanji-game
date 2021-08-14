@@ -60,7 +60,7 @@ MonoBehaviour:
     drawnColor: {r: 0.23137255, g: 0.4745098, b: 0.9529412, a: 1}
     thickness: 6
   strokePrefab: {fileID: 2117448921355055488, guid: 690c72815e92faf4aa3f77cc3d144e53, type: 3}
-  debug: 1
+  debug: 0
   kanjiManager: {fileID: 0}
   debugChar: 19979
   debugScale: 3

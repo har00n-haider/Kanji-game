@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// just do whatever...
 public class Debugger : MonoBehaviour
 {
 
