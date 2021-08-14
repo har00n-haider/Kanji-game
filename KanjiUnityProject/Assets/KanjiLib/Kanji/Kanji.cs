@@ -69,7 +69,7 @@ public class Kanji : MonoBehaviour
 #endif
 
     // Start is called before the first frame update
-    void Start()
+    protected void Start()
     {
 #if UNITY_EDITOR
         if (debug)

@@ -6,14 +6,17 @@ using UnityEngine;
 
 public class Kanji3D : Kanji
 {
-    private KanjiGrid3D kanjiGrid;
+    private KanjiGrid3D kanjiGrid = null;
 
     public override void Init(KanjiData kanjiData, float scale = 0.05f)
     {
         base.Init(kanjiData, scale);
         // setup the grid
-        kanjiGrid = GetComponentInChildren<KanjiGrid3D>();
-        kanjiGrid.Init(parsedKanjiData);
+        if(kanjiGrid == null) 
+        {
+            kanjiGrid = GetComponentInChildren<KanjiGrid3D>();
+            kanjiGrid.Init(parsedKanjiData);
+        }
     }
 
     protected override void UpdateInput()

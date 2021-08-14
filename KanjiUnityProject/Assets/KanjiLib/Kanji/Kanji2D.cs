@@ -6,14 +6,17 @@ using UnityEngine;
 
 public class Kanji2D : Kanji
 {
-    private KanjiGrid2D kanjiGrid;
+    private KanjiGrid2D kanjiGrid = null;
 
     public override void Init(KanjiData kanjiData, float scale = 1)
     {
         base.Init(kanjiData, scale);
         // setup the grid
-        kanjiGrid = GetComponentInChildren<KanjiGrid2D>();
-        kanjiGrid.Init(parsedKanjiData);
+        if (kanjiGrid == null) 
+        {
+            kanjiGrid = GetComponentInChildren<KanjiGrid2D>();
+            kanjiGrid.Init(parsedKanjiData);
+        }
     }
 
     protected override void UpdateInput()
@@ -28,11 +31,6 @@ public class Kanji2D : Kanji
         if (Input.GetMouseButtonUp(0))
         {
             curStroke.inpStroke.Complete();
-        }
-
-        if ((Input.GetKeyDown(KeyCode.Space))) 
-        {
-            Reset();
         }
     }
 
