@@ -19,7 +19,7 @@ public class KanjiSVGParser
     /// <param name="pntsInStroke">The number of points per stroke to use</param>
     /// <param name="scale"></param>
     /// <returns></returns>
-    public static ParsedKanjiData GetStrokesFromSvg(string svgContent, float scale = 0.05f, int pntsInStroke = 50)
+    public static ParsedKanjiData GetStrokesFromSvg(string svgContent, int pntsInStroke = 50)
     {
         if (svgContent == "") return null;
 
@@ -40,13 +40,13 @@ public class KanjiSVGParser
                 points = KanjiUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke),
             };
             rawStroke.points = KanjiUtils.SVGToUnityCoords(rawStroke.points);
-            rawStroke.points = KanjiUtils.ScaleCoords(rawStroke.points, scale);
+            // HACK: Hardcoded for now as it doesn't seem that these values change in the
+            // source kanji svg files
+            rawStroke.points = KanjiUtils.NormalizeAndConvertToUnity(rawStroke.points, 109, 109);
             strokes.Add(rawStroke);
         }
         
-        // Hardcoded for now as it doesn't seem that these values change in the
-        // source kanji svg files
-        return new ParsedKanjiData(109, 109, scale, strokes);
+        return new ParsedKanjiData(1, 1, 1, strokes);
     }
 
     #endregion

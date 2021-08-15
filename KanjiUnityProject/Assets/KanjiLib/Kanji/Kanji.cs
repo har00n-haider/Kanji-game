@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class Kanji : MonoBehaviour
 {
+    #region classes
 
     public class StrokeResult
     {
@@ -41,6 +42,8 @@ public class Kanji : MonoBehaviour
         public float thickness;
     }
 
+    #endregion
+
     // current state of the kanji
     protected Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
     protected StrokePair curStroke { get { return strokes[curStrokeIdx]; } }
@@ -65,7 +68,6 @@ public class Kanji : MonoBehaviour
     public bool debug = false;
     public KanjiManager kanjiManager;
     public char debugChar = '一';
-    public float debugScale = 0.5f;
 #endif
 
     // Start is called before the first frame update
@@ -74,7 +76,7 @@ public class Kanji : MonoBehaviour
 #if UNITY_EDITOR
         if (debug)
         {
-            Init(kanjiManager.database.GetKanji(debugChar), debugScale);
+            Init(kanjiManager.database.GetKanji(debugChar));
         }
 #endif
     }
@@ -91,10 +93,10 @@ public class Kanji : MonoBehaviour
     /// </summary>
     /// <param name="kanjiData"></param>
     /// <param name="scale"></param>
-    public virtual void Init(KanjiData kanjiData, float scale)
+    public virtual void Init(KanjiData kanjiData)
     {
         // pull a kanji
-        parsedKanjiData = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent, scale);
+        parsedKanjiData = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
         bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiManager.hideReferenceThreshold;
         for (int sIdx = 0; sIdx < parsedKanjiData.strokes.Count; sIdx++)
         {
@@ -235,6 +237,15 @@ public class Kanji : MonoBehaviour
         sp.strokeResult = result;
     }
 
+    /// <summary>
+    /// The input has to be provided in normalised coordinates (0-1) in this coordinate system:
+    ///    -------> x 
+    ///    |
+    ///    |
+    ///  y\/
+    ///  
+    /// relative to a rect in which the kanji exists 
+    /// </summary>
     protected virtual void UpdateInput() { }
 
 }

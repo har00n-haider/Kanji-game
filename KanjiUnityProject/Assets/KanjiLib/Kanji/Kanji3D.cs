@@ -4,36 +4,62 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider))]
 public class Kanji3D : Kanji
 {
     private KanjiGrid3D kanjiGrid = null;
+    private BoxCollider boxCollider = null;
+    [SerializeField]
+    private float gridThickness;
+    [SerializeField]
+    private float size = 1;
 
-    public override void Init(KanjiData kanjiData, float scale = 0.05f)
+    public override void Init(KanjiData kanjiData)
     {
-        base.Init(kanjiData, scale);
+        // set up before initialising the base class (need the collider set up)
+        if (boxCollider == null)
+        {
+            boxCollider = GetComponent<BoxCollider>();
+            ResizeCollider();
+        }
         // setup the grid
-        if(kanjiGrid == null) 
+        if (kanjiGrid == null)
         {
             kanjiGrid = GetComponentInChildren<KanjiGrid3D>();
-            kanjiGrid.Init(parsedKanjiData);
+            kanjiGrid.Init(parsedKanjiData, boxCollider, gridThickness);
         }
+
+        base.Init(kanjiData);
+    }
+
+    private void ResizeCollider()
+    {
+        float halfSize = size / 2;
+        boxCollider.size = new Vector3(size, size, size);
+        boxCollider.center = new Vector3(halfSize, halfSize, halfSize);
     }
 
     protected override void UpdateInput()
     {
-        //TODO: move the input stuff to Kanji
         // populate line
         if (Input.GetMouseButton(0))
         {
             // convert mouse position to a point on the kanji plane 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            bool hit = GetPlane().Raycast(ray, out float enter);
-            if (hit)
+
+            if (boxCollider.Raycast(ray, out RaycastHit hitInfo, 10000)) 
             {
-                Vector3 worldPoint = ray.direction * enter + ray.origin;
-                Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
-                curStroke.inpStroke.AddPoint(localPoint);
-            }
+                bool hit = GetPlane().Raycast(ray, out float enter);
+                if (hit)
+                {
+                    Vector3 worldPoint = ray.direction * enter + ray.origin;
+                    Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+                    Vector3 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, localPoint);
+                    curStroke.inpStroke.AddPoint(normLocPoint);
+                }
+            };
+
+
         }
         // clear line
         if (Input.GetMouseButtonUp(0))
@@ -64,7 +90,7 @@ public class Kanji3D : Kanji
         {
             for (int i = 0; i <= curStrokeIdx; i++)
             {
-                if(strokes[i].strokeResult != null) DrawStrokePair(strokes[i]);
+                if (strokes[i].strokeResult != null) DrawStrokePair(strokes[i]);
             }
         }
     }
@@ -78,7 +104,7 @@ public class Kanji3D : Kanji
                 Gizmos.color = Color.gray;
                 var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.refPoints[i].x, sp.refStroke.refPoints[i].y));
                 Gizmos.DrawSphere(refPnt, 0.1f);
-                Gizmos.color = new Color(0,0,0,0.1f);
+                Gizmos.color = new Color(0, 0, 0, 0.1f);
                 Gizmos.DrawSphere(refPnt, config.compThreshLoose);
                 Gizmos.DrawSphere(refPnt, config.compThreshTight);
                 Gizmos.color = sp.strokeResult.pass ? Color.green : Color.red;

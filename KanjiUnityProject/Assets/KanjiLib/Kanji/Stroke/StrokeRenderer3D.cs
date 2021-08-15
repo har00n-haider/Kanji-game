@@ -9,9 +9,11 @@ using UnityEngine;
 class StrokeRenderer3D : StrokeRenderer
 {
     private LineRenderer line;
+    private BoxCollider boxCollider;
 
     public override void SetupLine()
     {
+        boxCollider = GetComponentInParent<BoxCollider>();
         line = GetComponent<LineRenderer>();
         line.useWorldSpace = false;
         line.material = lineMaterial;
@@ -28,7 +30,14 @@ class StrokeRenderer3D : StrokeRenderer
     public override void UpdateLinePoints(List<Vector2> points)
     {
         line.positionCount = points.Count;
-        line.SetPositions(points.ConvertAll(p => new Vector3(p.x, p.y)).ToArray());
+        // set the normalised points to the size of the collider
+        Vector3[] scaledPoints = new Vector3[points.Count];
+        for (int i = 0; i < scaledPoints.Length; i++)
+        {
+            scaledPoints[i] = new Vector3(points[i].x, points[i].y);
+            scaledPoints[i].Scale(boxCollider.size);
+        }
+        line.SetPositions(scaledPoints);
     }
 
     protected override void ResetLineColor()

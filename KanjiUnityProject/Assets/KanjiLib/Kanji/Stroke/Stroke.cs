@@ -6,7 +6,9 @@ using UnityEngine;
 /// Holds the data relevant to a kanji stroke. Uses 2D coordinates.
 /// Designed to be used directly from the Kanji class.
 /// 
-/// strokeRenderer should be set up in the prefab
+/// strokeRenderer should be set up in the prefab.
+/// 
+/// All the poinst should be normalised to a 0-1 range.
 /// </summary>
 public class Stroke : MonoBehaviour
 {
@@ -31,6 +33,7 @@ public class Stroke : MonoBehaviour
         this.kanji = kanji;
         strokeRenderer.SetupLine();
     }
+
     public void AddPoint(Vector2 point)
     {
         points.Add(point);

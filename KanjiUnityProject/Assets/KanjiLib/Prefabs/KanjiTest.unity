@@ -312,7 +312,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1355470352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,15 +498,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.15
+      value: -1.61
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.04
+      value: 1.15
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.2
+      value: -2.24
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalRotation.w
@@ -541,13 +541,21 @@ PrefabInstance:
       value: Kanji3D
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
-      propertyPath: debug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: kanjiManager
       value: 
       objectReference: {fileID: 1694578314}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: _config.lengthBuffer
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: _config.compThreshLoose
+      value: 0.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: _config.compThreshTight
+      value: 0.03
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
 --- !u!114 &1694578314 stripped

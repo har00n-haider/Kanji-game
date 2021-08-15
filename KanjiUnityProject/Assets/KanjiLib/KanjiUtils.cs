@@ -149,9 +149,9 @@ public class KanjiUtils
         return points.ConvertAll(p => new Vector2(p.x, -p.y));
     }
 
-    public static List<Vector2> ScaleCoords(List<Vector2> points, float scale)
+    public static List<Vector2> NormalizeAndConvertToUnity(List<Vector2> points, float height, float width)
     {
-        return points.ConvertAll(p => new Vector2(p.x * scale, p.y * scale));
+        return points.ConvertAll(p => new Vector2(p.x * (1 / width), 1f + (p.y * (1 / height))));
     }
 
 

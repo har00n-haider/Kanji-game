@@ -8,9 +8,9 @@ public class Kanji2D : Kanji
 {
     private KanjiGrid2D kanjiGrid = null;
 
-    public override void Init(KanjiData kanjiData, float scale = 1)
+    public override void Init(KanjiData kanjiData)
     {
-        base.Init(kanjiData, scale);
+        base.Init(kanjiData);
         // setup the grid
         if (kanjiGrid == null) 
         {

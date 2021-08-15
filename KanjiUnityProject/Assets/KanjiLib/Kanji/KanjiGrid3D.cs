@@ -6,6 +6,7 @@ using UnityEngine;
 public class KanjiGrid3D : MonoBehaviour
 {
     public LineRenderer gridLinePrefab;
+    float gridThickness = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -18,24 +19,30 @@ public class KanjiGrid3D : MonoBehaviour
 
     }
 
-    public void Init(ParsedKanjiData parsedKanji) 
+    public void Init(ParsedKanjiData parsedKanji, BoxCollider box, float gridThickness)
     {
-        GenerateGrid(parsedKanji);
+        this.gridThickness = gridThickness;
+        GenerateGrid(parsedKanji, box.size);
     }
 
-
-    void GenerateGrid(ParsedKanjiData parsedKanji)
+    // origin assumed at 0,0,0
+    void GenerateGrid(ParsedKanjiData parsedKanji, Vector3 size)
     {
-        Vector2[] gridPnts = new Vector2[]{
-        new Vector2( 0.0f, 0.0f), new Vector2( 0.5f, 0.0f), new Vector2( 1.0f, 0.0f),
-        new Vector2( 0.0f,-0.5f), new Vector2( 0.5f,-0.5f), new Vector2( 1.0f,-0.5f),
-        new Vector2( 0.0f,-1.0f), new Vector2( 0.5f,-1.0f), new Vector2( 1.0f,-1.0f),
+        Vector3[] gridPnts = new Vector3[]{
+            new Vector3( 0.0f, 0.0f, 0.5f), // 0 - bottom left
+            new Vector3( 0.5f, 0.0f, 0.5f), // 1 - bottom  middle
+            new Vector3( 1.0f, 0.0f, 0.5f), // 2 - bottom right
+            new Vector3( 0.0f, 0.5f, 0.5f), // 3 - middle left
+            new Vector3( 0.5f, 0.5f, 0.5f), // 4 - middle middle
+            new Vector3( 1.0f, 0.5f, 0.5f), // 5 - middle right
+            new Vector3( 0.0f, 1.0f, 0.5f), // 6 - top left
+            new Vector3( 0.5f, 1.0f, 0.5f), // 7 - top middle
+            new Vector3( 1.0f, 1.0f, 0.5f), // 8 - top right
         };
 
         for (int i = 0; i < gridPnts.Length; i++)
         {
-            // assuming width/height are the same
-            gridPnts[i] *=  parsedKanji.scale*parsedKanji.height;
+            gridPnts[i].Scale(size);
         }
 
         // horizontal lines
@@ -50,12 +57,11 @@ public class KanjiGrid3D : MonoBehaviour
 
     }
 
-    void SetupLineRenderer(LineRenderer line, Vector2[] pnts, int sIdx, int eIdx) 
+    void SetupLineRenderer(LineRenderer line, Vector3[] pnts, int sIdx, int eIdx)
     {
-        float width = 0.2f;
         line.positionCount = 2;
         line.SetPositions(new Vector3[] { pnts[sIdx], pnts[eIdx] });
-        line.startWidth = width;
-        line.endWidth = width;
+        line.startWidth = gridThickness;
+        line.endWidth = gridThickness;
     }
 }
