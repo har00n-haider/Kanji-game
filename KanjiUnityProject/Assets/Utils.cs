@@ -9,13 +9,13 @@ using UnityEngine;
 public static class Utils
 {
 
-    public static void SetAndStretchToParentSize(this RectTransform rect, RectTransform parent)
+    public static void StretchToParentSize(this RectTransform rect, RectTransform parent, Vector2? pivot = null)
     {
-        rect.anchoredPosition = parent.position;
-        rect.anchorMin = new Vector2(1, 0);
-        rect.anchorMax = new Vector2(0, 1);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = parent.rect.size;
+        rect.anchorMin = new Vector2(0, 0);
+        rect.anchorMax = new Vector2(1, 1);
+        rect.sizeDelta = Vector2.zero;
+        rect.anchoredPosition = Vector2.zero;
+        rect.pivot = !pivot.HasValue ? new Vector2(0.5f, 0.5f) : pivot.Value;
     }
 
     public static void ScalePosRelativeToParentSize(this RectTransform rect, RectTransform parent, Vector2 scale)
