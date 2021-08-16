@@ -60,7 +60,9 @@ public class Kanji2D : Kanji
     private void ResizeRect()
     {
         Vector2 size = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
+        Vector2 halfSize = size/2;
         boxCollider.size = size;
+        boxCollider.offset = halfSize;
     }
 
 }
