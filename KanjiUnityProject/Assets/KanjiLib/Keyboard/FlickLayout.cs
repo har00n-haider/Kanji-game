@@ -14,6 +14,8 @@ public class FlickLayout : MonoBehaviour
     private readonly int columns = 3;
     [SerializeField]
     private KeyboardButton.Config buttonConfig;
+    [SerializeField]
+    private Keyboard.Type type;
 
     // flick key setup
     private float cellWidth;
@@ -43,16 +45,45 @@ public class FlickLayout : MonoBehaviour
 
     void SetUpButton(KeyboardButton button, int r, int c)
     {
-        if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'わ', upChar = 'ん', downChar = '　', leftChar = 'を', rightChar = 'ー' }; }
-        if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ま', upChar = 'む', downChar = 'も', leftChar = 'み', rightChar = 'め' }; }
-        if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'や', upChar = 'ゆ', downChar = 'よ', leftChar = '　', rightChar = '　' }; }
-        if (r == 1 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ら', upChar = 'る', downChar = 'ろ', leftChar = 'り', rightChar = 'れ' }; }
-        if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'た', upChar = 'つ', downChar = 'と', leftChar = 'ち', rightChar = 'て' }; }
-        if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'な', upChar = 'ぬ', downChar = 'の', leftChar = 'に', rightChar = 'ね' }; }
-        if (r == 2 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'は', upChar = 'ふ', downChar = 'ほ', leftChar = 'ひ', rightChar = 'へ' }; }
-        if (r == 3 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'あ', upChar = 'う', downChar = 'お', leftChar = 'い', rightChar = 'え' }; }
-        if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'か', upChar = 'く', downChar = 'こ', leftChar = 'き', rightChar = 'け' }; }
-        if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'さ', upChar = 'す', downChar = 'そ', leftChar = 'し', rightChar = 'せ' }; }
+        switch (type)
+        {
+            case Keyboard.Type.FlickHiragana:
+                if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'わ', upChar = 'ん', downChar = '　', leftChar = 'を', rightChar = 'ー' }; }
+                if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ま', upChar = 'む', downChar = 'も', leftChar = 'み', rightChar = 'め' }; }
+                if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'や', upChar = 'ゆ', downChar = 'よ', leftChar = '　', rightChar = '　' }; }
+                if (r == 1 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ら', upChar = 'る', downChar = 'ろ', leftChar = 'り', rightChar = 'れ' }; }
+                if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'た', upChar = 'つ', downChar = 'と', leftChar = 'ち', rightChar = 'て' }; }
+                if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'な', upChar = 'ぬ', downChar = 'の', leftChar = 'に', rightChar = 'ね' }; }
+                if (r == 2 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'は', upChar = 'ふ', downChar = 'ほ', leftChar = 'ひ', rightChar = 'へ' }; }
+                if (r == 3 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'あ', upChar = 'う', downChar = 'お', leftChar = 'い', rightChar = 'え' }; }
+                if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'か', upChar = 'く', downChar = 'こ', leftChar = 'き', rightChar = 'け' }; }
+                if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'さ', upChar = 'す', downChar = 'そ', leftChar = 'し', rightChar = 'せ' }; }
+                break;
+            case Keyboard.Type.FlickKatana:
+                if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ワ', upChar = 'ン', downChar = '　', leftChar = 'ヲ', rightChar = 'ー' }; }
+                if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'マ', upChar = 'ム', downChar = 'モ', leftChar = '三', rightChar = 'メ' }; }
+                if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ヤ', upChar = 'ユ', downChar = 'ヨ', leftChar = '　', rightChar = '　' }; }
+                if (r == 1 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ラ', upChar = 'ル', downChar = 'ロ', leftChar = 'リ', rightChar = 'レ' }; }
+                if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'タ', upChar = 'ツ', downChar = 'ト', leftChar = '千', rightChar = 'テ' }; }
+                if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ナ', upChar = 'ヌ', downChar = 'ノ', leftChar = '二', rightChar = 'ネ' }; }
+                if (r == 2 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ハ', upChar = 'フ', downChar = 'ホ', leftChar = 'ヒ', rightChar = 'へ' }; }
+                if (r == 3 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ア', upChar = 'ウ', downChar = 'オ', leftChar = 'イ', rightChar = 'エ' }; }
+                if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'カ', upChar = 'ク', downChar = 'コ', leftChar = 'キ', rightChar = 'ケ' }; }
+                if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'サ', upChar = 'ス', downChar = 'ソ', leftChar = 'シ', rightChar = 'セ' }; }
+                break;
+            case Keyboard.Type.FlickRomaji:
+                if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'wa', upChar = 'n', downChar = '　', leftChar = 'wo', rightChar = 'ー' }; }
+                if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ma', upChar = 'mu', downChar = 'mo', leftChar = 'mi', rightChar = 'mme' }; }
+                if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ya', upChar = 'yu', downChar = 'yo', leftChar = '　', rightChar = '　' }; }
+                if (r == 1 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ra', upChar = 'ru', downChar = 'ro', leftChar = 'ri', rightChar = 're' }; }
+                if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ta', upChar = 'tsu', downChar = 'to', leftChar = 'chi', rightChar = 'te' }; }
+                if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'na', upChar = 'nu', downChar = 'no', leftChar = 'ni', rightChar = 'ne' }; }
+                if (r == 2 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ha', upChar = 'fu', downChar = 'ho', leftChar = 'hi', rightChar = 'he' }; }
+                if (r == 3 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'a', upChar = 'u', downChar = 'o', leftChar = 'ii', rightChar = 'e' }; }
+                if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'ka', upChar = 'ku', downChar = 'ko', leftChar = 'ki', rightChar = 'ke' }; }
+                if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = 'sa', upChar = 'su', downChar = 'so', leftChar = 'shi', rightChar = 'se' }; }
+                break;
+        }
     }
 
     void Update()
