@@ -19,7 +19,7 @@ public class Kanji2D : Kanji
 
     public override void Init(KanjiData kanjiData)
     {
-        if(rectTransform == null) 
+        if (rectTransform == null)
         {
             rectTransform = GetComponent<RectTransform>();
         }
@@ -27,7 +27,7 @@ public class Kanji2D : Kanji
         {
             boxCollider = GetComponent<BoxCollider2D>();
         }
-        if(boxCollider != null && rectTransform != null) 
+        if (boxCollider != null && rectTransform != null)
         {
             ResizeRect();
         }
@@ -47,7 +47,8 @@ public class Kanji2D : Kanji
         {
             // screen to kanji rect transformation
             Vector2 newPoint = transform.InverseTransformPoint(Input.mousePosition);
-            curStroke.inpStroke.AddPoint(newPoint);
+            Vector2 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, newPoint);
+            curStroke.inpStroke.AddPoint(normLocPoint);
         }
         // clear line
         if (Input.GetMouseButtonUp(0))
@@ -56,12 +57,10 @@ public class Kanji2D : Kanji
         }
     }
 
-    private void ResizeRect() 
+    private void ResizeRect()
     {
-        Vector2 size = new Vector2(rectTransform.rect.width, rectTransform.rect.width);
-        Vector2 halfSize = size / 2;
+        Vector2 size = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
         boxCollider.size = size;
-        //boxCollider.offset = halfSize;
     }
 
 }

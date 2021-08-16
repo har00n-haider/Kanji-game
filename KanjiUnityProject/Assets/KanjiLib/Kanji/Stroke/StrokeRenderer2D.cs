@@ -10,9 +10,18 @@ using UnityEngine.UI.Extensions;
 class StrokeRenderer2D : StrokeRenderer
 {
     private UILineRenderer line;
+    private BoxCollider2D boxCollider;
+    private RectTransform strokeRectT;
+    private RectTransform kanjiRectT;
 
     public override void SetupLine()
     {
+        //TODO: maybe pass these in as arguments to the stroke/stroke renderer?
+        kanjiRectT = GetComponentInParent<RectTransform>();
+        strokeRectT = GetComponent<RectTransform>();
+        Utils.StretchToParentSize(strokeRectT, kanjiRectT, Vector2.zero);
+
+        boxCollider = GetComponentInParent<BoxCollider2D>();
         line = GetComponent<UILineRenderer>();
         line.material = lineMaterial;
         ResetLineWidth();
@@ -26,7 +35,13 @@ class StrokeRenderer2D : StrokeRenderer
 
     public override void UpdateLinePoints(List<Vector2> points)
     {
-        line.Points = points.ToArray();
+        Vector2[] scaledPoints = new Vector2[points.Count];
+        for (int i = 0; i < points.Count; i++)
+        {
+            scaledPoints[i] = points[i];
+            scaledPoints[i].Scale(boxCollider.size);
+        }
+        line.Points = scaledPoints;
     }
 
     protected override void ResetLineColor()

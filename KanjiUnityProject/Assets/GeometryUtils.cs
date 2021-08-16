@@ -39,5 +39,12 @@ public class GeometryUtils
             Mathf.Clamp01(point.z / boxSize.z));
     }
 
+    public static Vector2 NormalizePointToBoxPosOnly(Vector2 boxSize, Vector2 point)
+    {
+        return new Vector2(
+            Mathf.Clamp01(point.x / boxSize.x),
+            Mathf.Clamp01(point.y / boxSize.y));
+    }
+
 }
 
