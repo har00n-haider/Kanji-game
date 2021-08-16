@@ -7,14 +7,19 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class Kanji3D : Kanji
 {
+    // box resize stuff
+    // used to scale the normalised kanji points to the the dims of the box
+    [HideInInspector]
+    public BoxCollider boxCollider = null;
+    // width/height size
+    [SerializeField]
+    private Vector3 boxColliderSize;
+    [SerializeField]
+    public float kanjiZBoxRelativepos = 0.5f;
+
     private KanjiGrid3D kanjiGrid = null;
-    private BoxCollider boxCollider = null;
     [SerializeField]
     private float gridThickness;
-    [SerializeField]
-    private float size = 1;
-    [SerializeField]
-    private float kanjiZBoxRelativepos = 0.5f;
 
     public override void Init(KanjiData kanjiData)
     {
@@ -36,9 +41,9 @@ public class Kanji3D : Kanji
 
     private void ResizeCollider()
     {
-        float halfSize = size / 2;
-        boxCollider.size = new Vector3(size, size, size);
-        boxCollider.center = new Vector3(halfSize, halfSize, halfSize);
+        Vector3 halfSize = boxColliderSize / 2;
+        boxCollider.size = boxColliderSize;
+        boxCollider.center = new Vector3(halfSize.x, halfSize.y, halfSize.z);
     }
 
     protected override void UpdateInput()
@@ -54,6 +59,7 @@ public class Kanji3D : Kanji
                 bool hit = GetPlane().Raycast(ray, out float enter);
                 if (hit)
                 {
+                    // normalize the input points for correct comparison with ref stroke
                     Vector3 worldPoint = ray.direction * enter + ray.origin;
                     Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
                     Vector3 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, localPoint);
@@ -73,9 +79,9 @@ public class Kanji3D : Kanji
     // Get the plane on which the the 3d kanji lies
     private Plane GetPlane()
     {
+        if (boxCollider == null) return new Plane();
         // create the plane on which the kanji will be drawn
-        Vector3 planePoint = gameObject.transform.position + 
-            kanjiZBoxRelativepos * gameObject.transform.forward* boxCollider.size.z;
+        Vector3 planePoint = transform.TransformPoint(boxCollider.center);
         Vector3 planeDir = -gameObject.transform.forward;
         return new Plane(planeDir.normalized, planePoint);
     }

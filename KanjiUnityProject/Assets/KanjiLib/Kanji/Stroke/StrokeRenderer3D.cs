@@ -9,11 +9,12 @@ using UnityEngine;
 class StrokeRenderer3D : StrokeRenderer
 {
     private LineRenderer line;
-    private BoxCollider boxCollider;
+    private Kanji3D kanji3D;
 
     public override void SetupLine()
     {
-        boxCollider = GetComponentInParent<BoxCollider>();
+        // hierarchy dependant
+        kanji3D = GetComponentInParent<Kanji3D>();
         line = GetComponent<LineRenderer>();
         line.useWorldSpace = false;
         line.material = lineMaterial;
@@ -29,13 +30,19 @@ class StrokeRenderer3D : StrokeRenderer
 
     public override void UpdateLinePoints(List<Vector2> points)
     {
+        if (kanji3D.boxCollider == null) return;
+
         line.positionCount = points.Count;
         // set the normalised points to the size of the collider
         Vector3[] scaledPoints = new Vector3[points.Count];
         for (int i = 0; i < scaledPoints.Length; i++)
         {
-            scaledPoints[i] = new Vector3(points[i].x, points[i].y);
-            scaledPoints[i].Scale(boxCollider.size);
+            scaledPoints[i] = new Vector3(
+                points[i].x,
+                points[i].y,
+                // center of the box
+                kanji3D.kanjiZBoxRelativepos);
+            scaledPoints[i].Scale(kanji3D.boxCollider.size);
         }
         line.SetPositions(scaledPoints);
     }

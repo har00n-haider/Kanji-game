@@ -46,21 +46,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _config:
-    compThreshTight: 0.3
-    compThreshLoose: 0.7
-    lengthBuffer: 1
+    compThreshTight: 0.03
+    compThreshLoose: 0.07
+    lengthBuffer: 0.2
     wrongColor: {r: 0.9245283, g: 0.14478466, b: 0.14478466, a: 1}
     correctColor: {r: 0.4095268, g: 1, b: 0.37358493, a: 1}
     hintColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
     completedColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
     drawnColor: {r: 0.23011754, g: 0.47521275, b: 0.9528302, a: 1}
-    thickness: 0.03
+    thickness: 0.09
   strokePrefab: {fileID: 7339372506368467193, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
-  debug: 1
+  debug: 0
   kanjiManager: {fileID: 0}
   debugChar: 19968
+  boxCollider: {fileID: 0}
+  boxColliderSize: {x: 4, y: 4, z: 0.3}
+  kanjiZBoxRelativepos: 0.5
   gridThickness: 0.03
-  size: 3.9
 --- !u!65 &1188149025
 BoxCollider:
   m_ObjectHideFlags: 0

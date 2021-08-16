@@ -498,15 +498,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.61
+      value: -2.79
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.15
+      value: -1.14
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.24
+      value: -7.72
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064430, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: m_LocalRotation.w
@@ -541,9 +541,29 @@ PrefabInstance:
       value: Kanji3D
       objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: kanjiManager
       value: 
       objectReference: {fileID: 1694578314}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: _config.thickness
+      value: 0.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: boxColliderSize.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: boxColliderSize.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
+      propertyPath: boxColliderSize.z
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 2265220182066064465, guid: 750260f5ddb36624995a1a85f988f006, type: 3}
       propertyPath: _config.lengthBuffer
       value: 0.2
