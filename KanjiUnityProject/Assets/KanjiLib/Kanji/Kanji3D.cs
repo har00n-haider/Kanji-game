@@ -13,6 +13,8 @@ public class Kanji3D : Kanji
     private float gridThickness;
     [SerializeField]
     private float size = 1;
+    [SerializeField]
+    private float kanjiZBoxRelativepos = 0.5f;
 
     public override void Init(KanjiData kanjiData)
     {
@@ -72,7 +74,8 @@ public class Kanji3D : Kanji
     private Plane GetPlane()
     {
         // create the plane on which the kanji will be drawn
-        Vector3 planePoint = gameObject.transform.position;
+        Vector3 planePoint = gameObject.transform.position + 
+            kanjiZBoxRelativepos * gameObject.transform.forward* boxCollider.size.z;
         Vector3 planeDir = -gameObject.transform.forward;
         return new Plane(planeDir.normalized, planePoint);
     }
