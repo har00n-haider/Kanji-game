@@ -31,12 +31,12 @@ public class KeyboardButton : MonoBehaviour
         private FlickType type;
         public Vector2 relativePosScale;
 
-        public char character
+        public string character
         {
             get
             {
-                char val = ' ';
-                val = textMesh.text.Length > 0 ? textMesh.text[0] : val;
+                string val = " ";
+                val = textMesh.text.Length > 0 ? textMesh.text : val;
                 return val;
             }
             set
@@ -134,15 +134,15 @@ public class KeyboardButton : MonoBehaviour
     public class CharSetup 
     {
         [SerializeField]
-        public char centerChar = 'a';
+        public string centerChar = "a";
         [SerializeField]
-        public char upChar = 'b';
+        public string upChar = "b";
         [SerializeField]
-        public char downChar = 'c';
+        public string downChar = "c";
         [SerializeField]
-        public char leftChar = 'd';
+        public string leftChar = "d";
         [SerializeField]
-        public char rightChar = 'e';
+        public string rightChar = "e";
     }
 
     Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
@@ -288,9 +288,9 @@ public class KeyboardButton : MonoBehaviour
         transform.SetAsLastSibling();
     }
 
-    char? GetCurrentChar()
+    string GetCurrentChar()
     {
-        char? result = null;
+        string result = string.Empty;
         result = flickMap[currFlick].character;
         return result;
     }
