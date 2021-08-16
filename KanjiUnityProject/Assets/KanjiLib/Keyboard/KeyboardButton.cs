@@ -58,6 +58,12 @@ public class KeyboardButton : MonoBehaviour
             relativePosScale.y = buttonRect.rect.height / imageRect.anchoredPosition.y;
         }
 
+        public void SetFontSize(float fontSize) 
+        {
+            textMesh.enableAutoSizing = false;
+            textMesh.fontSize = fontSize;
+        }
+
         public void SetVisibility(bool value, bool exceptText = false)
         {
             image.enabled = value;
@@ -147,6 +153,7 @@ public class KeyboardButton : MonoBehaviour
 
     Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
 
+    public float? fontSize = null;
     public Config config;
     public CharSetup charSetup;
 
@@ -198,11 +205,13 @@ public class KeyboardButton : MonoBehaviour
 
         ResetFlicks();
 
-        // make sure all the game objects are active (prefab might be different)
         foreach (var flick in flickMap.Values)
         {
+            // make sure all the game objects are active (prefab might be different)
             flick.SetActive(true);
+            if (fontSize.HasValue) flick.SetFontSize(fontSize.Value);
         }
+
 
         SetColors();
 

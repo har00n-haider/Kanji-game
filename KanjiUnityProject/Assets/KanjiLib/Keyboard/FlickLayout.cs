@@ -16,6 +16,10 @@ public class FlickLayout : MonoBehaviour
     private KeyboardButton.Config buttonConfig;
     [SerializeField]
     private Keyboard.Type type;
+    [SerializeField]
+    private float fontSize;
+    [SerializeField]
+    private bool overrideFontSize = false;
 
     // flick key setup
     private float cellWidth;
@@ -83,6 +87,10 @@ public class FlickLayout : MonoBehaviour
                 if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ka", upChar = "ku", downChar = "ko", leftChar = "ki", rightChar = "ke" }; }
                 if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "sa", upChar = "su", downChar = "so", leftChar = "shi", rightChar = "se" }; }
                 break;
+        }
+        if (overrideFontSize) 
+        {
+            button.fontSize = fontSize;
         }
     }
 
