@@ -17,6 +17,7 @@ public class Kanji3D : Kanji
     [SerializeField]
     public float kanjiZBoxRelativepos = 0.5f;
 
+    // grid
     private KanjiGrid3D kanjiGrid = null;
     [SerializeField]
     private float gridThickness;
@@ -43,7 +44,7 @@ public class Kanji3D : Kanji
     {
         Vector3 halfSize = boxColliderSize / 2;
         boxCollider.size = boxColliderSize;
-        boxCollider.center = new Vector3(halfSize.x, halfSize.y, halfSize.z);
+        boxCollider.center = halfSize;
     }
 
     protected override void UpdateInput()
