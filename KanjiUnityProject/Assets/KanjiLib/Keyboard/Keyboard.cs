@@ -42,12 +42,26 @@ public class Keyboard : MonoBehaviour
         {
             case Type.Draw:
                 hiraganaFlickInput.gameObject.SetActive(false);
+                katakanaFlickInput.gameObject.SetActive(false);
+                romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
             case Type.FlickHiragana:
-            case Type.FlickKatana:
-            case Type.FlickRomaji:
                 hiraganaFlickInput.gameObject.SetActive(true);
+                katakanaFlickInput.gameObject.SetActive(false);
+                romajiFlickInput.gameObject.SetActive(false);
+                drawInput.gameObject.SetActive(false);
+                break;
+            case Type.FlickKatana:
+                hiraganaFlickInput.gameObject.SetActive(false);
+                katakanaFlickInput.gameObject.SetActive(true);
+                romajiFlickInput.gameObject.SetActive(false);
+                drawInput.gameObject.SetActive(false);
+                break;
+            case Type.FlickRomaji:
+                hiraganaFlickInput.gameObject.SetActive(false);
+                katakanaFlickInput.gameObject.SetActive(false);
+                romajiFlickInput.gameObject.SetActive(true);
                 drawInput.gameObject.SetActive(false);
                 break;
         }

@@ -1,5 +1,64 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1361166566137029296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5945443747667405017}
+  - component: {fileID: 2236558977464111673}
+  m_Layer: 5
+  m_Name: HiraganaFlickInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5945443747667405017
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361166566137029296}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6674254159579310215}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2236558977464111673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361166566137029296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1563c27962b74c140a2cdc083ffe8029, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonConfig:
+    flickThreshold: 0.5
+    relativeDistToCenter: 0.7
+    textPadding: 0.07
+    centerButtonColor: {r: 0.023529414, g: 0.54901963, b: 0.1137255, a: 1}
+    centerButtonHighlightColor: {r: 0.24313727, g: 0.6901961, b: 0.32156864, a: 1}
+    flickButtonColor: {r: 0.6039216, g: 0.15686275, b: 0.9058824, a: 1}
+    textColor: {r: 0.85098046, g: 0.82745105, b: 0.82745105, a: 1}
+  type: 2
+  buttonPrefab: {fileID: 3386287709193714736, guid: 70711d30487cff24990422330bd6bc13, type: 3}
+  buttonPlaceholder: {fileID: 2768931907986097838, guid: ffdbea3e09d49c74d8d7a98f5c73dd64, type: 3}
 --- !u!1 &3810762276480307559
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,7 +70,7 @@ GameObject:
   - component: {fileID: 7047856849684542884}
   - component: {fileID: 7719313785531242166}
   m_Layer: 5
-  m_Name: FlickLayout
+  m_Name: KatakanaFlickInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,6 +115,7 @@ MonoBehaviour:
     centerButtonHighlightColor: {r: 0.24313727, g: 0.6901961, b: 0.32156864, a: 1}
     flickButtonColor: {r: 0.6039216, g: 0.15686275, b: 0.9058824, a: 1}
     textColor: {r: 0.85098046, g: 0.82745105, b: 0.82745105, a: 1}
+  type: 3
   buttonPrefab: {fileID: 3386287709193714736, guid: 70711d30487cff24990422330bd6bc13, type: 3}
   buttonPlaceholder: {fileID: 2768931907986097838, guid: ffdbea3e09d49c74d8d7a98f5c73dd64, type: 3}
 --- !u!1 &6674254159579310214
@@ -89,6 +149,8 @@ RectTransform:
   m_Children:
   - {fileID: 5111714347536137278}
   - {fileID: 7047856849684542884}
+  - {fileID: 5945443747667405017}
+  - {fileID: 8727443678828699540}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -118,6 +180,69 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  hiraganaFlickInput: {fileID: 2236558977464111673}
+  katakanaFlickInput: {fileID: 7719313785531242166}
+  romajiFlickInput: {fileID: 5625339646015964439}
+  drawInput: {fileID: 5239628058918219282}
+--- !u!1 &7026679382873127453
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8727443678828699540}
+  - component: {fileID: 5625339646015964439}
+  m_Layer: 5
+  m_Name: RomajiFlickInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8727443678828699540
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026679382873127453}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6674254159579310215}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5625339646015964439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026679382873127453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1563c27962b74c140a2cdc083ffe8029, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonConfig:
+    flickThreshold: 0.5
+    relativeDistToCenter: 0.7
+    textPadding: 0.07
+    centerButtonColor: {r: 0.023529414, g: 0.54901963, b: 0.1137255, a: 1}
+    centerButtonHighlightColor: {r: 0.24313727, g: 0.6901961, b: 0.32156864, a: 1}
+    flickButtonColor: {r: 0.6039216, g: 0.15686275, b: 0.9058824, a: 1}
+    textColor: {r: 0.85098046, g: 0.82745105, b: 0.82745105, a: 1}
+  type: 1
+  buttonPrefab: {fileID: 3386287709193714736, guid: 70711d30487cff24990422330bd6bc13, type: 3}
+  buttonPlaceholder: {fileID: 2768931907986097838, guid: ffdbea3e09d49c74d8d7a98f5c73dd64, type: 3}
 --- !u!1 &8287359887149178564
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,3 +396,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 183098010905677226, guid: 7d093fe759c67e446a6a76d19fee963c, type: 3}
   m_PrefabInstance: {fileID: 1842237400390353638}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5239628058918219282 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5847384061664406772, guid: 7d093fe759c67e446a6a76d19fee963c, type: 3}
+  m_PrefabInstance: {fileID: 1842237400390353638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b043227ad720b4043b8a78ddc9e34a4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
