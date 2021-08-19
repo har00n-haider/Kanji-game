@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// Manages what objects in the scene hold kanjis
-/// and what kanji to display on screen.
-/// Should be the central place to manage how the 
-/// kanji interact with the rest of the game
+/// Manages objects in the scene that hold kanji prompts
 /// 
-/// Deals with the connection between Kanji holder and kanji object
+/// Middle man between the input <-> kanjiprompt
 /// </summary>
 public class KanjiManager : MonoBehaviour
 {
@@ -33,11 +30,27 @@ public class KanjiManager : MonoBehaviour
     {
         database = new KanjiDatabase();
         database.Load(dataBaseFile);
-
         reticuleTransform = reticule.GetComponent<RectTransform>();
     }
 
     void Update()
+    {
+        UpdateSelection();
+
+        UpdateKanjiPrompt();
+
+        UpdateReticule();
+    }
+
+    public void UpdateInputKanji(KanjiData kanjiData)
+    {
+        if (inputKanji != null) Destroy(inputKanji.gameObject);
+        var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji3D>();
+        kanji.Init(kanjiData);
+        inputKanji = kanji;
+    }
+
+    private void UpdateSelection() 
     {
         // see if user selected a kanji holder object
         if (Input.GetMouseButtonUp(0))
@@ -53,7 +66,10 @@ public class KanjiManager : MonoBehaviour
                 }
             }
         }
+    }
 
+    private void UpdateKanjiPrompt() 
+    {
         // Apply damage once the kanji is completed
         if (inputKanji != null && inputKanji.completed)
         {
@@ -67,16 +83,6 @@ public class KanjiManager : MonoBehaviour
         {
             if (inputKanji != null) Destroy(inputKanji.gameObject);
         }
-
-        UpdateReticule();
-    }
-
-    public void UpdateInputKanji(KanjiData kanjiData)
-    {
-        if (inputKanji != null) Destroy(inputKanji.gameObject);
-        var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji3D>();
-        kanji.Init(kanjiData);
-        inputKanji = kanji;
     }
 
 
