@@ -40,13 +40,6 @@ public class FlickLayout : MonoBehaviour
         containerRect = transform.parent.GetComponent<RectTransform>();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        SetCellDimensions();
-        CreateFlickButtons();
-    }
-
     void SetUpButton(KeyboardButton button, int r, int c)
     {
         switch (type)
@@ -98,6 +91,12 @@ public class FlickLayout : MonoBehaviour
     {
         SetCellDimensions();
         UpdateGrid();
+    }
+
+    public void Init()
+    {
+        SetCellDimensions();
+        CreateFlickButtons();
     }
 
     private void CreateFlickButtons()
