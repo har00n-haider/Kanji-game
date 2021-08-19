@@ -90,7 +90,6 @@ public class Kanji3D : Kanji
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (!debug) return;
         // plane
         Plane kanjiPlane = GetPlane();
         DrawPlane(kanjiPlane, kanjiPlane.ClosestPointOnPlane(transform.position), new Color(0, 0, 1, 0.1f));
