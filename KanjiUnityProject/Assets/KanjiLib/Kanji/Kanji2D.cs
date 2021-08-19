@@ -7,7 +7,7 @@ using UnityEngine;
 public class Kanji2D : Kanji
 {
     // box resize stuff
-    // used to scale the normalised kanji points to the the dims of the box
+    // used to scale the normalised kanji points to the dims of the box
     [HideInInspector]
     public BoxCollider2D boxCollider = null;
     private RectTransform rectTransform;
@@ -45,10 +45,13 @@ public class Kanji2D : Kanji
     {
         if (Input.GetMouseButton(0))
         {
-            // screen to kanji rect transformation
-            Vector2 newPoint = transform.InverseTransformPoint(Input.mousePosition);
-            Vector2 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, newPoint);
-            curStroke.inpStroke.AddPoint(normLocPoint);
+            if (Utils.RectTranfromToScreenRect(rectTransform).Contains(Input.mousePosition)) 
+            {
+                // screen to kanji rect transformation
+                Vector2 newPoint = transform.InverseTransformPoint(Input.mousePosition);
+                Vector2 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, newPoint);
+                curStroke.inpStroke.AddPoint(normLocPoint);
+            }
         }
         // clear line
         if (Input.GetMouseButtonUp(0))

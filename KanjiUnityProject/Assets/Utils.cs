@@ -9,6 +9,19 @@ using UnityEngine;
 public static class Utils
 {
 
+    public static Rect RectTranfromToScreenRect(RectTransform transform)
+    {
+        Vector3[] WorldCorners = new Vector3[4];
+        transform.GetWorldCorners(WorldCorners);
+        Bounds bounds = new Bounds(WorldCorners[0], Vector3.zero);
+        for (int i = 1; i < 4; ++i)
+        {
+            bounds.Encapsulate(WorldCorners[i]);
+        }
+        Rect screenRect = new Rect(bounds.min, bounds.size);
+        return screenRect;
+    }
+
     public static void StretchToParentSize(this RectTransform rect, RectTransform parent, Vector2? pivot = null)
     {
         rect.anchorMin = new Vector2(0, 0);
