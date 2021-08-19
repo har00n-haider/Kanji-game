@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class Keyboard : MonoBehaviour
 {
+
     public enum Type 
     {
         Draw,
@@ -26,14 +29,23 @@ public class Keyboard : MonoBehaviour
     private FlickLayout romajiFlickInput;
     [SerializeField]
     private Kanji2D drawInput;
+    [SerializeField]
+    public KanjiManager kanjiMan;
 
-    private void Awake()
-    {
-        
-    }
 
     private void Start()
     {
+        // flick layout setup
+        hiraganaFlickInput.keyboard = this;
+        hiraganaFlickInput.Init();
+        katakanaFlickInput.keyboard = this;
+        katakanaFlickInput.Init();
+        romajiFlickInput.keyboard = this;
+        romajiFlickInput.Init();
+
+        // needs KanjiData from the keyboard
+        //drawInput;
+
     }
 
     private void Update()
@@ -67,6 +79,11 @@ public class Keyboard : MonoBehaviour
         }
     }
 
+    // called from the flicklayouts and the Kanji2D input mechanisms
+    public void UpdateCharacter(string character) 
+    {
+        kanjiMan.UpdateKanjiPrompt(character);
+    }
 
 }
 

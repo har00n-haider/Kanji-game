@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class FlickLayout : MonoBehaviour
 {
-
     // config
     private readonly int rows = 4;
     private readonly int columns = 3;
@@ -32,7 +31,7 @@ public class FlickLayout : MonoBehaviour
     private GameObject buttonPrefab;
     [SerializeField]
     private GameObject buttonPlaceholder;
-
+    public Keyboard keyboard;
 
     private void Awake()
     {
@@ -120,11 +119,12 @@ public class FlickLayout : MonoBehaviour
                 }
                 else
                 {
-                    // make buttont
+                    // make button
                     KeyboardButton button = Instantiate(buttonPrefab, transform).GetComponent<KeyboardButton>();
                     button.name = "button " + buttNo;
                     SetUpButton(button, r, c);
                     button.config = buttonConfig;
+                    button.keyboard = keyboard;
                     button.Init();
                     currCell = button.gameObject;
                 }

@@ -151,29 +151,21 @@ public class KeyboardButton : MonoBehaviour
         public string rightChar = "e";
     }
 
-    Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
-
+    // config
     public float? fontSize = null;
     public Config config;
     public CharSetup charSetup;
 
-    [SerializeField]
-    private GameObject centerButton;
 
+    // state
     private Vector2 mousePosStart;
     private FlickType currFlick;
     private bool pressed = false;
+    Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
 
+    // refs
+    public Keyboard keyboard;
 
-    private void Awake()
-    {
-        Init();
-    }
-
-    void Start()
-    {
-
-    }
 
     void Update()
     {
@@ -181,17 +173,19 @@ public class KeyboardButton : MonoBehaviour
         UpdateFlick();
     }
 
+    // unity event method
     public void PointerDown()
     {
         pressed = true;
         mousePosStart = Input.mousePosition;
     }
 
+    // unity event method
     public void PointerUp()
     {
         pressed = false;
-        Debug.Log(GetCurrentChar());
         ResetFlicks();
+        keyboard.UpdateCharacter(GetCurrentChar());
     }
 
     public void Init()
@@ -211,7 +205,6 @@ public class KeyboardButton : MonoBehaviour
             flick.SetActive(true);
             if (fontSize.HasValue) flick.SetFontSize(fontSize.Value);
         }
-
 
         SetColors();
 
@@ -297,10 +290,9 @@ public class KeyboardButton : MonoBehaviour
         transform.SetAsLastSibling();
     }
 
-    string GetCurrentChar()
+    private string GetCurrentChar()
     {
-        string result = string.Empty;
-        result = flickMap[currFlick].character;
+        string result = flickMap[currFlick].character;
         return result;
     }
 

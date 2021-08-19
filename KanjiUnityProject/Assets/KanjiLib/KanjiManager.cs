@@ -36,9 +36,6 @@ public class KanjiManager : MonoBehaviour
     void Update()
     {
         UpdateSelection();
-
-        UpdateKanjiPrompt();
-
         UpdateReticule();
     }
 
@@ -68,7 +65,7 @@ public class KanjiManager : MonoBehaviour
         }
     }
 
-    private void UpdateKanjiPrompt() 
+    public void UpdateKanjiPrompt(string character) 
     {
         // Apply damage once the kanji is completed
         if (inputKanji != null && inputKanji.completed)
