@@ -62,25 +62,6 @@ public class Kanji : MonoBehaviour
     // refs
     public Stroke strokePrefab;
 
-
-#if UNITY_EDITOR
-    // debug - set these in the editor
-    public bool debug = false;
-    public KanjiManager kanjiManager;
-    public char debugChar = '一';
-#endif
-
-    // Start is called before the first frame update
-    protected void Start()
-    {
-#if UNITY_EDITOR
-        if (debug)
-        {
-            Init(kanjiManager.database.GetKanji(debugChar));
-        }
-#endif
-    }
-
     protected virtual void Update()
     {
         if (completed || strokes.Count == 0) return;
@@ -239,11 +220,10 @@ public class Kanji : MonoBehaviour
 
     /// <summary>
     /// The input has to be provided in normalised coordinates (0-1) in this coordinate system:
-    ///    -------> x 
-    ///    |
-    ///    |
-    ///  y\/
-    ///  
+    ///  y/\
+    ///   |
+    ///   |
+    ///    -----> x 
     /// relative to a rect in which the kanji exists 
     /// </summary>
     protected virtual void UpdateInput() { }
