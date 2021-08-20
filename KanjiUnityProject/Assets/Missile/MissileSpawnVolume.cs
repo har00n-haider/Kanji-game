@@ -89,7 +89,6 @@ public class MissileSpawnVolume : MonoBehaviour
             spawnLoc,
             new Quaternion()).GetComponent<Missile>();
         missile.gameObject.transform.LookAt(target.transform.position);
-        missile.SetKanji(kanji);
 
         float speedMax = config.missileSpeed + config.missileSpeedRng;
         float speedMin = config.missileSpeed - config.missileSpeedRng;

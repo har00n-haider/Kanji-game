@@ -12,16 +12,20 @@ using UnityEngine;
 /// </summary>
 public class KanjiManager : MonoBehaviour
 {
-    // settings for scoring behaviour
-    public static readonly int hideReferenceThreshold = 3;
+    // scoring
+    // the number of times a character has be succesfully input
+    // before it the reference strokes are hidden
+    public static readonly int hideWritingRefThreshold = 3;
 
-    private Kanji3D inputKanji;
-    private IKanjiHolder selectedKanjiHolder = null;
-    public Kanji3D kanjiPrefab;
+    // kanji holder managment
+    private KanjiTraceable selKanjiTraceable = null;
+    private List<KanjiTraceable> kanjiTraceables = new List<KanjiTraceable>();
 
+    // database
     public KanjiDatabase database;
     public TextAsset dataBaseFile;
 
+    // ui 
     public GameObject reticule;
     private RectTransform reticuleTransform;
     public float reticuleRotationrate = 0.12f;
@@ -39,13 +43,27 @@ public class KanjiManager : MonoBehaviour
         UpdateReticule();
     }
 
-    public void UpdateInputKanji(KanjiData kanjiData)
+
+    // give the kanji holder sentence to hold
+    public void UpdateKanjiHolder(string character)
     {
-        if (inputKanji != null) Destroy(inputKanji.gameObject);
-        var kanji = Instantiate(kanjiPrefab, transform).GetComponent<Kanji3D>();
-        kanji.Init(kanjiData);
-        inputKanji = kanji;
+        // Apply damage once the kanji is completed
+
+        // flick input
+
+
+        // kanji writing input
+        // remove the kanji display once the selected kanji is destroyed
+
     }
+
+    public void RegisterKanjiTraceable(KanjiTraceable kanjiTraceable) 
+    {
+        kanjiTraceables.Add(kanjiTraceable);
+    }
+
+
+    #region selection
 
     private void UpdateSelection() 
     {
@@ -55,41 +73,22 @@ public class KanjiManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                var kanjiHolder = hitInfo.collider.gameObject.GetComponent<IKanjiHolder>();
+                var kanjiHolder = hitInfo.collider.gameObject.GetComponent<KanjiTraceable>();
                 if (kanjiHolder != null)
                 {
-                    selectedKanjiHolder = kanjiHolder;
-                    UpdateInputKanji(selectedKanjiHolder.kanjiData);
+                    selKanjiTraceable = kanjiHolder;
                 }
             }
         }
     }
 
-    public void UpdateKanjiPrompt(string character) 
-    {
-        // Apply damage once the kanji is completed
-        if (inputKanji != null && inputKanji.completed)
-        {
-            selectedKanjiHolder.TakeDamage(inputKanji.score);
-            Destroy(inputKanji.gameObject);
-            inputKanji = null;
-        }
-
-        // remove the kanji display once the selected kanji is destroyed
-        if (selectedKanjiHolder != null && selectedKanjiHolder.IsDestroyed())
-        {
-            if (inputKanji != null) Destroy(inputKanji.gameObject);
-        }
-    }
-
-
     private void UpdateReticule() 
     {
-        if(selectedKanjiHolder != null && !selectedKanjiHolder.IsDestroyed()) 
+        if(selKanjiTraceable != null && !selKanjiTraceable.IsDestroyed()) 
         {
             reticule.SetActive(true);
             reticuleTransform.position = 
-                Camera.main.WorldToScreenPoint(selectedKanjiHolder.transform.position);
+                Camera.main.WorldToScreenPoint(selKanjiTraceable.transform.position);
             reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate*Time.deltaTime);
         }
         else 
@@ -97,5 +96,8 @@ public class KanjiManager : MonoBehaviour
             reticule.SetActive(false);
         }
     }
+
+    #endregion
+
 }
 

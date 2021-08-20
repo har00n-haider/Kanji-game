@@ -43,7 +43,7 @@ public class Keyboard : MonoBehaviour
         romajiFlickInput.keyboard = this;
         romajiFlickInput.Init();
 
-        // needs KanjiData from the keyboard
+        // needs KanjiData from the kajimanager , i.e. the current kanji to draw
         //drawInput;
 
     }
@@ -82,7 +82,7 @@ public class Keyboard : MonoBehaviour
     // called from the flicklayouts and the Kanji2D input mechanisms
     public void UpdateCharacter(string character) 
     {
-        kanjiMan.UpdateKanjiPrompt(character);
+        kanjiMan.UpdateKanjiHolder(character);
     }
 
 }

@@ -58,17 +58,3 @@ public class KanjiProgress
     public int flawlessClears = 0;
 }
 
-public interface IKanjiHolder
-{
-    KanjiData kanjiData { get; set; }
-    bool selected { get; set; }
-    void Destroy();
-
-    void TakeDamage(float damage);
-
-    bool IsDestroyed();
-
-    Transform transform { get; }
-}
-
-
