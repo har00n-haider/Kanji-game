@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 930016233078496434}
   m_Layer: 0
   m_Name: KanjiManager
-  m_TagString: Untagged
+  m_TagString: KanjiManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -143,10 +143,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efdfc6ea8db8bb6479400262fbdbc67c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kanjiPrefab: {fileID: 0}
   dataBaseFile: {fileID: 4900000, guid: b596e44a221d6c74a822d8ca9b82b0da, type: 3}
   reticule: {fileID: 5359766136690969790}
-  reticuleRotationrate: 0.12
+  reticuleRotationrate: 75.21
 --- !u!1 &5359766136690969790
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,7 +181,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7869872506030543293
 CanvasRenderer:

@@ -312,10 +312,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 608230490}
     m_Modifications:
-    - target: {fileID: 671725057870352579, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
-      propertyPath: canMove
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2277416298079898521, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
       propertyPath: m_Name
       value: Missile
@@ -905,6 +901,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1326603604746189412, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 1326603604746189412, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 5333870931083577166, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
       propertyPath: m_Name
       value: KanjiManager

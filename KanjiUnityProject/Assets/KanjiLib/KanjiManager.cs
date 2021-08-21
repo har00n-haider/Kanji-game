@@ -18,7 +18,7 @@ public class KanjiManager : MonoBehaviour
     public static readonly int hideWritingRefThreshold = 3;
 
     // kanji holder managment
-    private KanjiTraceable selKanjiTraceable = null;
+    private KanjiTraceable seletedKanjiTraceable = null;
     private List<KanjiTraceable> kanjiTraceables = new List<KanjiTraceable>();
 
     // database
@@ -73,10 +73,10 @@ public class KanjiManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                var kanjiHolder = hitInfo.collider.gameObject.GetComponent<KanjiTraceable>();
-                if (kanjiHolder != null)
+                var kanjiTraceable = hitInfo.collider.gameObject.GetComponent<KanjiTraceable>();
+                if (kanjiTraceable != null)
                 {
-                    selKanjiTraceable = kanjiHolder;
+                    seletedKanjiTraceable = kanjiTraceable;
                 }
             }
         }
@@ -84,11 +84,11 @@ public class KanjiManager : MonoBehaviour
 
     private void UpdateReticule() 
     {
-        if(selKanjiTraceable != null && !selKanjiTraceable.IsDestroyed()) 
+        if(seletedKanjiTraceable != null && !seletedKanjiTraceable.IsDestroyed()) 
         {
             reticule.SetActive(true);
             reticuleTransform.position = 
-                Camera.main.WorldToScreenPoint(selKanjiTraceable.transform.position);
+                Camera.main.WorldToScreenPoint(seletedKanjiTraceable.transform.position);
             reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate*Time.deltaTime);
         }
         else 

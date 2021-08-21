@@ -13,6 +13,9 @@ public class KanjiTraceable : MonoBehaviour
     public Color textColor;
     public float labelOffsetYPercentage;
 
+
+    private bool setColliderSize = false;
+
     // refs
     private RectTransform labelRect;
     public GameObject labelPrefab;
@@ -27,19 +30,23 @@ public class KanjiTraceable : MonoBehaviour
         GameObject mainCanvas = GameObject.FindGameObjectWithTag("MainCanvas");
         GameObject label =  Instantiate(labelPrefab, mainCanvas.transform);
         labelRect = label.GetComponentInChildren<RectTransform>();
-
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        ConfigureLabel(labelRect.gameObject);
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 
     // Update is called once per frame
     void Update()
     {
+        // the label takes a frame or so to get the right size (mayebe the content fitter?)
+        if (!setColliderSize && labelRect.rect.size.magnitude > 0) 
+        {
+            ConfigureLabel(labelRect.gameObject);
+            setColliderSize = true;
+        }
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 
