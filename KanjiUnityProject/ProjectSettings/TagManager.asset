@@ -6,6 +6,7 @@ TagManager:
   tags:
   - KanjiManager
   - MainCanvas
+  - Keyboard
   layers:
   - Default
   - TransparentFX

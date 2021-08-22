@@ -31,6 +31,7 @@ public class FlickLayout : MonoBehaviour
     private GameObject buttonPrefab;
     [SerializeField]
     private GameObject buttonPlaceholder;
+    [HideInInspector]
     public Keyboard keyboard;
 
     private void Awake()

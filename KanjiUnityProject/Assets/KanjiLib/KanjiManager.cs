@@ -18,7 +18,7 @@ public class KanjiManager : MonoBehaviour
     public static readonly int hideWritingRefThreshold = 3;
 
     // kanji holder managment
-    private KanjiTraceable seletedKanjiTraceable = null;
+    private KanjiTraceable selectedKanjiTraceable = null;
     private List<KanjiTraceable> kanjiTraceables = new List<KanjiTraceable>();
 
     // database
@@ -30,42 +30,66 @@ public class KanjiManager : MonoBehaviour
     private RectTransform reticuleTransform;
     public float reticuleRotationrate = 0.12f;
 
+    // refs
+    Keyboard keyboard;
+
     private void Awake()
     {
         database = new KanjiDatabase();
         database.Load(dataBaseFile);
         reticuleTransform = reticule.GetComponent<RectTransform>();
+        keyboard = GameObject.FindGameObjectWithTag("Keyboard").GetComponent<Keyboard>();
     }
 
     void Update()
     {
-        UpdateSelection();
+        CheckSelectionInput();
         UpdateReticule();
     }
 
-
-    // give the kanji holder sentence to hold
-    public void UpdateKanjiHolder(string character)
+    public void UpdateCurrentKanjiTraceable(bool curCharPassed)
     {
-        // Apply damage once the kanji is completed
-
-        // flick input
-
-
-        // kanji writing input
-        // remove the kanji display once the selected kanji is destroyed
-
+        if (curCharPassed) 
+        {
+            bool completed = selectedKanjiTraceable.MoveNext();
+            if (completed) 
+            {
+                Destroy(selectedKanjiTraceable.gameObject);
+            }
+            else 
+            {
+                keyboard.currCharTarget = selectedKanjiTraceable.currentChar;
+            }
+        }
     }
+
 
     public void RegisterKanjiTraceable(KanjiTraceable kanjiTraceable) 
     {
         kanjiTraceables.Add(kanjiTraceable);
+        kanjiTraceable.prompt = GeneratePrompt();
     }
 
+    private List<string> GeneratePrompt() 
+    {
+        return new List<string>()
+        {
+            "く",
+            "そ",
+            "や",
+            "ろ"
+        };
+    }
+
+    private void UpdateSelection(KanjiTraceable selectedKanji) 
+    {
+        selectedKanjiTraceable = selectedKanji;
+        keyboard.currCharTarget = selectedKanjiTraceable.currentChar;
+    }
 
     #region selection
 
-    private void UpdateSelection() 
+    private void CheckSelectionInput() 
     {
         // see if user selected a kanji holder object
         if (Input.GetMouseButtonUp(0))
@@ -73,10 +97,10 @@ public class KanjiManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                var kanjiTraceable = hitInfo.collider.gameObject.GetComponent<KanjiTraceable>();
-                if (kanjiTraceable != null)
+                var selectedKanji = hitInfo.collider.gameObject.GetComponent<KanjiTraceable>();
+                if (selectedKanji != null)
                 {
-                    seletedKanjiTraceable = kanjiTraceable;
+                    UpdateSelection(selectedKanji);
                 }
             }
         }
@@ -84,11 +108,11 @@ public class KanjiManager : MonoBehaviour
 
     private void UpdateReticule() 
     {
-        if(seletedKanjiTraceable != null && !seletedKanjiTraceable.IsDestroyed()) 
+        if(selectedKanjiTraceable != null && !selectedKanjiTraceable.IsDestroyed()) 
         {
             reticule.SetActive(true);
             reticuleTransform.position = 
-                Camera.main.WorldToScreenPoint(seletedKanjiTraceable.transform.position);
+                Camera.main.WorldToScreenPoint(selectedKanjiTraceable.transform.position);
             reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate*Time.deltaTime);
         }
         else 

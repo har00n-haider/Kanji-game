@@ -138,6 +138,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Missile (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 2277416298079898521, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5618808288066402080, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -459,7 +463,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 55604192758991054, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: type
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 55604192758991054, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: kanjiMan
@@ -483,6 +487,14 @@ PrefabInstance:
       objectReference: {fileID: 217517158}
     - target: {fileID: 6674254159579310214, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: m_Name
+      value: Keyboard
+      objectReference: {fileID: 0}
+    - target: {fileID: 6674254159579310214, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6674254159579310214, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: m_TagString
       value: Keyboard
       objectReference: {fileID: 0}
     - target: {fileID: 6674254159579310215, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
@@ -585,6 +597,10 @@ PrefabInstance:
     - target: {fileID: 2277416298079898521, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
       propertyPath: m_Name
       value: Missile (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2277416298079898521, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5618808288066402080, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
       propertyPath: m_RootOrder
@@ -707,7 +723,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -745,6 +761,10 @@ PrefabInstance:
     - target: {fileID: 2277416298079898521, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
       propertyPath: m_Name
       value: Missile (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2277416298079898521, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5618808288066402080, guid: 88c2868bb52fe864aa6f4b3651a9c6ba, type: 3}
       propertyPath: m_RootOrder
@@ -901,24 +921,8 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1326603604746189412, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 1326603604746189412, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 60
-      objectReference: {fileID: 0}
     - target: {fileID: 5333870931083577166, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
       propertyPath: m_Name
-      value: KanjiManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 5333870931083577166, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5333870931083577166, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
-      propertyPath: m_TagString
       value: KanjiManager
       objectReference: {fileID: 0}
     - target: {fileID: 6944437444086387101, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}

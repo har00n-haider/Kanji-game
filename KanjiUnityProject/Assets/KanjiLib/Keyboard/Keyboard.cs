@@ -29,12 +29,19 @@ public class Keyboard : MonoBehaviour
     private FlickLayout romajiFlickInput;
     [SerializeField]
     private Kanji2D drawInput;
-    [SerializeField]
-    public KanjiManager kanjiMan;
 
+    private KanjiManager kanjiMan;
+
+    public string currCharTarget { get; set; }
+
+    private void Awake() 
+    { 
+        kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
+    }
 
     private void Start()
     {
+
         // flick layout setup
         hiraganaFlickInput.keyboard = this;
         hiraganaFlickInput.Init();
@@ -43,7 +50,7 @@ public class Keyboard : MonoBehaviour
         romajiFlickInput.keyboard = this;
         romajiFlickInput.Init();
 
-        // needs KanjiData from the kajimanager , i.e. the current kanji to draw
+        // needs KanjiData from the kanjimanager , i.e. the current kanji to draw
         //drawInput;
 
     }
@@ -82,7 +89,11 @@ public class Keyboard : MonoBehaviour
     // called from the flicklayouts and the Kanji2D input mechanisms
     public void UpdateCharacter(string character) 
     {
-        kanjiMan.UpdateKanjiHolder(character);
+        Debug.Log(character);
+        if (character == currCharTarget)
+        {
+            kanjiMan.UpdateCurrentKanjiTraceable(true);
+        }
     }
 
 }

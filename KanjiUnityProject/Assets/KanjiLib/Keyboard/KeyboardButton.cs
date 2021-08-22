@@ -184,8 +184,8 @@ public class KeyboardButton : MonoBehaviour
     public void PointerUp()
     {
         pressed = false;
-        ResetFlicks();
         keyboard.UpdateCharacter(GetCurrentChar());
+        ResetFlicks();
     }
 
     public void Init()

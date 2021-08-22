@@ -12,12 +12,20 @@ public class KanjiTraceable : MonoBehaviour
     public Color labelColor;
     public Color textColor;
     public float labelOffsetYPercentage;
-
-
     private bool setColliderSize = false;
+
+    // prompt string content
+    public List<string> prompt;
+    public int promptIdx { get; private set; } = 0;
+    public string currentChar { get { return prompt[promptIdx]; } }
+    // prompt string configuration
+    Color completedColor = Color.grey;
+    Color currentColor = Color.red;
+    Color upcomingColor = Color.yellow;
 
     // refs
     private RectTransform labelRect;
+    private TextMeshProUGUI textMesh;
     public GameObject labelPrefab;
     private KanjiManager kanjiMan;
 
@@ -57,14 +65,13 @@ public class KanjiTraceable : MonoBehaviour
 
     private void ConfigureLabel(GameObject label) 
     {
-        var labelText = label.GetComponentInChildren<TextMeshProUGUI>();
-        labelText.color = textColor;
+        textMesh = label.GetComponentInChildren<TextMeshProUGUI>();
+        textMesh.font = Resources.Load<TMP_FontAsset>("Fonts/NotoSansJP-Regular SDF");
+        SetTextMesh();
         var labelImage = label.GetComponentInChildren<Image>();
         labelImage.color = labelColor;
         var labelBoxCollider = label.GetComponent<BoxCollider2D>();
         labelBoxCollider.size = labelRect.rect.size;
-
-
     }
 
     private void UpdateLabelScreenPos(RectTransform lRect, float yOffsetPercentage)
@@ -83,4 +90,31 @@ public class KanjiTraceable : MonoBehaviour
         lRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
 
+    public bool MoveNext() 
+    {
+        promptIdx++;
+        SetTextMesh();
+        return promptIdx == prompt.Count;
+    }
+
+    private void SetTextMesh() 
+    {
+        string textMeshText = "";
+        for (int i = 0; i < prompt.Count; i++)
+        {
+            if( i < promptIdx) 
+            {
+                textMeshText += $"{prompt[i].AddColor(completedColor)}";
+            }
+            else if (i == promptIdx) 
+            {
+                textMeshText += $"{prompt[i].AddColor(currentColor)}";
+            }
+            else if(i > promptIdx)
+            {
+                textMeshText += $"{prompt[i].AddColor(upcomingColor)}";
+            }
+        }
+        textMesh.SetText(textMeshText);
+    }
 }
