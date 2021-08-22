@@ -67,20 +67,32 @@ public interface IKankiTraceable
 public class PromptChar 
 {
     public CharType type;
-    public string character;
+    public string character = "";
+    public PromptChar()
+    {
+    }
     public PromptChar(string c, CharType t) 
     {
         character = c;
         type = t;
+    }
+    public static List<PromptChar> GetPromptListFromString(string origString, CharType stringType) 
+    {
+        List<PromptChar> result = new List<PromptChar>();
+        foreach (var s in origString)
+        {
+            result.Add(new PromptChar(s.ToString(), stringType));
+        }
+        return result;
     }
 }
 
 public enum CharType
 {
     Draw,
-    FlickRomaji,
-    FlickHiragana,
-    FlickKatana,
+    Romaji,
+    Hiragana,
+    Katana,
 }
 
 

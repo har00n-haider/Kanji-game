@@ -23,7 +23,7 @@ public class Keyboard : MonoBehaviour
 
     private KanjiManager kanjiMan;
 
-    public PromptChar currCharTarget { get; set; }
+    public PromptChar currCharTarget { get; set; } = new PromptChar();
 
     private void Awake() 
     { 
@@ -56,19 +56,19 @@ public class Keyboard : MonoBehaviour
                 romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
-            case CharType.FlickHiragana:
+            case CharType.Hiragana:
                 hiraganaFlickInput.gameObject.SetActive(true);
                 katakanaFlickInput.gameObject.SetActive(false);
                 romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(false);
                 break;
-            case CharType.FlickKatana:
+            case CharType.Katana:
                 hiraganaFlickInput.gameObject.SetActive(false);
                 katakanaFlickInput.gameObject.SetActive(true);
                 romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(false);
                 break;
-            case CharType.FlickRomaji:
+            case CharType.Romaji:
                 hiraganaFlickInput.gameObject.SetActive(false);
                 katakanaFlickInput.gameObject.SetActive(false);
                 romajiFlickInput.gameObject.SetActive(true);

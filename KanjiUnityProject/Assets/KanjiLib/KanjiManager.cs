@@ -70,15 +70,22 @@ public class KanjiManager : MonoBehaviour
         kanjiTraceable.prompt = GeneratePrompt();
     }
 
+
+
+    // debug shite
+    List<Tuple<CharType, string>> sampleStrings = new List<Tuple<CharType, string>>()
+    {
+      new Tuple<CharType, string>(CharType.Katana, "コーヒー"),
+      new Tuple<CharType, string>(CharType.Hiragana, "こくにん"),
+      new Tuple<CharType, string>(CharType.Hiragana, "わからない"),
+      new Tuple<CharType, string>(CharType.Hiragana, "テレビ"),
+    };
+    int sIdx = 0;
     private List<PromptChar> GeneratePrompt() 
     {
-        return new List<PromptChar>()
-        {
-            new PromptChar("く", CharType.FlickHiragana),
-            new PromptChar("そ", CharType.FlickHiragana),
-            new PromptChar("や", CharType.FlickHiragana),
-            new PromptChar("ろ", CharType.FlickHiragana)
-        };
+        var r = sampleStrings.ElementAt(sIdx);
+        if (sIdx < (sampleStrings.Count - 1)) sIdx++;
+        return PromptChar.GetPromptListFromString(r.Item2, r.Item1);
     }
 
     private void UpdateSelection(KanjiTraceable selectedKanji) 
