@@ -54,7 +54,7 @@ public class KanjiManager : MonoBehaviour
             bool completed = selectedKanjiTraceable.MoveNext();
             if (completed) 
             {
-                Destroy(selectedKanjiTraceable.gameObject);
+                selectedKanjiTraceable.Destroy();
             }
             else 
             {

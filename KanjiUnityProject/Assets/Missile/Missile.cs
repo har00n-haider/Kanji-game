@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Missile : MonoBehaviour
+public class Missile : MonoBehaviour, IKankiTraceable
 {
     public float speed = 0.1f;
 

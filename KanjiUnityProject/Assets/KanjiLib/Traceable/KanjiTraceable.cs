@@ -28,9 +28,11 @@ public class KanjiTraceable : MonoBehaviour
     private TextMeshProUGUI textMesh;
     public GameObject labelPrefab;
     private KanjiManager kanjiMan;
+    private IKankiTraceable controlledGameObject;
 
     private void Awake()
     {
+        controlledGameObject = GetComponent<IKankiTraceable>();
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
         kanjiMan.RegisterKanjiTraceable(this);
 
@@ -116,5 +118,11 @@ public class KanjiTraceable : MonoBehaviour
             }
         }
         textMesh.SetText(textMeshText);
+    }
+
+    public void Destroy() 
+    {
+        Destroy(labelRect.gameObject);
+        controlledGameObject.Destroy();
     }
 }

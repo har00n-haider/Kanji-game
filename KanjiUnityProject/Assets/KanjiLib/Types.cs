@@ -58,3 +58,10 @@ public class KanjiProgress
     public int flawlessClears = 0;
 }
 
+
+public interface IKankiTraceable
+{
+    void Destroy();
+}
+
+
