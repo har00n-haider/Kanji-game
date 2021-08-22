@@ -70,14 +70,14 @@ public class KanjiManager : MonoBehaviour
         kanjiTraceable.prompt = GeneratePrompt();
     }
 
-    private List<string> GeneratePrompt() 
+    private List<PromptChar> GeneratePrompt() 
     {
-        return new List<string>()
+        return new List<PromptChar>()
         {
-            "く",
-            "そ",
-            "や",
-            "ろ"
+            new PromptChar("く", CharType.FlickHiragana),
+            new PromptChar("そ", CharType.FlickHiragana),
+            new PromptChar("や", CharType.FlickHiragana),
+            new PromptChar("ろ", CharType.FlickHiragana)
         };
     }
 

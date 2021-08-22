@@ -15,9 +15,9 @@ public class KanjiTraceable : MonoBehaviour
     private bool setColliderSize = false;
 
     // prompt string content
-    public List<string> prompt;
+    public List<PromptChar> prompt;
     public int promptIdx { get; private set; } = 0;
-    public string currentChar { get { return prompt[promptIdx]; } }
+    public PromptChar currentChar { get { return prompt[promptIdx]; } }
     // prompt string configuration
     Color completedColor = Color.grey;
     Color currentColor = Color.red;
@@ -106,15 +106,15 @@ public class KanjiTraceable : MonoBehaviour
         {
             if( i < promptIdx) 
             {
-                textMeshText += $"{prompt[i].AddColor(completedColor)}";
+                textMeshText += $"{prompt[i].character.AddColor(completedColor)}";
             }
             else if (i == promptIdx) 
             {
-                textMeshText += $"{prompt[i].AddColor(currentColor)}";
+                textMeshText += $"{prompt[i].character.AddColor(currentColor)}";
             }
             else if(i > promptIdx)
             {
-                textMeshText += $"{prompt[i].AddColor(upcomingColor)}";
+                textMeshText += $"{prompt[i].character.AddColor(upcomingColor)}";
             }
         }
         textMesh.SetText(textMeshText);

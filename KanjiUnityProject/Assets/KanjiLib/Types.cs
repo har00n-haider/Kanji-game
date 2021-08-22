@@ -64,4 +64,23 @@ public interface IKankiTraceable
     void Destroy();
 }
 
+public class PromptChar 
+{
+    public CharType type;
+    public string character;
+    public PromptChar(string c, CharType t) 
+    {
+        character = c;
+        type = t;
+    }
+}
+
+public enum CharType
+{
+    Draw,
+    FlickRomaji,
+    FlickHiragana,
+    FlickKatana,
+}
+
 

@@ -14,7 +14,7 @@ public class FlickLayout : MonoBehaviour
     [SerializeField]
     private KeyboardButton.Config buttonConfig;
     [SerializeField]
-    private Keyboard.Type type;
+    private CharType type;
     [SerializeField]
     private float fontSize;
     [SerializeField]
@@ -44,7 +44,7 @@ public class FlickLayout : MonoBehaviour
     {
         switch (type)
         {
-            case Keyboard.Type.FlickHiragana:
+            case CharType.FlickHiragana:
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "わ", upChar = "ん", downChar = "　", leftChar = "を", rightChar = "ー" }; }
                 if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ま", upChar = "む", downChar = "も", leftChar = "み", rightChar = "め" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "や", upChar = "ゆ", downChar = "よ", leftChar = "　", rightChar = "　" }; }
@@ -56,7 +56,7 @@ public class FlickLayout : MonoBehaviour
                 if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "か", upChar = "く", downChar = "こ", leftChar = "き", rightChar = "け" }; }
                 if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "さ", upChar = "す", downChar = "そ", leftChar = "し", rightChar = "せ" }; }
                 break;
-            case Keyboard.Type.FlickKatana:
+            case CharType.FlickKatana:
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ワ", upChar = "ン", downChar = "　", leftChar = "ヲ", rightChar = "ー" }; }
                 if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "マ", upChar = "ム", downChar = "モ", leftChar = "三", rightChar = "メ" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ヤ", upChar = "ユ", downChar = "ヨ", leftChar = "　", rightChar = "　" }; }
@@ -68,7 +68,7 @@ public class FlickLayout : MonoBehaviour
                 if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "カ", upChar = "ク", downChar = "コ", leftChar = "キ", rightChar = "ケ" }; }
                 if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "サ", upChar = "ス", downChar = "ソ", leftChar = "シ", rightChar = "セ" }; }
                 break;
-            case Keyboard.Type.FlickRomaji:
+            case CharType.FlickRomaji:
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "wa", upChar = "n", downChar = "　", leftChar = "wo", rightChar = "ー" }; }
                 if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ma", upChar = "mu", downChar = "mo", leftChar = "mi", rightChar = "me" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ya", upChar = "yu", downChar = "yo", leftChar = "　", rightChar = "　" }; }

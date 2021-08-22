@@ -7,18 +7,9 @@ using UnityEngine.UI;
 
 public class Keyboard : MonoBehaviour
 {
-
-    public enum Type 
-    {
-        Draw,
-        FlickRomaji,
-        FlickHiragana,
-        FlickKatana,
-    }
-
     // keyboard 
     [SerializeField]
-    private Type type;
+    private CharType type;
 
     // refs
     [SerializeField]
@@ -32,7 +23,7 @@ public class Keyboard : MonoBehaviour
 
     private KanjiManager kanjiMan;
 
-    public string currCharTarget { get; set; }
+    public PromptChar currCharTarget { get; set; }
 
     private void Awake() 
     { 
@@ -59,25 +50,25 @@ public class Keyboard : MonoBehaviour
     {
         switch (type) 
         {
-            case Type.Draw:
+            case CharType.Draw:
                 hiraganaFlickInput.gameObject.SetActive(false);
                 katakanaFlickInput.gameObject.SetActive(false);
                 romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
-            case Type.FlickHiragana:
+            case CharType.FlickHiragana:
                 hiraganaFlickInput.gameObject.SetActive(true);
                 katakanaFlickInput.gameObject.SetActive(false);
                 romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(false);
                 break;
-            case Type.FlickKatana:
+            case CharType.FlickKatana:
                 hiraganaFlickInput.gameObject.SetActive(false);
                 katakanaFlickInput.gameObject.SetActive(true);
                 romajiFlickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(false);
                 break;
-            case Type.FlickRomaji:
+            case CharType.FlickRomaji:
                 hiraganaFlickInput.gameObject.SetActive(false);
                 katakanaFlickInput.gameObject.SetActive(false);
                 romajiFlickInput.gameObject.SetActive(true);
@@ -90,7 +81,7 @@ public class Keyboard : MonoBehaviour
     public void UpdateCharacter(string character) 
     {
         Debug.Log(character);
-        if (character == currCharTarget)
+        if (character == currCharTarget.character)
         {
             kanjiMan.UpdateCurrentKanjiTraceable(true);
         }
