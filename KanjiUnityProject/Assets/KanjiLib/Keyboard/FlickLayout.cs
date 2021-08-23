@@ -58,11 +58,11 @@ public class FlickLayout : MonoBehaviour
                 break;
             case CharType.Katana:
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ワ", upChar = "ン", downChar = "　", leftChar = "ヲ", rightChar = "ー" }; }
-                if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "マ", upChar = "ム", downChar = "モ", leftChar = "三", rightChar = "メ" }; }
+                if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "マ", upChar = "ム", downChar = "モ", leftChar = "ミ", rightChar = "メ" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ヤ", upChar = "ユ", downChar = "ヨ", leftChar = "　", rightChar = "　" }; }
                 if (r == 1 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ラ", upChar = "ル", downChar = "ロ", leftChar = "リ", rightChar = "レ" }; }
-                if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "タ", upChar = "ツ", downChar = "ト", leftChar = "千", rightChar = "テ" }; }
-                if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ナ", upChar = "ヌ", downChar = "ノ", leftChar = "二", rightChar = "ネ" }; }
+                if (r == 2 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "タ", upChar = "ツ", downChar = "ト", leftChar = "チ", rightChar = "テ" }; }
+                if (r == 2 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ナ", upChar = "ヌ", downChar = "ノ", leftChar = "ニ", rightChar = "ネ" }; }
                 if (r == 2 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ハ", upChar = "フ", downChar = "ホ", leftChar = "ヒ", rightChar = "へ" }; }
                 if (r == 3 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ア", upChar = "ウ", downChar = "オ", leftChar = "イ", rightChar = "エ" }; }
                 if (r == 3 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "カ", upChar = "ク", downChar = "コ", leftChar = "キ", rightChar = "ケ" }; }

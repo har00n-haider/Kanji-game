@@ -92,6 +92,7 @@ public class KanjiManager : MonoBehaviour
     {
         selectedKanjiTraceable = selectedKanji;
         keyboard.currCharTarget = selectedKanjiTraceable.currentChar;
+        keyboard.type = selectedKanjiTraceable.currentChar.type;
     }
 
     #region selection

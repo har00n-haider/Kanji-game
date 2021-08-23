@@ -9,7 +9,8 @@ public class Keyboard : MonoBehaviour
 {
     // keyboard 
     [SerializeField]
-    private CharType type;
+    private CharType lastType;
+    public CharType type { get; set; }
 
     // refs
     [SerializeField]
@@ -48,6 +49,7 @@ public class Keyboard : MonoBehaviour
 
     private void Update()
     {
+        if (type == lastType) return;
         switch (type) 
         {
             case CharType.Draw:
@@ -75,6 +77,7 @@ public class Keyboard : MonoBehaviour
                 drawInput.gameObject.SetActive(false);
                 break;
         }
+        lastType = type;
     }
 
     // called from the flicklayouts and the Kanji2D input mechanisms
