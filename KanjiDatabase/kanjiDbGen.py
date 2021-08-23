@@ -69,7 +69,7 @@ def PopulatRootWithSet(root, inputSet, inputSetName, inCategoryType="basic"):
     # add to root
     root.insert(setIdx, outputKanjiElem)
 
-    print("Generated entry for:" +  kanji + ", dict entry exists: " + str(dictEntryExists))
+    # print("Generated entry for:" +  kanji + ", dict entry exists: " + str(dictEntryExists))
   return
 
 # paths
@@ -88,7 +88,7 @@ PopulatRootWithSet(outRoot, [chr(i) for i in range(0x30A0, 0x30FF)] , "katakana 
 PopulatRootWithSet(outRoot, [chr(i) for i in range(0x3040, 0x309F)] , "hiragana set")
 
 with open('kanjigamedb.xml', 'wb') as doc:
-  doc.write(etree.tostring(outRoot, pretty_print = True, xml_declaration=True, encoding='UTF-8'))
+  doc.write(etree.tostring(outRoot, pretty_print = False, xml_declaration=True, encoding='UTF-8'))
 
 
 
