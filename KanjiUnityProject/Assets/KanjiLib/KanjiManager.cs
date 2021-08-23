@@ -59,7 +59,7 @@ public class KanjiManager : MonoBehaviour
             }
             else 
             {
-                keyboard.currCharTarget = selectedKanjiTraceable.currentChar;
+                keyboard.SetPromptChar(selectedKanjiTraceable.currentChar);
             }
         }
     }

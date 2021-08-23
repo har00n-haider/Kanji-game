@@ -98,6 +98,13 @@ public class Kanji : MonoBehaviour
 
     public virtual void Reset()
     {
+        // game objects
+        foreach (var strokePair in strokes.Values)
+        {
+            Destroy(strokePair.inpStroke.gameObject);
+            Destroy(strokePair.refStroke.gameObject);
+        }
+
         // state
         strokes.Clear();
         curStrokeIdx = 0;
