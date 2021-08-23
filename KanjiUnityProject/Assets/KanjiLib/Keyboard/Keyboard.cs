@@ -33,7 +33,6 @@ public class Keyboard : MonoBehaviour
 
     private void Start()
     {
-
         // flick layout setup
         hiraganaFlickInput.keyboard = this;
         hiraganaFlickInput.Init();
@@ -43,8 +42,7 @@ public class Keyboard : MonoBehaviour
         romajiFlickInput.Init();
 
         // needs KanjiData from the kanjimanager , i.e. the current kanji to draw
-        //drawInput;
-
+        drawInput.keyboard = this;
     }
 
     private void Update()
@@ -87,6 +85,17 @@ public class Keyboard : MonoBehaviour
         if (character == currCharTarget.character)
         {
             kanjiMan.UpdateCurrentKanjiTraceable(true);
+        }
+    }
+
+    public void SetPromptChar(PromptChar promptChar) 
+    {
+        currCharTarget = promptChar;
+        type = promptChar.type;
+        if(type == CharType.Draw) 
+        {
+            drawInput.Reset();
+            drawInput.Init(promptChar.kanjiData);
         }
     }
 

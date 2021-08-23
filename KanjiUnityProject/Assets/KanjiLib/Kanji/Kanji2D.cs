@@ -17,6 +17,9 @@ public class Kanji2D : Kanji
     [SerializeField]
     private float gridThickness;
 
+    [HideInInspector]
+    public Keyboard keyboard;
+
     public override void Init(KanjiData kanjiData)
     {
         if (rectTransform == null)
@@ -67,5 +70,11 @@ public class Kanji2D : Kanji
         boxCollider.size = size;
         boxCollider.offset = halfSize;
     }
+
+    protected override void Completed() 
+    {
+        keyboard.UpdateCharacter(kanjiData.literal);
+    }
+
 
 }

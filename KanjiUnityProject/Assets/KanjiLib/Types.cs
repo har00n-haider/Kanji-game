@@ -36,6 +36,10 @@ public class RawStroke
     public List<Vector2> points = new List<Vector2>();
 }
 
+/// <summary>
+/// Holds all data relevant to a given kanji
+/// Required by the kanji draw classes
+/// </summary>
 public class KanjiData 
 {
     public string literal = string.Empty;
@@ -65,6 +69,7 @@ public class PromptChar
 {
     public CharType type;
     public string character = "";
+    public KanjiData kanjiData;
     public PromptChar()
     {
     }

@@ -34,7 +34,6 @@ public class KanjiTraceable : MonoBehaviour
     {
         controlledGameObject = GetComponent<IKankiTraceable>();
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
-        kanjiMan.RegisterKanjiTraceable(this);
 
         // always place the label on the main canvas
         GameObject mainCanvas = GameObject.FindGameObjectWithTag("MainCanvas");
@@ -45,6 +44,7 @@ public class KanjiTraceable : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        kanjiMan.RegisterKanjiTraceable(this);
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 

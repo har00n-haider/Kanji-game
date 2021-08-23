@@ -47,6 +47,7 @@ public class KanjiManager : MonoBehaviour
         UpdateReticule();
     }
 
+    // called by the keyboard
     public void UpdateCurrentKanjiTraceable(bool curCharPassed)
     {
         if (curCharPassed) 
@@ -63,36 +64,40 @@ public class KanjiManager : MonoBehaviour
         }
     }
 
-
     public void RegisterKanjiTraceable(KanjiTraceable kanjiTraceable) 
     {
         kanjiTraceables.Add(kanjiTraceable);
         kanjiTraceable.prompt = GeneratePrompt();
     }
 
-
-
-    // debug shite
-    List<Tuple<CharType, string>> sampleStrings = new List<Tuple<CharType, string>>()
-    {
-      new Tuple<CharType, string>(CharType.Katana, "コーヒー"),
-      new Tuple<CharType, string>(CharType.Hiragana, "こくにん"),
-      new Tuple<CharType, string>(CharType.Hiragana, "わからない"),
-      new Tuple<CharType, string>(CharType.Hiragana, "テレビ"),
-    };
-    int sIdx = 0;
-    private List<PromptChar> GeneratePrompt() 
-    {
-        var r = sampleStrings.ElementAt(sIdx);
-        if (sIdx < (sampleStrings.Count - 1)) sIdx++;
-        return PromptChar.GetPromptListFromString(r.Item2, r.Item1);
-    }
-
     private void UpdateSelection(KanjiTraceable selectedKanji) 
     {
         selectedKanjiTraceable = selectedKanji;
-        keyboard.currCharTarget = selectedKanjiTraceable.currentChar;
-        keyboard.type = selectedKanjiTraceable.currentChar.type;
+        keyboard.SetPromptChar(selectedKanji.currentChar);
+    }
+
+    // TODO: remove debug shite
+    List<Tuple<CharType, string>> sampleStrings = new List<Tuple<CharType, string>>()
+    {
+      new Tuple<CharType, string>(CharType.Katana, "コーヒー"),
+      new Tuple<CharType, string>(CharType.Draw, "こくにん"),
+      new Tuple<CharType, string>(CharType.Hiragana, "わからない"),
+      new Tuple<CharType, string>(CharType.Katana, "テレビ"),
+    };
+    int sIdx = 0;
+    private List<PromptChar> GeneratePrompt()
+    {
+        var promptSample = sampleStrings.ElementAt(sIdx);
+        if (sIdx < (sampleStrings.Count - 1)) sIdx++;
+        List<PromptChar> promptList = PromptChar.GetPromptListFromString(promptSample.Item2, promptSample.Item1);
+        if(promptSample.Item1 == CharType.Draw) 
+        {
+            foreach (PromptChar p in promptList) 
+            {
+                p.kanjiData = database.GetKanji(p.character[0]);
+            }
+        }
+        return promptList;
     }
 
     #region selection

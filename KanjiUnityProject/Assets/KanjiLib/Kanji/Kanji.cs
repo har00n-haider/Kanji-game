@@ -149,6 +149,7 @@ public class Kanji : MonoBehaviour
             {
                 kanjiData.progress.clears++;
             }
+            Completed();
         }
     }
 
@@ -227,6 +228,8 @@ public class Kanji : MonoBehaviour
     /// relative to a rect in which the kanji exists 
     /// </summary>
     protected virtual void UpdateInput() { }
+
+    protected virtual void Completed() { }
 
 }
 
