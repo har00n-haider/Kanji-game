@@ -66,24 +66,31 @@ public class KanjiDatabase
             KanjiData kanji = new KanjiData();
             kanji.literal = kanjiElem["literal"].InnerText;
             kanji.code = kanjiElem.Attributes["code"].InnerText;
-            foreach (XmlNode meaningNode in kanjiElem["meaning_group"]) 
+            if (kanjiElem["meaning_group"] != null) 
             {
-                kanji.meanings.Add(meaningNode.InnerText);
-            }
-            foreach (XmlNode readingNode in kanjiElem["reading_group"])
-            {
-                if(readingNode.Attributes["r_type"].InnerText == "ja_kun") 
+                foreach (XmlNode meaningNode in kanjiElem["meaning_group"]) 
                 {
-                    kanji.readingsKun.Add(readingNode.InnerText);
+                    kanji.meanings.Add(meaningNode.InnerText);
                 }
-                else if(readingNode.Attributes["r_type"].InnerText == "ja_on") 
+            }
+            if (kanjiElem["reading_group"] != null)
+            {
+                foreach (XmlNode readingNode in kanjiElem["reading_group"])
                 {
-                    kanji.readingsOn.Add(readingNode.InnerText);
+                    if(readingNode.Attributes["r_type"].InnerText == "ja_kun") 
+                    {
+                        kanji.readingsKun.Add(readingNode.InnerText);
+                    }
+                    else if(readingNode.Attributes["r_type"].InnerText == "ja_on") 
+                    {
+                        kanji.readingsOn.Add(readingNode.InnerText);
+                    }
                 }
             }
             kanji.svgContent = kanjiElem["svg"].InnerXml;
-            kanji.category = new System.Tuple<KanjiData.CategoryType, string>
-                (KanjiData.CategoryType.kanjipower, kanjiElem["category"].InnerText);
+            kanji.category = kanjiElem["category"].InnerText;
+            kanji.categoryType = kanjiElem["category"].Attributes["type"].InnerText;
+
             kanjis.Add(kanji);
         }
         dataBaseLoaded = true;
