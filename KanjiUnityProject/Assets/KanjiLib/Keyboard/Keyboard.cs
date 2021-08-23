@@ -92,7 +92,8 @@ public class Keyboard : MonoBehaviour
     {
         currCharTarget = promptChar;
         type = promptChar.type;
-        if(type == CharType.Draw) 
+        Update(); // need to force update to enable drawInput calls below to work
+        if (type == CharType.Draw) 
         {
             drawInput.Reset();
             drawInput.Init(promptChar.kanjiData);
