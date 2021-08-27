@@ -48,19 +48,16 @@ public class KanjiManager : MonoBehaviour
     }
 
     // called by the keyboard
-    public void UpdateCurrentKanjiTraceable(bool curCharPassed)
+    public void UpdateCurrentKanjiTraceable()
     {
-        if (curCharPassed) 
+        bool completed = selectedKanjiTraceable.MoveNext();
+        if (completed) 
         {
-            bool completed = selectedKanjiTraceable.MoveNext();
-            if (completed) 
-            {
-                selectedKanjiTraceable.Destroy();
-            }
-            else 
-            {
-                keyboard.SetPromptChar(selectedKanjiTraceable.currentChar);
-            }
+            selectedKanjiTraceable.Destroy();
+        }
+        else 
+        {
+            keyboard.SetPromptChar(selectedKanjiTraceable.currentChar);
         }
     }
 
@@ -79,6 +76,7 @@ public class KanjiManager : MonoBehaviour
     // TODO: remove debug shite
     List<Tuple<CharType, string>> sampleStrings = new List<Tuple<CharType, string>>()
     {
+      new Tuple<CharType, string>(CharType.Hiragana, "ぎゃ"),
       new Tuple<CharType, string>(CharType.Katana, "コーヒー"),
       new Tuple<CharType, string>(CharType.Draw, "こくにん"),
       new Tuple<CharType, string>(CharType.Hiragana, "わからない"),

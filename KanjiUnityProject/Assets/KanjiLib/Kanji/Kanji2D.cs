@@ -19,6 +19,8 @@ public class Kanji2D : Kanji
 
     [HideInInspector]
     public Keyboard keyboard;
+    [HideInInspector]
+    private PromptChar currCharTarget = null;
 
     public override void Init(KanjiData kanjiData)
     {
@@ -71,10 +73,22 @@ public class Kanji2D : Kanji
         boxCollider.offset = halfSize;
     }
 
-    protected override void Completed() 
+    public void SetPromptChar(PromptChar promptChar) 
     {
-        keyboard.UpdateCharacter(kanjiData.literal);
+        currCharTarget = promptChar;
     }
 
+    protected override void Completed() 
+    {
+        if (pass) 
+        {
+            keyboard.CharCompletedSuccesfully();
+        }
+        else
+        {
+            Reset();
+            Init(currCharTarget.kanjiData);
+        }
+    }
 
 }

@@ -164,8 +164,7 @@ public class KeyboardButton : MonoBehaviour
     Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
 
     // refs
-    public Keyboard keyboard;
-
+    public FlickLayout parentFlickLayout;
 
     void Update()
     {
@@ -184,7 +183,7 @@ public class KeyboardButton : MonoBehaviour
     public void PointerUp()
     {
         pressed = false;
-        keyboard.UpdateCharacter(GetCurrentChar());
+        parentFlickLayout.UpdateCharacter(GetCurrentChar());
         ResetFlicks();
     }
 

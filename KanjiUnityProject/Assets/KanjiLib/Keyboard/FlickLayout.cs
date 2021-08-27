@@ -34,6 +34,12 @@ public class FlickLayout : MonoBehaviour
     [HideInInspector]
     public Keyboard keyboard;
 
+    // mora detection
+    private PromptChar currCharTarget = null;
+    private string inputStr = "";
+    private bool waitOne = false;
+
+
     private void Awake()
     {
         flickKeyRectArr = new RectTransform[rows, columns];
@@ -45,6 +51,7 @@ public class FlickLayout : MonoBehaviour
         switch (type)
         {
             case CharType.Hiragana:
+                if (r == 0 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "小", upChar = "゛", downChar = "゜", leftChar = "　", rightChar = "　" }; }
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "わ", upChar = "ん", downChar = "　", leftChar = "を", rightChar = "ー" }; }
                 if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ま", upChar = "む", downChar = "も", leftChar = "み", rightChar = "め" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "や", upChar = "ゆ", downChar = "よ", leftChar = "　", rightChar = "　" }; }
@@ -57,6 +64,7 @@ public class FlickLayout : MonoBehaviour
                 if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "さ", upChar = "す", downChar = "そ", leftChar = "し", rightChar = "せ" }; }
                 break;
             case CharType.Katana:
+                if (r == 0 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "小", upChar = "゛", downChar = "゜", leftChar = "　", rightChar = "　" }; }
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ワ", upChar = "ン", downChar = "　", leftChar = "ヲ", rightChar = "ー" }; }
                 if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "マ", upChar = "ム", downChar = "モ", leftChar = "ミ", rightChar = "メ" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ヤ", upChar = "ユ", downChar = "ヨ", leftChar = "　", rightChar = "　" }; }
@@ -69,6 +77,7 @@ public class FlickLayout : MonoBehaviour
                 if (r == 3 && c == 2) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "サ", upChar = "ス", downChar = "ソ", leftChar = "シ", rightChar = "セ" }; }
                 break;
             case CharType.Romaji:
+                if (r == 0 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "小", upChar = "゛", downChar = "゜", leftChar = "　", rightChar = "　" }; }
                 if (r == 0 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "wa", upChar = "n", downChar = "　", leftChar = "wo", rightChar = "ー" }; }
                 if (r == 1 && c == 0) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ma", upChar = "mu", downChar = "mo", leftChar = "mi", rightChar = "me" }; }
                 if (r == 1 && c == 1) { button.charSetup = new KeyboardButton.CharSetup() { centerChar = "ya", upChar = "yu", downChar = "yo", leftChar = "　", rightChar = "　" }; }
@@ -108,7 +117,6 @@ public class FlickLayout : MonoBehaviour
             {
                 // buttons we are skipping for the moment
                 bool isPlaceholderButton =
-                    r == 0 && c == 0 ||
                     r == 0 && c == 2;
                 GameObject currCell = null;
                 if (isPlaceholderButton)
@@ -125,7 +133,7 @@ public class FlickLayout : MonoBehaviour
                     button.name = "button " + buttNo;
                     SetUpButton(button, r, c);
                     button.config = buttonConfig;
-                    button.keyboard = keyboard;
+                    button.parentFlickLayout = this;
                     button.Init();
                     currCell = button.gameObject;
                 }
@@ -172,5 +180,139 @@ public class FlickLayout : MonoBehaviour
         rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
     }
 
+    public void SetPromptChar(PromptChar promptChar) 
+    {
+        currCharTarget = promptChar;
+        waitOne = RequiresModifier(promptChar.character);
+    }
 
+    // to be called from the buttons
+    public void UpdateCharacter(string inputchar) 
+    {
+        HandleInputChar(inputchar);
+        if (!waitOne) 
+        {
+            if(inputStr == currCharTarget.character) 
+            {
+                keyboard.CharCompletedSuccesfully();
+            }
+            else 
+            {
+                waitOne = RequiresModifier(currCharTarget.character);
+            }
+        }
+        else 
+        {
+            waitOne = false;
+        }
+    }
+
+    private bool RequiresModifier(string character) 
+    {
+        switch (character[0]) 
+        {
+            // smalleable
+            case 'ゃ':
+            case 'ゅ':
+            case 'ょ':
+            case 'っ':
+            // han/dakuten
+            case 'が':
+            case 'ぎ':
+            case 'ぐ':
+            case 'げ':
+            case 'ご':
+            case 'ざ':
+            case 'じ':
+            case 'ず':
+            case 'ぜ':
+            case 'ぞ':
+            case 'だ':
+            case 'ぢ':
+            case 'づ':
+            case 'で':
+            case 'ど':
+            case 'ば':
+            case 'び':
+            case 'ぶ':
+            case 'べ':
+            case 'ぼ':
+            case 'ぽ':
+            case 'ぴ':
+            case 'ぷ':
+            case 'ぺ':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void HandleInputChar(string inputChar) 
+    {
+        switch (inputChar)
+        {
+            case "小":
+                ApplySmall();
+                break;
+            case "゛":
+                ApplyHandakuten();
+                break;
+            case "゜":
+                ApplyDakuten();
+                break;
+            default:
+                inputStr = inputChar; 
+                break;
+        }
+    }
+
+    private void ApplySmall() 
+    {
+        switch (inputStr) 
+        {
+            case "や": inputStr = "ゃ"; break;
+            case "ゆ": inputStr = "ゅ"; break;
+            case "よ": inputStr = "ょ"; break;
+            case "つ": inputStr = "っ"; break;
+        }
+    }
+
+    private void ApplyHandakuten() 
+    {
+        switch (inputStr) 
+        {
+            case "か": inputStr = "が"; break;
+            case "き": inputStr = "ぎ"; break;
+            case "く": inputStr = "ぐ"; break;
+            case "け": inputStr = "げ"; break;
+            case "こ": inputStr = "ご"; break;
+            case "さ": inputStr = "ざ"; break;
+            case "し": inputStr = "じ"; break;
+            case "す": inputStr = "ず"; break;
+            case "せ": inputStr = "ぜ"; break;
+            case "そ": inputStr = "ぞ"; break;
+            case "た": inputStr = "だ"; break;
+            case "ち": inputStr = "ぢ"; break;
+            case "つ": inputStr = "づ"; break;
+            case "て": inputStr = "で"; break;
+            case "と": inputStr = "ど"; break;
+            case "は": inputStr = "ば"; break;
+            case "ひ": inputStr = "び"; break;
+            case "ふ": inputStr = "ぶ"; break;
+            case "へ": inputStr = "べ"; break;
+            case "ほ": inputStr = "ぼ"; break;
+        }
+    }
+
+    private void ApplyDakuten()
+    {
+        switch (inputStr)
+        {
+            case "は": inputStr = "ぽ"; break;
+            case "ひ": inputStr = "ぴ"; break;
+            case "ふ": inputStr = "ぷ"; break;
+            case "へ": inputStr = "ぺ"; break;
+            case "ほ": inputStr = "ぽ"; break;
+        }
+    }
 }

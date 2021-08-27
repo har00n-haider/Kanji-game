@@ -24,7 +24,7 @@ public class Keyboard : MonoBehaviour
 
     private KanjiManager kanjiMan;
 
-    public PromptChar currCharTarget { get; set; } = new PromptChar();
+    private PromptChar currCharTarget { get; set; } = new PromptChar();
 
     private void Awake() 
     { 
@@ -78,28 +78,37 @@ public class Keyboard : MonoBehaviour
         lastType = type;
     }
 
-    // called from the flicklayouts and the Kanji2D input mechanisms
-    public void UpdateCharacter(string character) 
+    // called from the flicklayouts and the Kanji2D input methods
+    public void CharCompletedSuccesfully() 
     {
-        Debug.Log(character);
-        if (character == currCharTarget.character)
-        {
-            kanjiMan.UpdateCurrentKanjiTraceable(true);
-        }
+        kanjiMan.UpdateCurrentKanjiTraceable();
     }
 
     public void SetPromptChar(PromptChar promptChar) 
     {
-        currCharTarget = promptChar;
         type = promptChar.type;
-        Update(); // need to force update to enable drawInput calls below to work
-        if (type == CharType.Draw) 
+        switch (type)
         {
-            drawInput.Reset();
-            drawInput.Init(promptChar.kanjiData);
+            case CharType.Draw:
+                drawInput.SetPromptChar(promptChar);
+                Update(); // need to force update to enable drawInput calls below to work
+                if (type == CharType.Draw) 
+                {
+                    drawInput.Reset();
+                    drawInput.Init(promptChar.kanjiData);
+                }
+                break;
+            case CharType.Romaji:
+                romajiFlickInput.SetPromptChar(promptChar);
+                break;
+            case CharType.Hiragana:
+                hiraganaFlickInput.SetPromptChar(promptChar);
+                break;
+            case CharType.Katana:
+                katakanaFlickInput.SetPromptChar(promptChar);
+                break;
         }
     }
-
 }
 
 
