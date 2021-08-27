@@ -471,7 +471,7 @@ PrefabInstance:
       objectReference: {fileID: 217517158}
     - target: {fileID: 2236558977464111673, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: buttonConfig.flickThreshold
-      value: 1.49
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5111714347536137278, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: m_AnchorMax.x
@@ -567,11 +567,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6674254159579310215, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 754
+      value: 765
       objectReference: {fileID: 0}
     - target: {fileID: 6674254159579310215, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 261
+      value: 207
       objectReference: {fileID: 0}
     - target: {fileID: 6674254159579310215, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -587,7 +587,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
       propertyPath: buttonConfig.flickThreshold
-      value: 1.49
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}

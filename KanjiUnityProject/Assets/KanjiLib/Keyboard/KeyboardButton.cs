@@ -254,9 +254,13 @@ public class KeyboardButton : MonoBehaviour
         UpdatePressed();
         Vector2 mousePosEnd = Input.mousePosition;
         Vector2 mouseDelta = mousePosEnd - mousePosStart;
-        if (mouseDelta.magnitude < config.flickThreshold) return;
-        // flick occured
-        if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
+        // center button
+        if (mouseDelta.magnitude < config.flickThreshold) 
+        {
+            currFlick = FlickType.Center;
+        }         
+        // flick button
+        else if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
         {
             currFlick = mouseDelta.x > 0 ? FlickType.Right : FlickType.Left;
         }
@@ -264,13 +268,13 @@ public class KeyboardButton : MonoBehaviour
         {
             currFlick = mouseDelta.y > 0 ? FlickType.Up : FlickType.Down;
         }
-        // nothing happened scenario
+        // center scenario
         if (currFlick == FlickType.Center)
         {
             ResetFlicks();
             return;
         }
-        // set only the current flick/center visible
+        // flick scenario: set only the current flick/center visible
         else
         {
             foreach (var flickPair in flickMap)
