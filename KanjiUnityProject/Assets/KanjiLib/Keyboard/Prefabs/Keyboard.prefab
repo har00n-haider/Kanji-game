@@ -398,6 +398,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Kanji2D
       objectReference: {fileID: 0}
+    - target: {fileID: 5847384061664406772, guid: 7d093fe759c67e446a6a76d19fee963c, type: 3}
+      propertyPath: _config.compThreshLoose
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5847384061664406772, guid: 7d093fe759c67e446a6a76d19fee963c, type: 3}
+      propertyPath: _config.compThreshTight
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d093fe759c67e446a6a76d19fee963c, type: 3}
 --- !u!224 &1953031220030459724 stripped
