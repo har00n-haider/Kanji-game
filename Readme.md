@@ -20,11 +20,13 @@ https://teamjapanese.com/free-websites-japanese-reading-practice-every-level/#Ad
 ### Tools
 - MeCab python. For converting sentences with combinations of hiragana/katakana/kanji into readings. 
   - https://pypi.org/project/mecab-python3
+  - docs - https://taku910.github.io/mecab/
 - Phoentic analyser
   - https://docs.microsoft.com/en-us/uwp/api/windows.globalization.japanesephoneticanalyzer?view=winrt-20348
 - Japanese NLP processing library
   - https://jprocessing.readthedocs.io/en/latest/
-
+- Dictionary manipulation in python ( 
+  - https://github.com/neocl/jamdict
 
 ### Interesting people
 
