@@ -6,12 +6,13 @@ https://github.com/KanjiVG
 ### Kanji dictionary
 http://nihongo.monash.edu/kanjidic2/index.html
 
-### Japanese dictionary
+### Japanese->English dictionary
 https://github.com/gojp/nihongo
 https://github.com/Gnurou/tagainijisho
 https://github.com/AnkiUniversal/NLP-Japanese-Dictionary
 http://www.edrdg.org/jmdict/edict.html
 https://tangorin.com/
+https://jisho.org/
 
 ### Text sources
 https://tatoeba.org/en/
@@ -27,7 +28,18 @@ https://teamjapanese.com/free-websites-japanese-reading-practice-every-level/#Ad
   - https://jprocessing.readthedocs.io/en/latest/
 - Dictionary manipulation in python ( 
   - https://github.com/neocl/jamdict
+- C# lib to go from kana/romaji conversion
+  - https://github.com/Xifax/HiraKana/
+- Python lib from romaji/kana conversion
+  - https://pypi.org/project/romkan/ (old doesn't install on py3)
+  - https://pypi.org/project/pykakasi/
+
+### Comparison of NLP libraries
+
+https://towardsdatascience.com/an-overview-of-nlp-libraries-for-japanese-be1805837143
+
 
 ### Interesting people
 
 https://github.com/fasiha
+http://nihongo.monash.edu/japanese.html
