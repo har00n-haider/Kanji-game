@@ -1,8 +1,9 @@
-from enum import Enum
+from enum import IntEnum
 from jamdict import Jamdict
 import pykakasi
 from fugashi import Tagger
 import re
+import json
 
 # globals 
 kks = pykakasi.kakasi()
@@ -175,9 +176,10 @@ unreqDicWords = {
   'transitive',
   'pronoun',
   ''
-}
+  }
+reqKanji = set()
 
-class WordType(Enum):
+class WordType(IntEnum):
   kanji = 1
   hiragana = 2
   katakana = 3  
@@ -264,20 +266,37 @@ def GetTypeFromOriginalWord(wordStr):
   # discount hiragana
   for mora in hiriganaList:
     if mora == firstChar:
-      return  WordType.hiragana
+      return WordType.hiragana
   # must be kanji
   return WordType.kanji
+
+def StripKanaFromString(wordStr):
+  def isHiragana(char):
+    for mora in hiriganaList:
+      if mora == char:
+        return True
+    return False
+  onlyKanjiStr = ''
+  for i in range(len(wordStr)):
+    currChar = wordStr[i]
+    # discount hiragana
+    if isHiragana(currChar):
+      continue
+    # must be kanji
+    onlyKanjiStr += currChar
+  return onlyKanjiStr
 
 def GetPromptWordsFromString(sentenceStr):
   tagger.parse(sentenceStr)
   wordList = tagger(sentenceStr)
-
   skipOne = False
   promptWords = []
+
   for i in range(len(wordList)):
     if skipOne == True:
       skipOne = False
       continue
+
     word = wordList[i]
     nextWord = wordList[i + 1] if (i + 1 < len(wordList)) else None
     wordType = GetTypeFromOriginalWord(str(word))
@@ -297,6 +316,9 @@ def GetPromptWordsFromString(sentenceStr):
     if(wordType == WordType.kanji):
       kanji = str(word)
       meanings = GetMeaningsFromRootWord(word.feature.lemma)
+      # Add the kanji to list of required kanji for import
+      for kanji in list(StripKanaFromString(kanji).strip(' ')):
+        reqKanji.add(kanji)
     katakana = kana
     hiragana = GetHiraganaFromKana(katakana)
     romaji = GetRomajiFromKana(katakana) 
@@ -304,13 +326,37 @@ def GetPromptWordsFromString(sentenceStr):
 
   return promptWords
 
+# can load this in from tatoeba eventually
 inputSentences = [
+  '忘れちゃった',
   'メロンが半分食べられた',
   'パイソンが大好きです',
   'オリンピックで残ったマスク',
   '私ブラックコーヒーが大好き',
-  '忘れちゃった',
   '彼女は決して肉を食べない'
 ]
 
+# process the sentences to prompt strings
+promptSentences = []
+for sentence in inputSentences:
+  promptSentences.append(GetPromptWordsFromString(sentence))
+
+# save a json file with the promp strings
+data = json.dumps(
+  promptSentences, 
+  default=lambda o: o.__dict__, 
+  ensure_ascii=False,
+  indent=4)
+
+with open("sentenceDb.json", "w", encoding='utf-8') as file:
+  file.write(data)
+
+# save a list of the required kanji for the sentence list
+reqKanjiData = json.dumps(
+  list(reqKanji), 
+  default=lambda o: o.__dict__, 
+  ensure_ascii=False,
+  indent=4)
+with open("reqKanji.json", "w", encoding='utf-8') as file:
+  file.write(reqKanjiData)
 
