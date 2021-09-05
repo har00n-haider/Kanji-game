@@ -293,10 +293,10 @@ public class KeyboardButton : MonoBehaviour
         transform.SetAsLastSibling();
     }
 
-    private string GetCurrentChar()
+    private char GetCurrentChar()
     {
-        string result = flickMap[currFlick].character;
-        return result;
+        //TODO: Fix me 
+        return flickMap[currFlick].character[0];
     }
 
 }

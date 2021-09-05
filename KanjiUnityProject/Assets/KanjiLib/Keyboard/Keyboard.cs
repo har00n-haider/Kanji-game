@@ -7,24 +7,16 @@ using UnityEngine.UI;
 
 public class Keyboard : MonoBehaviour
 {
-    // keyboard 
-    [SerializeField]
-    private CharType lastType;
-    public CharType type { get; set; }
-
     // refs
     [SerializeField]
-    private FlickLayout hiraganaFlickInput;
-    [SerializeField]
-    private FlickLayout katakanaFlickInput;
-    [SerializeField]
-    private FlickLayout romajiFlickInput;
+    private FlickLayout flickInput;
     [SerializeField]
     private Kanji2D drawInput;
 
     private KanjiManager kanjiMan;
 
-    private PromptChar currCharTarget { get; set; } = new PromptChar();
+    private PromptWord currCharTarget { get; set; } = null;
+    private int charIdx = 0;
 
     private void Awake() 
     { 
@@ -34,12 +26,8 @@ public class Keyboard : MonoBehaviour
     private void Start()
     {
         // flick layout setup
-        hiraganaFlickInput.keyboard = this;
-        hiraganaFlickInput.Init();
-        katakanaFlickInput.keyboard = this;
-        katakanaFlickInput.Init();
-        romajiFlickInput.keyboard = this;
-        romajiFlickInput.Init();
+        flickInput.keyboard = this;
+        flickInput.Init();
 
         // needs KanjiData from the kanjimanager , i.e. the current kanji to draw
         drawInput.keyboard = this;
@@ -47,35 +35,26 @@ public class Keyboard : MonoBehaviour
 
     private void Update()
     {
-        if (type == lastType) return;
-        switch (type) 
+    }
+
+    private void SetInputType(InputType type) 
+    {
+        switch (type)
         {
-            case CharType.Draw:
-                hiraganaFlickInput.gameObject.SetActive(false);
-                katakanaFlickInput.gameObject.SetActive(false);
-                romajiFlickInput.gameObject.SetActive(false);
+            case InputType.WritingHiragana:
+            case InputType.WritingKatakana:
+            case InputType.WritingKanji:
+                flickInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
-            case CharType.Hiragana:
-                hiraganaFlickInput.gameObject.SetActive(true);
-                katakanaFlickInput.gameObject.SetActive(false);
-                romajiFlickInput.gameObject.SetActive(false);
-                drawInput.gameObject.SetActive(false);
-                break;
-            case CharType.Katana:
-                hiraganaFlickInput.gameObject.SetActive(false);
-                katakanaFlickInput.gameObject.SetActive(true);
-                romajiFlickInput.gameObject.SetActive(false);
-                drawInput.gameObject.SetActive(false);
-                break;
-            case CharType.Romaji:
-                hiraganaFlickInput.gameObject.SetActive(false);
-                katakanaFlickInput.gameObject.SetActive(false);
-                romajiFlickInput.gameObject.SetActive(true);
+            case InputType.KeyHiragana:
+            case InputType.KeyKatakana:
+            case InputType.KeyRomaji:
+                flickInput.gameObject.SetActive(true);
                 drawInput.gameObject.SetActive(false);
                 break;
         }
-        lastType = type;
+        flickInput.SetType(type);
     }
 
     // called from the flicklayouts and the Kanji2D input methods
@@ -84,28 +63,21 @@ public class Keyboard : MonoBehaviour
         kanjiMan.UpdateCurrentKanjiTraceable();
     }
 
-    public void SetPromptChar(PromptChar promptChar) 
+    public void SetPromptWord(PromptWord promptWord) 
     {
-        type = promptChar.type;
-        switch (type)
+        switch (promptWord.responseType)
         {
-            case CharType.Draw:
-                drawInput.SetPromptChar(promptChar);
-                Update(); // need to force update to enable drawInput calls below to work
-                if (type == CharType.Draw) 
-                {
-                    drawInput.Reset();
-                    drawInput.Init(promptChar.kanjiData);
-                }
+            case InputType.WritingHiragana:
+            case InputType.WritingKatakana:
+            case InputType.WritingKanji:
+                SetInputType(promptWord.responseType);
+                drawInput.SetPromptChar(promptWord.chars[charIdx]);
                 break;
-            case CharType.Romaji:
-                romajiFlickInput.SetPromptChar(promptChar);
-                break;
-            case CharType.Hiragana:
-                hiraganaFlickInput.SetPromptChar(promptChar);
-                break;
-            case CharType.Katana:
-                katakanaFlickInput.SetPromptChar(promptChar);
+            case InputType.KeyHiragana:
+            case InputType.KeyKatakana:
+            case InputType.KeyRomaji:
+                SetInputType(promptWord.responseType);
+                flickInput.SetPromptChar(promptWord.chars[charIdx]);
                 break;
         }
     }

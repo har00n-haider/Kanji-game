@@ -76,6 +76,8 @@ public class Kanji2D : Kanji
     public void SetPromptChar(PromptChar promptChar) 
     {
         currCharTarget = promptChar;
+        Reset();
+        Init(currCharTarget.data);
     }
 
     protected override void Completed() 
@@ -87,7 +89,7 @@ public class Kanji2D : Kanji
         else
         {
             Reset();
-            Init(currCharTarget.kanjiData);
+            Init(currCharTarget.data);
         }
     }
 
