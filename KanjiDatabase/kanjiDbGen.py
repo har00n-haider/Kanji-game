@@ -82,12 +82,17 @@ outRoot = etree.Element('kanjidb')
 parser = etree.XMLParser(remove_blank_text=True)
 dictionaryRoot = etree.parse(dictionaryPath, parser).getroot()
 
-# kanji sets
-PopulatRootWithSet(outRoot, ['一','九','七','十','人','二','入','八','下','口','三','山'], "kanji power set 1")
+# required kanji
+reqKanji = []
+with open('out/reqKanji.txt', 'r', encoding='utf-8') as file:
+   for line in file:
+     reqKanji.append(line.strip('\n'))
+PopulatRootWithSet(outRoot, reqKanji , "required kanji")
+# kana sets
 PopulatRootWithSet(outRoot, [chr(i) for i in range(0x30A0, 0x30FF)] , "katakana set")
 PopulatRootWithSet(outRoot, [chr(i) for i in range(0x3040, 0x309F)] , "hiragana set")
 
-with open('kanjigamedb.xml', 'wb') as doc:
+with open('out/kanjigamedb.xml', 'wb') as doc:
   doc.write(etree.tostring(outRoot, pretty_print = False, xml_declaration=True, encoding='UTF-8'))
 
 

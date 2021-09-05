@@ -337,18 +337,24 @@ inputSentences = [
 ]
 
 # process the sentences to prompt strings
-promptSentences = []
-for sentence in inputSentences:
-  promptSentences.append(GetPromptWordsFromString(sentence))
+prompts = {
+  'sentences' : []
+}
+for rawSentence in inputSentences:
+  sentence = {
+    'words' : []
+  }
+  sentence['words'] = GetPromptWordsFromString(rawSentence)
+  prompts['sentences'].append(sentence)
 
 # save a json file with the promp strings
 data = json.dumps(
-  promptSentences, 
+  prompts, 
   default=lambda o: o.__dict__, 
   ensure_ascii=False,
   indent=4)
 
-with open("sentenceDb.json", "w", encoding='utf-8') as file:
+with open("out/sentenceDb.json", "w", encoding='utf-8') as file:
   file.write(data)
 
 # save a list of the required kanji for the sentence list
@@ -357,6 +363,6 @@ reqKanjiData = json.dumps(
   default=lambda o: o.__dict__, 
   ensure_ascii=False,
   indent=4)
-with open("reqKanji.json", "w", encoding='utf-8') as file:
+with open("out/reqKanji.json", "w", encoding='utf-8') as file:
   file.write(reqKanjiData)
 

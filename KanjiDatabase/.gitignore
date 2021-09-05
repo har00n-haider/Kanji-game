@@ -2,6 +2,10 @@
 .vs/
 
 # db files
+kanjidic2.xml/
+kanjiKeywords/
+kanjiVG/
+
 *.xml
 
 # outputs of the scripts
