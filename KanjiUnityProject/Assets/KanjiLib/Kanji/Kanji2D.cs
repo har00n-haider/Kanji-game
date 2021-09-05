@@ -84,7 +84,7 @@ public class Kanji2D : Kanji
     {
         if (pass) 
         {
-            keyboard.CharCompletedSuccesfully();
+            keyboard.WordCompleteSuccesfully();
         }
         else
         {

@@ -15,7 +15,9 @@ public class Keyboard : MonoBehaviour
 
     private KanjiManager kanjiMan;
 
-    private PromptWord currCharTarget { get; set; } = null;
+
+    private string displayString;
+    public PromptWord currWord { get; set; } = null;
     private int charIdx = 0;
 
     private void Awake() 
@@ -58,9 +60,12 @@ public class Keyboard : MonoBehaviour
     }
 
     // called from the flicklayouts and the Kanji2D input methods
-    public void CharCompletedSuccesfully() 
+    // TODO: move the movement through the word to the inputs. 
+    // it should be their responsibility to manage progress 
+    // through the word
+    public void WordCompleteSuccesfully() 
     {
-        kanjiMan.UpdateCurrentKanjiTraceable();
+        kanjiMan.UpdateCurrentKanjiTraceable();     
     }
 
     public void SetPromptWord(PromptWord promptWord) 

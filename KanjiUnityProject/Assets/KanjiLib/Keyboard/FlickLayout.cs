@@ -35,7 +35,8 @@ public class FlickLayout : MonoBehaviour
 
     // char detection
     private PromptChar currCharTarget = null;
-
+    private StringBuilder inputStr = new StringBuilder();
+    private bool reqModifier = false;
 
     private void Awake()
     {
@@ -188,11 +189,146 @@ public class FlickLayout : MonoBehaviour
     }
 
     // to be called from the buttons
-    public void UpdateCharacter(char inputchar) 
+    public void UpdateCharacter(char inputchar)
     {
-        if(inputchar == currCharTarget.character) 
+        // TODO: Fix me need to go through this one character at a time
+        if (IsModifier(inputchar))
         {
-            keyboard.CharCompletedSuccesfully();
+            HandleModifier(inputchar);
+            if (inputStr.ToString() == keyboard.currWord.GetString())
+            {
+                keyboard.WordCompleteSuccesfully();
+            }
+        }
+        else
+        {
+            inputStr.Append(inputchar);
+            if (inputStr.ToString() == keyboard.currWord.GetString())
+            {
+                keyboard.WordCompleteSuccesfully();
+            }
+        }
+    }
+
+
+    private static bool IsModifier(char character)
+    {
+        string modifierChars = "小゛゜";
+        return modifierChars.Contains(character) ? true : false;
+    }
+
+    private static bool RequiresModifier(char character)
+    {
+        switch (character)
+        {
+            // smalleable
+            case 'ゃ':
+            case 'ゅ':
+            case 'ょ':
+            case 'っ':
+            // han/dakuten
+            case 'が':
+            case 'ぎ':
+            case 'ぐ':
+            case 'げ':
+            case 'ご':
+            case 'ざ':
+            case 'じ':
+            case 'ず':
+            case 'ぜ':
+            case 'ぞ':
+            case 'だ':
+            case 'ぢ':
+            case 'づ':
+            case 'で':
+            case 'ど':
+            case 'ば':
+            case 'び':
+            case 'ぶ':
+            case 'べ':
+            case 'ぼ':
+            case 'ぽ':
+            case 'ぴ':
+            case 'ぷ':
+            case 'ぺ':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void HandleModifier(char inputChar)
+    {
+        if (inputStr.Length == 0) return;
+        switch (inputChar)
+        {
+            case '小':
+                inputStr[inputStr.Length - 1] = ApplySmall(inputStr[inputStr.Length - 1]);
+                break;
+            case '゛':
+                inputStr[inputStr.Length - 1] = ApplyHandakuten(inputStr[inputStr.Length - 1]);
+                break;
+            case '゜':
+                inputStr[inputStr.Length - 1] = ApplyDakuten(inputStr[inputStr.Length - 1]);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private static char ApplySmall(char inputChar)
+    {
+        switch (inputChar)
+        {
+            case 'や': return 'ゃ';
+            case 'ゆ': return 'ゅ';
+            case 'よ': return 'ょ';
+            case 'つ': return 'っ';
+            default:
+                return ' ';
+        }
+    }
+
+    private static char ApplyHandakuten(char inputChar)
+    {
+        switch (inputChar)
+        {
+            case 'か': return 'が';
+            case 'き': return 'ぎ';
+            case 'く': return 'ぐ';
+            case 'け': return 'げ';
+            case 'こ': return 'ご';
+            case 'さ': return 'ざ';
+            case 'し': return 'じ';
+            case 'す': return 'ず';
+            case 'せ': return 'ぜ';
+            case 'そ': return 'ぞ';
+            case 'た': return 'だ';
+            case 'ち': return 'ぢ';
+            case 'つ': return 'づ';
+            case 'て': return 'で';
+            case 'と': return 'ど';
+            case 'は': return 'ば';
+            case 'ひ': return 'び';
+            case 'ふ': return 'ぶ';
+            case 'へ': return 'べ';
+            case 'ほ': return 'ぼ';
+            default:
+                return ' ';
+        }
+    }
+
+    private static char ApplyDakuten(char inputChar)
+    {
+        switch (inputChar)
+        {
+            case 'は': return 'ぽ';
+            case 'ひ': return 'ぴ';
+            case 'ふ': return 'ぷ';
+            case 'へ': return 'ぺ';
+            case 'ほ': return 'ぽ';
+            default:
+                return ' ';
         }
     }
 

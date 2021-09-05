@@ -125,6 +125,16 @@ public class PromptWord
     [System.NonSerialized]
     public PromptChar[] chars;
 
+
+    public string GetString() 
+    {
+        string s = String.Empty;
+        foreach(var x in chars) 
+        {
+            s += x;
+        }
+        return s;
+    }
 }
 
 [System.Serializable]
