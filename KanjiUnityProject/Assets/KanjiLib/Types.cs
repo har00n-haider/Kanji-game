@@ -65,41 +65,45 @@ public interface IKankiTraceable
     void Destroy();
 }
 
-public class PromptChar 
+/// <summary>
+/// What is display in the prompt.
+/// </summary>
+public enum PromptType
 {
-    public CharType type;
-    public string character = "";
-    public KanjiData kanjiData;
-    public PromptChar()
-    {
-    }
-    public PromptChar(string c, CharType t) 
-    {
-        character = c;
-        type = t;
-    }
-    public static List<PromptChar> GetPromptListFromString(string origString, CharType stringType) 
-    {
-        List<PromptChar> result = new List<PromptChar>();
-        foreach (var s in origString)
-        {
-            result.Add(new PromptChar(s.ToString(), stringType));
-        }
-        return result;
-    }
-}
-
-public enum CharType
-{
-    Draw,
+    Kanji,
     Romaji,
     Hiragana,
     Katana,
 }
 
+/// <summary>
+/// What the input needs to supply. (Call/Response type)
+/// </summary>
+public enum InputType 
+{
+    KeyHiragana,
+    KeyKatakana,
+    KeyRomaji,
+    WritingHiragana,
+    WritingKatakana,
+    WritingKanji,
+    Meaning,
+}
+
+public class PromptChar 
+{
+    public char character = ' ';
+    public KanjiData data = null;
+}
+
+
 [System.Serializable]
 public class PromptWord
 {
+    /// <summary>
+    /// Cassification of the word. Can only perform
+    /// certain call/responses for certain word types
+    /// </summary>
     public enum WordType 
     {
       kanji = 1,
@@ -113,18 +117,26 @@ public class PromptWord
     public string romaji;
     public string hiragana;
     public string katakana;
+
+    [System.NonSerialized]
+    public InputType responseType;
+    [System.NonSerialized]
+    public PromptType displayType;
+    [System.NonSerialized]
+    public PromptChar[] chars;
+
 }
 
 [System.Serializable]
-public class PromptSentence 
+public class Prompt 
 {
     public List<PromptWord> words;
 }
 
 [System.Serializable]
-public class Prompts
+public class PromptList
 {
-    public List<PromptSentence> sentences;
+    public List<Prompt> sentences;
 }
 
 
