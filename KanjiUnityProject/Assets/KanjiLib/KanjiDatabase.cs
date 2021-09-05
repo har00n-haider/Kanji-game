@@ -27,7 +27,25 @@ public class KanjiDatabase
     {
         if (prompts == null || prompts.sentences.Count == 0) return null;
         var idx = Random.Range(0, prompts.sentences.Count - 1);
-        return prompts.sentences[idx];
+
+        Prompt prompt = prompts.sentences[idx];
+
+        //TODO: Fix me for the a given type (either by each word or sentence)
+        // Set the chars to iterate through (
+        foreach(PromptWord word in prompt.words) 
+        {
+            List<PromptChar> chars = new List<PromptChar>();
+            foreach(char c in word.hiragana) 
+            {
+                chars.Add(new PromptChar()
+                {
+                    character = c,
+                    data = GetKanji(c)
+                });
+            }
+            word.chars = chars.ToArray();
+        }
+        return prompt;
     }
 
     public KanjiData GetRandomKanjiFiltered(System.Func<KanjiData, bool> filter) 
