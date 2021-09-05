@@ -15,9 +15,9 @@ public class KanjiTraceable : MonoBehaviour
     private bool setColliderSize = false;
 
     // prompt string content
-    public List<PromptChar> prompt;
-    public int promptIdx { get; private set; } = 0;
-    public PromptChar currentChar { get { return prompt[promptIdx]; } }
+    public Prompt prompt;
+    private int pIdx { get; set; } = 0;
+    public PromptWord currWord { get { return prompt.words[pIdx]; } }
     // prompt string configuration
     Color completedColor = Color.grey;
     Color currentColor = Color.red;
@@ -94,27 +94,27 @@ public class KanjiTraceable : MonoBehaviour
 
     public bool MoveNext() 
     {
-        promptIdx++;
+        pIdx++;
         SetTextMesh();
-        return promptIdx == prompt.Count;
+        return pIdx == prompt.words.Count;
     }
 
     private void SetTextMesh() 
     {
         string textMeshText = "";
-        for (int i = 0; i < prompt.Count; i++)
+        for (int i = 0; i < prompt.words.Count; i++)
         {
-            if( i < promptIdx) 
+            if( i < pIdx) 
             {
-                textMeshText += $"{prompt[i].character.AddColor(completedColor)}";
+                textMeshText += $"{prompt.words[i].hiragana.AddColor(completedColor)}";
             }
-            else if (i == promptIdx) 
+            else if (i == pIdx) 
             {
-                textMeshText += $"{prompt[i].character.AddColor(currentColor)}";
+                textMeshText += $"{prompt.words[i].hiragana.AddColor(currentColor)}";
             }
-            else if(i > promptIdx)
+            else if(i > pIdx)
             {
-                textMeshText += $"{prompt[i].character.AddColor(upcomingColor)}";
+                textMeshText += $"{prompt.words[i].hiragana.AddColor(upcomingColor)}";
             }
         }
         textMesh.SetText(textMeshText);
