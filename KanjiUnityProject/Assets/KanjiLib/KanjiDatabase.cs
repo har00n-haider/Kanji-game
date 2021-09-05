@@ -12,20 +12,27 @@ using System.Linq;
 public class KanjiDatabase
 {
     private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
-    private Prompts sentences = new Prompts();
-    public bool dataBaseLoaded = false;
+    private PromptList prompts = new PromptList();
+    public bool kanjiDataBaseLoaded = false;
 
     public KanjiData GetRandomKanji()
     {
-        if (!dataBaseLoaded) return null;
+        if (!kanjiDataBaseLoaded) return null;
         var kanjiList = kanjis.Values.ToList();
         var idx = Random.Range(0, kanjiList.Count - 1);
         return kanjiList[idx];
     }
 
+    public Prompt GetRandomPrompt() 
+    {
+        if (prompts == null || prompts.sentences.Count == 0) return null;
+        var idx = Random.Range(0, prompts.sentences.Count - 1);
+        return prompts.sentences[idx];
+    }
+
     public KanjiData GetRandomKanjiFiltered(System.Func<KanjiData, bool> filter) 
     {
-        if (!dataBaseLoaded) return null;
+        if (!kanjiDataBaseLoaded) return null;
         var kanjiList = kanjis.Values;
         var remainingkanjis = kanjiList.Where(filter).ToList();
         if(remainingkanjis.Count > 0) 
@@ -38,7 +45,7 @@ public class KanjiDatabase
 
     public int CountKanji(System.Func<KanjiData, bool> filter) 
     {
-        if (!dataBaseLoaded) return 0;
+        if (!kanjiDataBaseLoaded) return 0;
         var kanjiList = kanjis.Values;
         return kanjiList.Where(filter).Count();
     }
@@ -52,7 +59,7 @@ public class KanjiDatabase
     public void Load(TextAsset kanjiDataBaseFile, TextAsset sentenceDataBaseFile)
     {
         kanjis = LoadKanjiDatabase(kanjiDataBaseFile).ToDictionary(x => x.code, c => c);
-        sentences = LoadSentenceDatabase(sentenceDataBaseFile);
+        prompts = LoadSentenceDatabase(sentenceDataBaseFile);
     }
 
     private List<KanjiData> LoadKanjiDatabase(TextAsset dataBaseFile) 
@@ -95,13 +102,13 @@ public class KanjiDatabase
 
             kanjis.Add(kanji);
         }
-        dataBaseLoaded = true;
+        kanjiDataBaseLoaded = true;
         return kanjis;
     }
 
-    private Prompts LoadSentenceDatabase(TextAsset dataBaseFile)     
+    private PromptList LoadSentenceDatabase(TextAsset dataBaseFile)     
     {
-        return JsonUtility.FromJson<Prompts>(dataBaseFile.text);
+        return JsonUtility.FromJson<PromptList>(dataBaseFile.text);
     }
 }
 

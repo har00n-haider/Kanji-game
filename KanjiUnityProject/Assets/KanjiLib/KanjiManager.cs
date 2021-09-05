@@ -58,7 +58,7 @@ public class KanjiManager : MonoBehaviour
         }
         else 
         {
-            keyboard.SetPromptChar(selectedKanjiTraceable.currentChar);
+            keyboard.SetPromptWord(selectedKanjiTraceable.currWord);
         }
     }
 
@@ -71,32 +71,12 @@ public class KanjiManager : MonoBehaviour
     private void UpdateSelection(KanjiTraceable selectedKanji) 
     {
         selectedKanjiTraceable = selectedKanji;
-        keyboard.SetPromptChar(selectedKanji.currentChar);
+        keyboard.SetPromptWord(selectedKanji.currWord);
     }
 
-    // TODO: remove debug shite
-    List<Tuple<CharType, string>> sampleStrings = new List<Tuple<CharType, string>>()
+    private Prompt GeneratePrompt()
     {
-      new Tuple<CharType, string>(CharType.Hiragana, "ぎゃ"),
-      new Tuple<CharType, string>(CharType.Katana, "コーヒー"),
-      new Tuple<CharType, string>(CharType.Draw, "こくにん"),
-      new Tuple<CharType, string>(CharType.Hiragana, "わからない"),
-      new Tuple<CharType, string>(CharType.Katana, "テレビ"),
-    };
-    int sIdx = 0;
-    private List<PromptChar> GeneratePrompt()
-    {
-        var promptSample = sampleStrings.ElementAt(sIdx);
-        if (sIdx < (sampleStrings.Count - 1)) sIdx++;
-        List<PromptChar> promptList = PromptChar.GetPromptListFromString(promptSample.Item2, promptSample.Item1);
-        if(promptSample.Item1 == CharType.Draw) 
-        {
-            foreach (PromptChar p in promptList) 
-            {
-                p.kanjiData = database.GetKanji(p.character[0]);
-            }
-        }
-        return promptList;
+        return database.GetRandomPrompt();
     }
 
     #region selection
