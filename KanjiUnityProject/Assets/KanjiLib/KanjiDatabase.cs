@@ -12,6 +12,7 @@ using System.Linq;
 public class KanjiDatabase
 {
     private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
+    private Prompts sentences = new Prompts();
     public bool dataBaseLoaded = false;
 
     public KanjiData GetRandomKanji()
@@ -48,12 +49,13 @@ public class KanjiDatabase
         return result;
     }
 
-    public void Load(TextAsset dataBaseFile)
+    public void Load(TextAsset kanjiDataBaseFile, TextAsset sentenceDataBaseFile)
     {
-        kanjis = LoadDatabase(dataBaseFile).ToDictionary(x => x.code, c => c);
+        kanjis = LoadKanjiDatabase(kanjiDataBaseFile).ToDictionary(x => x.code, c => c);
+        sentences = LoadSentenceDatabase(sentenceDataBaseFile);
     }
 
-    private List<KanjiData> LoadDatabase(TextAsset dataBaseFile) 
+    private List<KanjiData> LoadKanjiDatabase(TextAsset dataBaseFile) 
     {
         List<KanjiData> kanjis = new List<KanjiData>();
         string dbPath = dataBaseFile.text;
@@ -96,4 +98,10 @@ public class KanjiDatabase
         dataBaseLoaded = true;
         return kanjis;
     }
+
+    private Prompts LoadSentenceDatabase(TextAsset dataBaseFile)     
+    {
+        return JsonUtility.FromJson<Prompts>(dataBaseFile.text);
+    }
 }
+

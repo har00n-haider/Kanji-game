@@ -97,4 +97,38 @@ public enum CharType
     Katana,
 }
 
+[System.Serializable]
+public class PromptWord
+{
+    public enum WordType 
+    {
+      kanji = 1,
+      hiragana = 2,
+      katakana = 3  
+    }
+
+    public WordType type;
+    public string kanji;
+    public string[] meanings;
+    public string romaji;
+    public string hiragana;
+    public string katakana;
+}
+
+[System.Serializable]
+public class PromptSentence 
+{
+    public List<PromptWord> words;
+}
+
+[System.Serializable]
+public class Prompts
+{
+    public List<PromptSentence> sentences;
+}
+
+
+
+
+
 

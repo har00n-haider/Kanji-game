@@ -23,7 +23,8 @@ public class KanjiManager : MonoBehaviour
 
     // database
     public KanjiDatabase database;
-    public TextAsset dataBaseFile;
+    public TextAsset kanjiDataBaseFile;
+    public TextAsset sentenceDataBaseFile;
 
     // ui 
     public GameObject reticule;
@@ -36,7 +37,7 @@ public class KanjiManager : MonoBehaviour
     private void Awake()
     {
         database = new KanjiDatabase();
-        database.Load(dataBaseFile);
+        database.Load(kanjiDataBaseFile, sentenceDataBaseFile);
         reticuleTransform = reticule.GetComponent<RectTransform>();
         keyboard = GameObject.FindGameObjectWithTag("Keyboard").GetComponent<Keyboard>();
     }
