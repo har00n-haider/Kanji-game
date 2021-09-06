@@ -31,6 +31,13 @@ public static class Utils
         rect.pivot = !pivot.HasValue ? new Vector2(0.5f, 0.5f) : pivot.Value;
     }
 
+    /// <summary>
+    /// For when the position of a given rect needs to stay constant relative 
+    /// to the parent, when its size is changing
+    /// </summary>
+    /// <param name="rect"></param>
+    /// <param name="parent"></param>
+    /// <param name="scale"></param>
     public static void ScalePosRelativeToParentSize(this RectTransform rect, RectTransform parent, Vector2 scale)
     {
         float buttonHeight = parent.rect.height;
@@ -52,6 +59,16 @@ public static class Utils
         // the size of the rect is adjusted to match the
         // rect formed by the location of the anchor points
         rect.sizeDelta = new Vector2();
+    }
+
+    public static void SetLocalPositionAndDims(this RectTransform rect, Vector2 position, float height, float width)
+    {
+        rect.anchoredPosition = position;
+        rect.pivot = new Vector2();
+        rect.anchorMin = new Vector2(0, 0);
+        rect.anchorMax = new Vector2(1, 1);
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
     }
 
     public static string AddColor(this string text, Color col) => $"<color={ColorHexFromUnityColor(col)}>{text}</color>";
