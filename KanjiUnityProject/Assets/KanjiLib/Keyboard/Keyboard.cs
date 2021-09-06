@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,10 +16,9 @@ public class Keyboard : MonoBehaviour
 
     private KanjiManager kanjiMan;
 
-
-    private string displayString;
     public PromptWord currWord { get; set; } = null;
     private int charIdx = 0;
+    private StringBuilder displaystr = new StringBuilder();
 
     private void Awake() 
     { 
@@ -59,30 +59,43 @@ public class Keyboard : MonoBehaviour
         flickInput.SetType(type);
     }
 
-    // called from the flicklayouts and the Kanji2D input methods
-    // TODO: move the movement through the word to the inputs. 
-    // it should be their responsibility to manage progress 
-    // through the word
-    public void WordCompleteSuccesfully() 
+    public void CharUpdatedSuccesfully() 
     {
-        kanjiMan.UpdateCurrentKanjiTraceable();     
+        displaystr[charIdx] = currWord.chars[charIdx].character;
+        if(charIdx + 1 < currWord.chars.Length) 
+        {
+            charIdx++;
+            flickInput.SetPromptChar(currWord.chars[charIdx]);
+        }
+        else 
+        {
+            charIdx = 0;
+            kanjiMan.UpdateCurrentKanjiTraceable();     
+        }
     }
 
     public void SetPromptWord(PromptWord promptWord) 
     {
-        switch (promptWord.responseType)
+        currWord = promptWord;
+        // fill the display string
+        displaystr.Clear();
+        foreach(PromptChar p in currWord.chars) 
+        {
+            displaystr.Append('_');
+        }
+        switch (currWord.responseType)
         {
             case InputType.WritingHiragana:
             case InputType.WritingKatakana:
             case InputType.WritingKanji:
-                SetInputType(promptWord.responseType);
-                drawInput.SetPromptChar(promptWord.chars[charIdx]);
+                SetInputType(currWord.responseType);
+                drawInput.SetPromptChar(currWord.chars[charIdx]);
                 break;
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
             case InputType.KeyRomaji:
-                SetInputType(promptWord.responseType);
-                flickInput.SetPromptChar(promptWord.chars[charIdx]);
+                SetInputType(currWord.responseType);
+                flickInput.SetPromptChar(currWord.chars[charIdx]);
                 break;
         }
     }

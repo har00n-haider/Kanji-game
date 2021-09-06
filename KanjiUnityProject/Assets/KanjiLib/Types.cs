@@ -128,10 +128,10 @@ public class PromptWord
 
     public string GetString() 
     {
-        string s = String.Empty;
+        string s = string.Empty;
         foreach(var x in chars) 
         {
-            s += x;
+            s += x.character;
         }
         return s;
     }

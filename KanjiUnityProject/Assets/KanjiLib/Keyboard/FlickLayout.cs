@@ -34,9 +34,9 @@ public class FlickLayout : MonoBehaviour
     public Keyboard keyboard;
 
     // char detection
-    private PromptChar currCharTarget = null;
-    private StringBuilder inputStr = new StringBuilder();
-    private bool reqModifier = false;
+    private PromptChar curPromptChar = null;
+    private char? inputChar = null;
+    private bool waitOne = false;
 
     private void Awake()
     {
@@ -185,28 +185,45 @@ public class FlickLayout : MonoBehaviour
 
     public void SetPromptChar(PromptChar promptChar) 
     {
-        currCharTarget = promptChar;
+        Reset();
+        curPromptChar = promptChar;
+        waitOne = RequiresModifier(promptChar.character);
+    }
+
+    private void Reset()
+    {
+        curPromptChar = null;
+        inputChar = null;
+        waitOne = false;
     }
 
     // to be called from the buttons
-    public void UpdateCharacter(char inputchar)
+    public void UpdateCharacter(char newChar)
     {
-        // TODO: Fix me need to go through this one character at a time
-        if (IsModifier(inputchar))
+        if (curPromptChar == null) return;
+
+        Debug.Log("newChar: " + newChar + ", waitOne: " + waitOne);
+
+        if (IsModifier(newChar) && inputChar.HasValue)
         {
-            HandleModifier(inputchar);
-            if (inputStr.ToString() == keyboard.currWord.GetString())
+            HandleModifier(newChar);
+        }
+        else
+        {
+            inputChar = newChar;
+        }
+
+        // wait if a modifier is required
+        if (!waitOne) 
+        {
+            if (inputChar.HasValue && inputChar.Value == curPromptChar.character)
             {
-                keyboard.WordCompleteSuccesfully();
+                keyboard.CharUpdatedSuccesfully();
             }
         }
         else
         {
-            inputStr.Append(inputchar);
-            if (inputStr.ToString() == keyboard.currWord.GetString())
-            {
-                keyboard.WordCompleteSuccesfully();
-            }
+            waitOne = false;
         }
     }
 
@@ -257,19 +274,19 @@ public class FlickLayout : MonoBehaviour
         }
     }
 
-    private void HandleModifier(char inputChar)
+    private void HandleModifier(char modChar)
     {
-        if (inputStr.Length == 0) return;
-        switch (inputChar)
+        if (inputChar == null) return;
+        switch (modChar)
         {
             case '小':
-                inputStr[inputStr.Length - 1] = ApplySmall(inputStr[inputStr.Length - 1]);
+                inputChar = ApplySmall(inputChar.Value);
                 break;
             case '゛':
-                inputStr[inputStr.Length - 1] = ApplyHandakuten(inputStr[inputStr.Length - 1]);
+                inputChar = ApplyHandakuten(inputChar.Value);
                 break;
             case '゜':
-                inputStr[inputStr.Length - 1] = ApplyDakuten(inputStr[inputStr.Length - 1]);
+                inputChar = ApplyDakuten(inputChar.Value);
                 break;
             default:
                 break;
