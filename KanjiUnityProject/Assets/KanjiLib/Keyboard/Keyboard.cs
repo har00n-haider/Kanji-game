@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class Keyboard : MonoBehaviour
     private FlickLayout flickInput;
     [SerializeField]
     private Kanji2D drawInput;
+    [SerializeField]
+    private TextMeshProUGUI displayTextMesh;
 
     private KanjiManager kanjiMan;
 
@@ -62,7 +65,8 @@ public class Keyboard : MonoBehaviour
     public void CharUpdatedSuccesfully() 
     {
         displaystr[charIdx] = currWord.chars[charIdx].character;
-        if(charIdx + 1 < currWord.chars.Length) 
+        displayTextMesh.text = displaystr.ToString();
+        if (charIdx + 1 < currWord.chars.Length) 
         {
             charIdx++;
             flickInput.inputHandler.SetPromptChar(currWord.chars[charIdx]);
@@ -81,8 +85,10 @@ public class Keyboard : MonoBehaviour
         displaystr.Clear();
         foreach(PromptChar p in currWord.chars) 
         {
-            displaystr.Append('_');
+            displaystr.Append('☐');
         }
+        displayTextMesh.text = displaystr.ToString();
+        // set the type
         switch (currWord.responseType)
         {
             case InputType.WritingHiragana:
