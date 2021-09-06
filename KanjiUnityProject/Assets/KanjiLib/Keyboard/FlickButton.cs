@@ -1,122 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-
-public class KeyboardButton : MonoBehaviour
+/// <summary>
+/// Creates and manages the flick buttons for a given button in the keyboard.
+/// Deals primarily with the interaction logic (UI resizing is done 
+/// by the flick button itself)
+/// </summary>
+public class FlickButton : MonoBehaviour
 {
-    private enum FlickType
-    {
-        Up,
-        Down,
-        Left,
-        Right,
-        Center
-    }
-
-    // currently designed to match a hierarchy of
-    // - button (top level game object)
-    //  - flick button (with image, i.e. instance of this class)
-    //   - text mesh 
-    //  ... (more flick buttons)
-    private class FlickButton
-    {
-        private RectTransform buttonRect; 
-        private RectTransform imageRect;
-        private GameObject gameObject;
-        private TextMeshProUGUI textMesh;
-        private Image image;
-        private FlickType type;
-        public Vector2 relativePosScale;
-
-        public string character
-        {
-            get
-            {
-                string val = " ";
-                val = textMesh.text.Length > 0 ? textMesh.text : val;
-                return val;
-            }
-            set
-            {
-                textMesh.text = value.ToString();
-            }
-        }
-
-        public FlickButton(GameObject flickButtonGameObject, FlickType type)
-        {
-            this.type = type;
-            this.gameObject = flickButtonGameObject;
-            textMesh = flickButtonGameObject.GetComponentInChildren<TextMeshProUGUI>();
-            textMesh.font = Resources.Load<TMP_FontAsset>("Fonts/NotoSansJP-Regular SDF");
-            image = flickButtonGameObject.GetComponent<Image>();
-            imageRect = flickButtonGameObject.GetComponent<RectTransform>();
-            buttonRect = flickButtonGameObject.GetComponentInParent<RectTransform>();
-            relativePosScale.x = buttonRect.rect.width / imageRect.anchoredPosition.x;
-            relativePosScale.y = buttonRect.rect.height / imageRect.anchoredPosition.y;
-        }
-
-        public void SetFontSize(float fontSize) 
-        {
-            textMesh.enableAutoSizing = false;
-            textMesh.fontSize = fontSize;
-        }
-
-        public void SetVisibility(bool value, bool exceptText = false)
-        {
-            image.enabled = value;
-            textMesh.enabled = value;
-        }
-
-        public void SetColors(Color imageColor, Color? textColor = null) 
-        {
-            image.color = imageColor;
-            if (textColor.HasValue) 
-            {
-                textMesh.color =  textColor.Value;
-            }
-        }
-
-        public void Resize(float distFromCenter, float padding)
-        {
-            SetRelativePosScale(distFromCenter);
-            imageRect.ScalePosRelativeToParentSize(buttonRect, relativePosScale);
-            textMesh.rectTransform.SetPadding(padding, padding, padding, padding);
-        }
-
-        public void SetActive(bool state) 
-        {
-            gameObject.SetActive(state);
-        }
-
-        private void SetRelativePosScale(float distance) 
-        {
-            switch (type) 
-            {
-                case FlickType.Up:
-                    relativePosScale.x = 0;
-                    relativePosScale.y = distance;
-                    break;
-                case FlickType.Down:
-                    relativePosScale.x = 0;
-                    relativePosScale.y = -distance;
-                    break;
-                case FlickType.Left:
-                    relativePosScale.x = -distance;
-                    relativePosScale.y = 0;
-                    break;
-                case FlickType.Right:
-                    relativePosScale.x = distance;
-                    relativePosScale.y = 0;
-                    break;
-                case FlickType.Center:
-                    break;
-            }
-        }
-    }
-
     [Serializable]
     public class Config
     {
@@ -161,7 +53,7 @@ public class KeyboardButton : MonoBehaviour
     private Vector2 mousePosStart;
     private FlickType currFlick;
     private bool pressed = false;
-    Dictionary<FlickType, FlickButton> flickMap = new Dictionary<FlickType, FlickButton>();
+    Dictionary<FlickType, FlickButtonDirectional> flickMap = new Dictionary<FlickType, FlickButtonDirectional>();
 
     // refs
     public FlickLayout parentFlickLayout;
@@ -183,18 +75,18 @@ public class KeyboardButton : MonoBehaviour
     public void PointerUp()
     {
         pressed = false;
-        parentFlickLayout.UpdateCharacter(GetCurrentChar());
+        parentFlickLayout.inputHandler.UpdateCharacter(GetCurrentChar());
         ResetFlicks();
     }
 
     public void Init()
     {
         flickMap.Clear();
-        flickMap.Add(FlickType.Up, new FlickButton(transform.Find("FlickUp").gameObject, FlickType.Up));
-        flickMap.Add(FlickType.Down, new FlickButton(transform.Find("FlickDown").gameObject, FlickType.Down));
-        flickMap.Add(FlickType.Left, new FlickButton(transform.Find("FlickLeft").gameObject, FlickType.Left));
-        flickMap.Add(FlickType.Right, new FlickButton(transform.Find("FlickRight").gameObject, FlickType.Right));
-        flickMap.Add(FlickType.Center, new FlickButton(transform.Find("Center").gameObject, FlickType.Center));
+        flickMap.Add(FlickType.Up, new FlickButtonDirectional(transform.Find("FlickUp").gameObject, FlickType.Up));
+        flickMap.Add(FlickType.Down, new FlickButtonDirectional(transform.Find("FlickDown").gameObject, FlickType.Down));
+        flickMap.Add(FlickType.Left, new FlickButtonDirectional(transform.Find("FlickLeft").gameObject, FlickType.Left));
+        flickMap.Add(FlickType.Right, new FlickButtonDirectional(transform.Find("FlickRight").gameObject, FlickType.Right));
+        flickMap.Add(FlickType.Center, new FlickButtonDirectional(transform.Find("Center").gameObject, FlickType.Center));
 
         ResetFlicks();
 
@@ -298,5 +190,4 @@ public class KeyboardButton : MonoBehaviour
         //TODO: Fix me 
         return flickMap[currFlick].character[0];
     }
-
 }

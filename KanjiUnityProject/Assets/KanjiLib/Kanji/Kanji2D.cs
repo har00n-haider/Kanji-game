@@ -24,25 +24,19 @@ public class Kanji2D : Kanji
 
     public override void Init(KanjiData kanjiData)
     {
-        if (rectTransform == null)
-        {
-            rectTransform = GetComponent<RectTransform>();
-        }
-        if (boxCollider == null)
-        {
-            boxCollider = GetComponent<BoxCollider2D>();
-        }
-        if (boxCollider != null && rectTransform != null)
-        {
-            ResizeRect();
-        }
+        // setup references
+        if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+        if (boxCollider == null) boxCollider = GetComponent<BoxCollider2D>();
+        if (boxCollider != null && rectTransform != null) PositionCollider();
+        
         // setup the grid
         if (kanjiGrid == null)
         {
             kanjiGrid = GetComponentInChildren<KanjiGrid2D>();
             kanjiGrid.Init(parsedKanjiData, boxCollider, gridThickness);
         }
-        // set up before initialising the base class (need the collider set up)
+
+        // initialise the base class after set up (need the collider configured)
         base.Init(kanjiData);
     }
 
@@ -50,6 +44,7 @@ public class Kanji2D : Kanji
     {
         if (Input.GetMouseButton(0))
         {
+            // take input only if the mouse is clicked within the kanji space
             if (Utils.RectTranfromToScreenRect(rectTransform).Contains(Input.mousePosition)) 
             {
                 // screen to kanji rect transformation
@@ -65,7 +60,8 @@ public class Kanji2D : Kanji
         }
     }
 
-    private void ResizeRect()
+    // makes sure the collider is in line with the 2d rect 
+    private void PositionCollider()
     {
         Vector2 size = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
         Vector2 halfSize = size/2;

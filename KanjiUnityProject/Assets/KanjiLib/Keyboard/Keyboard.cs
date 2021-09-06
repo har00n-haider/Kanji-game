@@ -65,7 +65,7 @@ public class Keyboard : MonoBehaviour
         if(charIdx + 1 < currWord.chars.Length) 
         {
             charIdx++;
-            flickInput.SetPromptChar(currWord.chars[charIdx]);
+            flickInput.inputHandler.SetPromptChar(currWord.chars[charIdx]);
         }
         else 
         {
@@ -95,7 +95,7 @@ public class Keyboard : MonoBehaviour
             case InputType.KeyKatakana:
             case InputType.KeyRomaji:
                 SetInputType(currWord.responseType);
-                flickInput.SetPromptChar(currWord.chars[charIdx]);
+                flickInput.inputHandler.SetPromptChar(currWord.chars[charIdx]);
                 break;
         }
     }
