@@ -220,7 +220,10 @@ public class FlickLayout : MonoBehaviour
     {
         flickKeyRectArr = new RectTransform[rows, columns];
         containerRect = transform.parent.GetComponent<RectTransform>();
-        inputHandler.keyboard = keyboard;
+    }
+
+    private void Start()
+    {
     }
 
     private void SetUpButton(FlickButton button, int r, int c)
@@ -275,6 +278,7 @@ public class FlickLayout : MonoBehaviour
 
     void Update()
     {
+        if(inputHandler.keyboard == null) inputHandler.keyboard = keyboard;       
         SetCellDimensions();
         UpdateGrid();
     }
@@ -332,8 +336,8 @@ public class FlickLayout : MonoBehaviour
 
     private void SetCellDimensions()
     {
-        cellWidth = containerRect.sizeDelta.x / (float)(columns);
-        cellHeight = containerRect.sizeDelta.y / (float)(rows);
+        cellWidth = containerRect.rect.width / (float)(columns);
+        cellHeight = containerRect.rect.height / (float)(rows);
     }
 
     private void UpdateGrid()
