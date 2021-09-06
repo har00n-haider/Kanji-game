@@ -96,6 +96,7 @@ public class FlickInputHandler
             case 'ぶ':
             case 'べ':
             case 'ぼ':
+            case 'ぱ':
             case 'ぽ':
             case 'ぴ':
             case 'ぷ':
@@ -171,7 +172,7 @@ public class FlickInputHandler
     {
         switch (inputChar)
         {
-            case 'は': return 'ぽ';
+            case 'は': return 'ぱ';
             case 'ひ': return 'ぴ';
             case 'ふ': return 'ぷ';
             case 'へ': return 'ぺ';
