@@ -80,7 +80,7 @@ public class Kanji2D : Kanji
     {
         if (pass) 
         {
-            keyboard.CharUpdatedSuccesfully();
+            keyboard.CharUpdated(currCharTarget.character);
         }
         else
         {
