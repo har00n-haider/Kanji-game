@@ -54,8 +54,8 @@ MonoBehaviour:
     textPadding: 0.07
     centerButtonColor: {r: 0.18823531, g: 0.18823531, b: 0.18823531, a: 1}
     centerButtonHighlightColor: {r: 0.4431373, g: 0.4431373, b: 0.4431373, a: 1}
-    flickButtonColor: {r: 1, g: 0.7628869, b: 0.33333337, a: 1}
-    textColor: {r: 1, g: 0.2783019, b: 0.34665072, a: 1}
+    flickButtonColor: {r: 0.9302542, g: 0.5918476, b: 0.9433962, a: 1}
+    textColor: {r: 0.23740657, g: 0.9150943, b: 0.343145, a: 1}
     disabled: 0
   fontSize: 0
   overrideFontSize: 0
