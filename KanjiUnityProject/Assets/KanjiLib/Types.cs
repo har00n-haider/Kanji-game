@@ -66,7 +66,7 @@ public interface IKankiTraceable
 }
 
 /// <summary>
-/// What is display in the prompt.
+/// What is displayed in the prompt.
 /// </summary>
 public enum PromptType
 {
@@ -111,6 +111,9 @@ public class PromptWord
       katakana = 3  
     }
 
+    /// <summary>
+    /// Classification of the word
+    /// </summary>
     public WordType type;
     public string kanji;
     public string[] meanings;
@@ -118,8 +121,14 @@ public class PromptWord
     public string hiragana;
     public string katakana;
 
+    /// <summary>
+    /// Type of response required to complete the word
+    /// </summary>
     [System.NonSerialized]
     public InputType responseType;
+    /// <summary>
+    /// Determines the way the word will be displayed on a prompt
+    /// </summary>
     [System.NonSerialized]
     public PromptType displayType;
     [System.NonSerialized]

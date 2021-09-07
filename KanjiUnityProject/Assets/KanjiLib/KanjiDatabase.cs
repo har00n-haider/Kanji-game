@@ -30,18 +30,35 @@ public class KanjiDatabase
 
         Prompt prompt = prompts.sentences[idx];
 
-        //TODO: Fix me for the a given type (either by each word or sentence)
-        // Set the chars to iterate through (
+        // Set the chars to iterate through 
         foreach(PromptWord word in prompt.words) 
         {
             List<PromptChar> chars = new List<PromptChar>();
-            foreach(char c in word.hiragana) 
+            switch (word.type)
             {
-                chars.Add(new PromptChar()
-                {
-                    character = c,
-                    data = GetKanji(c)
-                });
+                case PromptWord.WordType.kanji:
+                case PromptWord.WordType.hiragana:
+                    foreach(char c in word.hiragana) 
+                    {
+                        chars.Add(new PromptChar()
+                        {
+                            character = c,
+                            data = GetKanji(c)
+                        });
+                    }
+                    break;
+                case PromptWord.WordType.katakana:
+                    foreach (char c in word.katakana)
+                    {
+                        chars.Add(new PromptChar()
+                        {
+                            character = c,
+                            data = GetKanji(c)
+                        });
+                    }
+                    break;
+                default:
+                    break;
             }
             word.chars = chars.ToArray();
         }

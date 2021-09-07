@@ -104,17 +104,15 @@ public class KanjiTraceable : MonoBehaviour
         string textMeshText = "";
         for (int i = 0; i < prompt.words.Count; i++)
         {
-            if( i < pIdx) 
+            switch (prompt.words[i].type)
             {
-                textMeshText += $"{prompt.words[i].hiragana.AddColor(completedColor)}";
-            }
-            else if (i == pIdx) 
-            {
-                textMeshText += $"{prompt.words[i].hiragana.AddColor(currentColor)}";
-            }
-            else if(i > pIdx)
-            {
-                textMeshText += $"{prompt.words[i].hiragana.AddColor(upcomingColor)}";
+                case PromptWord.WordType.kanji:
+                case PromptWord.WordType.hiragana:
+                    textMeshText += $"{prompt.words[i].hiragana.AddColor(upcomingColor)}";
+                    break;
+                case PromptWord.WordType.katakana:
+                    textMeshText += $"{prompt.words[i].katakana.AddColor(upcomingColor)}";
+                    break;
             }
         }
         textMesh.SetText(textMeshText);
