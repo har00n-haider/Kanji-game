@@ -193,7 +193,7 @@ public class FlickLayout : MonoBehaviour
 {
     private class Cell
     {
-        public RectTransform tranform;
+        public RectTransform transform;
         public FlickButton button;
     }
 
@@ -248,52 +248,51 @@ public class FlickLayout : MonoBehaviour
         }
     }
 
-    private void SetUpButton(FlickButton button, int row, int col)
+    private void UpdateButtonChars(int row, int col)
     {
+        if (flickCellGrid.Length == 0) return;
+        FlickButton button = flickCellGrid[row, col].button;
         // per button setup 
-        Action<string, string, string, string, string> setupButton =
-        (string c, string u, string d, string l, string r) =>
+        Action<string, string, string, string, string> updateChars =
+        (string c, string l, string u, string r, string d) =>
         {
-            button.charSetup = new FlickButton.CharSetup() 
+            button.charSetup = new FlickButton.CharSetup()
                 { centerChar = c, upChar = u, downChar = d, leftChar = l, rightChar = r };
-            button.config = GetConfigForGridCell(row, col);
-            button.parentFlickLayout = this;
-            button.name = "button r" + row + "c" + col;
-            button.Init();
+            button.UpdateChars();
         };
-
         switch (type)
         {
             case InputType.KeyHiragana:
-                if (row == 0 && col == 0) { setupButton("小", "゛", "゜", "　", "　" ); }
-                if (row == 0 && col == 1) { setupButton("わ", "ん", "　", "を", "ー" ); }
-                if (row == 0 && col == 2) { setupButton("　", "　", "　", "　", "　" ); } 
-                if (row == 1 && col == 0) { setupButton("ま", "む", "も", "み", "め" ); }
-                if (row == 1 && col == 1) { setupButton("や", "ゆ", "よ", "　", "　" ); }
-                if (row == 1 && col == 2) { setupButton("ら", "る", "ろ", "り", "れ" ); }
-                if (row == 2 && col == 0) { setupButton("た", "つ", "と", "ち", "て" ); }
-                if (row == 2 && col == 1) { setupButton("な", "ぬ", "の", "に", "ね" ); }
-                if (row == 2 && col == 2) { setupButton("は", "ふ", "ほ", "ひ", "へ" ); }
-                if (row == 3 && col == 0) { setupButton("あ", "う", "お", "い", "え" ); }
-                if (row == 3 && col == 1) { setupButton("か", "く", "こ", "き", "け" ); }
-                if (row == 3 && col == 2) { setupButton("さ", "す", "そ", "し", "せ" ); }
+
+                if (row == 0 && col == 0) { updateChars("小", "　", "゛", "　", "゜"); }
+                if (row == 0 && col == 1) { updateChars("わ", "を", "ん", "ー", "　"); }
+                if (row == 0 && col == 2) { updateChars("　", "　", "　", "　", "　"); }
+                if (row == 1 && col == 0) { updateChars("ま", "み", "む", "め", "も"); }
+                if (row == 1 && col == 1) { updateChars("や", "　", "ゆ", "　", "よ"); }
+                if (row == 1 && col == 2) { updateChars("ら", "り", "る", "れ", "ろ"); }
+                if (row == 2 && col == 0) { updateChars("た", "ち", "つ", "て", "と"); }
+                if (row == 2 && col == 1) { updateChars("な", "に", "ぬ", "ね", "の"); }
+                if (row == 2 && col == 2) { updateChars("は", "ひ", "ふ", "へ", "ほ"); }
+                if (row == 3 && col == 0) { updateChars("あ", "い", "う", "え", "お"); }
+                if (row == 3 && col == 1) { updateChars("か", "き", "く", "け", "こ"); }
+                if (row == 3 && col == 2) { updateChars("さ", "し", "す", "せ", "そ"); }
                 break;
             case InputType.KeyKatakana:
-                if (row == 0 && col == 0) { setupButton("小", "゛", "゜", "　", "　" );}
-                if (row == 0 && col == 1) { setupButton("ワ", "ン", "　", "ヲ", "ー" );}
-                if (row == 0 && col == 2) { setupButton("　", "　", "　", "　", "　" );}
-                if (row == 1 && col == 0) { setupButton("マ", "ム", "モ", "ミ", "メ" );}
-                if (row == 1 && col == 1) { setupButton("ヤ", "ユ", "ヨ", "　", "　" );}
-                if (row == 1 && col == 2) { setupButton("ラ", "ル", "ロ", "リ", "レ" );}
-                if (row == 2 && col == 0) { setupButton("タ", "ツ", "ト", "チ", "テ" );}
-                if (row == 2 && col == 1) { setupButton("ナ", "ヌ", "ノ", "ニ", "ネ" );}
-                if (row == 2 && col == 2) { setupButton("ハ", "フ", "ホ", "ヒ", "へ" );}
-                if (row == 3 && col == 0) { setupButton("ア", "ウ", "オ", "イ", "エ" );}
-                if (row == 3 && col == 1) { setupButton("カ", "ク", "コ", "キ", "ケ" );}
-                if (row == 3 && col == 2) { setupButton("サ", "ス", "ソ", "シ", "セ" );}
+                if (row == 0 && col == 0) { updateChars("小", "　", "゛", "　", "゜"); }
+                if (row == 0 && col == 1) { updateChars("ワ", "ヲ", "ン", "ー", "　"); }
+                if (row == 0 && col == 2) { updateChars("　", "　", "　", "　", "　"); }
+                if (row == 1 && col == 0) { updateChars("マ", "ミ", "ム", "メ", "モ"); }
+                if (row == 1 && col == 1) { updateChars("ヤ", "　", "ユ", "　", "ヨ"); }
+                if (row == 1 && col == 2) { updateChars("ラ", "リ", "ル", "レ", "ロ"); }
+                if (row == 2 && col == 0) { updateChars("タ", "チ", "ツ", "テ", "ト"); }
+                if (row == 2 && col == 1) { updateChars("ナ", "ニ", "ヌ", "ネ", "ノ"); }
+                if (row == 2 && col == 2) { updateChars("ハ", "ヒ", "フ", "へ", "ホ"); }
+                if (row == 3 && col == 0) { updateChars("ア", "イ", "ウ", "エ", "オ"); }
+                if (row == 3 && col == 1) { updateChars("カ", "キ", "ク", "ケ", "コ"); }
+                if (row == 3 && col == 2) { updateChars("サ", "シ", "ス", "セ", "ソ"); }
                 break;
             case InputType.KeyRomaji:
-                // romaji is only a visualisation of on prompts and the keyboard display
+            // romaji is only a visualisation of on prompts and the keyboard display
             default:
                 break;
         }
@@ -319,11 +318,27 @@ public class FlickLayout : MonoBehaviour
     public void SetType(InputType type)
     {
         this.type = type;
+        for (int r = 0; r < rows; r++)
+        {
+            for (int c = 0; c < columns; c++)
+            {
+                UpdateButtonChars(r, c);
+            }
+        }
+    }
+
+    private void SetUpButton(int row, int col)
+    {
+        if (flickCellGrid.Length == 0) return;
+        FlickButton button = flickCellGrid[row, col].button;
+        button.config = GetConfigForGridCell(row, col);
+        button.parentFlickLayout = this;
+        button.name = "button r" + row + "c" + col;
+        button.Init();
     }
 
     private void CreateFlickButtons()
     {
-        int buttNo = 0;
         for (int r = 0; r < rows; r++)
         {
             for (int c = 0; c < columns; c++)
@@ -333,14 +348,13 @@ public class FlickLayout : MonoBehaviour
                 Cell cell = new Cell()
                 {
                     button = go.GetComponent<FlickButton>(),
-                    tranform = go.GetComponent<RectTransform>()
+                    transform = go.GetComponent<RectTransform>()
                 };
                 // setting the button up
-                SetUpButton(cell.button, r, c);
-                // get ref matrix for updating the transform of buttons
-                SetGridPosForCell(cell.tranform, containerRect, r, c);
                 flickCellGrid[r, c] = cell;
-                buttNo++;
+                SetUpButton(r, c);
+                UpdateButtonChars(r, c);
+                SetGridPosForCell(containerRect, r, c);
             }
         }
     }
@@ -349,8 +363,8 @@ public class FlickLayout : MonoBehaviour
 
     private void SetCellDimensions()
     {
-        cellWidth = containerRect.rect.width / (float)(columns);
-        cellHeight = containerRect.rect.height / (float)(rows);
+        cellWidth = containerRect.rect.width / columns;
+        cellHeight = containerRect.rect.height / rows;
     }
 
     private void UpdateGrid()
@@ -359,14 +373,15 @@ public class FlickLayout : MonoBehaviour
         {
             for (int c = 0; c < columns; c++)
             {
-                SetGridPosForCell(flickCellGrid[r, c].tranform, containerRect, r, c);
-                SetGridCellSizeForCell(flickCellGrid[r, c].tranform, cellHeight, cellWidth);
+                SetGridPosForCell(containerRect, r, c);
+                SetGridCellSizeForCell(flickCellGrid[r, c].transform, cellHeight, cellWidth);
             }
         }
     }
 
-    private void SetGridPosForCell(RectTransform rect, RectTransform parent, int r, int c)
+    private void SetGridPosForCell(RectTransform parent, int r, int c)
     {
+        RectTransform rect = flickCellGrid[r, c].transform;
         // set cell origin at bottom left corner of parent
         rect.anchorMin = new Vector2();
         rect.anchorMax = new Vector2();

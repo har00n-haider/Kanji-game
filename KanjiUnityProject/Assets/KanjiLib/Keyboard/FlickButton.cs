@@ -101,7 +101,7 @@ public class FlickButton : MonoBehaviour
 
         SetColors();
 
-        SetChars();
+        UpdateChars();
     }
 
     void ResizeFlickButtons()
@@ -132,7 +132,7 @@ public class FlickButton : MonoBehaviour
         flickMap[FlickType.Center].SetColors(config.centerButtonColor, config.textColor);
     }
 
-    void SetChars()
+    public void UpdateChars()
     {
         flickMap[FlickType.Up].character     = charSetup.upChar;
         flickMap[FlickType.Down].character   = charSetup.downChar;
