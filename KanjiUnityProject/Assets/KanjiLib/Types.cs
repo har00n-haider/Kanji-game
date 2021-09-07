@@ -66,7 +66,8 @@ public interface IKankiTraceable
 }
 
 /// <summary>
-/// What is displayed in the prompt.
+/// What is displayed in the prompt. 
+/// Limited by word type
 /// </summary>
 public enum PromptType
 {
@@ -77,7 +78,8 @@ public enum PromptType
 }
 
 /// <summary>
-/// What the input needs to supply. (Call/Response type)
+/// What the input needs to supply (Call/Response type). 
+/// Limited by word type
 /// </summary>
 public enum InputType 
 {
@@ -131,6 +133,9 @@ public class PromptWord
     /// </summary>
     [System.NonSerialized]
     public PromptType displayType;
+    /// <summary>
+    /// These are iterated through by the input to complete a word
+    /// </summary>
     [System.NonSerialized]
     public PromptChar[] chars;
 

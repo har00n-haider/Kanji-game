@@ -27,10 +27,9 @@ public class KanjiDatabase
     {
         if (prompts == null || prompts.sentences.Count == 0) return null;
         var idx = Random.Range(0, prompts.sentences.Count - 1);
-
         Prompt prompt = prompts.sentences[idx];
-
-        // Set the chars to iterate through 
+        // Set the chars to iterate through depending 
+        // on the type of the word
         foreach(PromptWord word in prompt.words) 
         {
             List<PromptChar> chars = new List<PromptChar>();
