@@ -76,7 +76,17 @@ public class KanjiManager : MonoBehaviour
 
     private Prompt GeneratePrompt()
     {
-        return database.GetRandomPrompt();
+        Prompt prompt = database.GetRandomPrompt();
+
+        foreach(PromptWord word in prompt.words) 
+        {
+            // basic setup for testing
+            if (word.type == PromptWord.WordType.katakana) word.responseType = InputType.KeyKatakana;
+            if (word.type == PromptWord.WordType.hiragana) word.responseType = InputType.KeyHiragana;
+            if (word.type == PromptWord.WordType.kanji) word.responseType = InputType.KeyHiragana;
+        }
+
+        return prompt;
     }
 
     #region selection
