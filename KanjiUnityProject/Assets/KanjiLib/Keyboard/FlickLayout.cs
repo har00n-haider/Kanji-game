@@ -12,18 +12,190 @@ using UnityEngine.UI;
 /// </summary>
 public class FlickInputHandler
 {
+
     public Keyboard keyboard;
 
     // char detection
+    public InputType type;
     private PromptChar curPromptChar = null;
     private char? inputChar = null;
     private bool waitOne = false;
+
+    #region kana maps
+
+    private static readonly Dictionary<char, char> katakanaToHiragana = new Dictionary<char, char>()
+    {
+        {'ア','あ'},
+        {'イ','い'},
+        {'ウ','う'},
+        {'エ','え'},
+        {'オ','お'},
+        {'カ','か'},
+        {'キ','き'},
+        {'ク','く'},
+        {'ケ','け'},
+        {'コ','こ'},
+        {'サ','さ'},
+        {'シ','し'},
+        {'ス','す'},
+        {'セ','せ'},
+        {'ソ','そ'},
+        {'タ','た'},
+        {'チ','ち'},
+        {'ツ','つ'},
+        {'テ','て'},
+        {'ト','と'},
+        {'ナ','な'},
+        {'ニ','に'},
+        {'ヌ','ぬ'},
+        {'ネ','ね'},
+        {'ノ','の'},
+        {'ハ','は'},
+        {'ヒ','ひ'},
+        {'フ','ふ'},
+        {'ヘ','へ'},
+        {'ホ','ほ'},
+        {'マ','ま'},
+        {'ミ','み'},
+        {'ム','む'},
+        {'メ','め'},
+        {'モ','も'},
+        {'ヤ','や'},
+        {'ユ','ゆ'},
+        {'ヨ','よ'},
+        {'ラ','ら'},
+        {'リ','り'},
+        {'ル','る'},
+        {'レ','れ'},
+        {'ロ','ろ'},
+        {'ワ','わ'},
+        {'ヰ','ゐ'},
+        {'ヱ','ゑ'},
+        {'ヲ','を'},
+        {'ン','ん'},
+        {'ガ','が'},
+        {'ギ','ぎ'},
+        {'グ','ぐ'},
+        {'ゲ','げ'},
+        {'ゴ','ご'},
+        {'ザ','ざ'},
+        {'ジ','じ'},
+        {'ズ','ず'},
+        {'ゼ','ぜ'},
+        {'ゾ','ぞ'},
+        {'ダ','だ'},
+        {'ヂ','ぢ'},
+        {'ヅ','づ'},
+        {'デ','で'},
+        {'ド','ど'},
+        {'バ','ば'},
+        {'ビ','び'},
+        {'ブ','ぶ'},
+        {'ベ','べ'},
+        {'ボ','ぼ'},
+        {'パ','ぱ'},
+        {'ピ','ぴ'},
+        {'プ','ぷ'},
+        {'ペ','ぺ'},
+        {'ポ','ぽ'},
+        // yoon
+        {'ャ','ゃ'},
+        {'ュ','ゅ'},
+        {'ョ','ょ'},
+        // sokuon
+        {'ッ','っ'},
+    };
+
+    private static readonly Dictionary<char, char> hiraganaToKatana = new Dictionary<char, char>()
+    {
+        {'あ','ア'},
+        {'い','イ'},
+        {'う','ウ'},
+        {'え','エ'},
+        {'お','オ'},
+        {'か','カ'},
+        {'き','キ'},
+        {'く','ク'},
+        {'け','ケ'},
+        {'こ','コ'},
+        {'さ','サ'},
+        {'し','シ'},
+        {'す','ス'},
+        {'せ','セ'},
+        {'そ','ソ'},
+        {'た','タ'},
+        {'ち','チ'},
+        {'つ','ツ'},
+        {'て','テ'},
+        {'と','ト'},
+        {'な','ナ'},
+        {'に','ニ'},
+        {'ぬ','ヌ'},
+        {'ね','ネ'},
+        {'の','ノ'},
+        {'は','ハ'},
+        {'ひ','ヒ'},
+        {'ふ','フ'},
+        {'へ','ヘ'},
+        {'ほ','ホ'},
+        {'ま','マ'},
+        {'み','ミ'},
+        {'む','ム'},
+        {'め','メ'},
+        {'も','モ'},
+        {'や','ヤ'},
+        {'ゆ','ユ'},
+        {'よ','ヨ'},
+        {'ら','ラ'},
+        {'り','リ'},
+        {'る','ル'},
+        {'れ','レ'},
+        {'ろ','ロ'},
+        {'わ','ワ'},
+        {'ゐ','ヰ'},
+        {'ゑ','ヱ'},
+        {'を','ヲ'},
+        {'ん','ン'},
+        {'が','ガ'},
+        {'ぎ','ギ'},
+        {'ぐ','グ'},
+        {'げ','ゲ'},
+        {'ご','ゴ'},
+        {'ざ','ザ'},
+        {'じ','ジ'},
+        {'ず','ズ'},
+        {'ぜ','ゼ'},
+        {'ぞ','ゾ'},
+        {'だ','ダ'},
+        {'ぢ','ヂ'},
+        {'づ','ヅ'},
+        {'で','デ'},
+        {'ど','ド'},
+        {'ば','バ'},
+        {'び','ビ'},
+        {'ぶ','ブ'},
+        {'べ','ベ'},
+        {'ぼ','ボ'},
+        {'ぱ','パ'},
+        {'ぴ','ピ'},
+        {'ぷ','プ'},
+        {'ぺ','ペ'},
+        {'ぽ','ポ'},
+        {'ゃ','ャ'},
+        {'ゅ','ュ'},
+        {'ょ','ョ'},
+        {'っ','ッ'},
+    };
+    
+    #endregion
 
     public void SetPromptChar(PromptChar promptChar)
     {
         Reset();
         curPromptChar = promptChar;
-        waitOne = RequiresModifier(promptChar.character);
+        waitOne = type == InputType.KeyKatakana ?
+            RequiresModifier(katakanaToHiragana[promptChar.character]) :
+            RequiresModifier(promptChar.character);
     }
 
     private void Reset()
@@ -50,17 +222,40 @@ public class FlickInputHandler
         // wait if a modifier is required
         if (!waitOne)
         {
-            if (inputChar.HasValue && inputChar.Value == curPromptChar.character)
-            {
-                //HACK: should use a delegate 
-                keyboard.CharUpdatedSuccesfully();
-            }
+            //HACK: should use a delegate 
+            keyboard.CharUpdated(inputChar.Value);
         }
         else
         {
             waitOne = false;
         }
     }
+
+    private void HandleModifier(char modChar)
+    {
+        if (inputChar == null) return;
+
+        char inChar = inputChar.Value;
+        if (type == InputType.KeyKatakana) inChar = katakanaToHiragana[inChar];
+        switch (modChar)
+        {
+            case '小':
+                inChar = ApplySmall(inChar);
+                break;
+            case '゛':
+                inChar = ApplyHandakuten(inChar);
+                break;
+            case '゜':
+                inChar = ApplyDakuten(inChar);
+                break;
+            default:
+                break;
+        }
+        if (type == InputType.KeyKatakana) inChar = hiraganaToKatana[inChar];
+        inputChar = inChar;
+    }
+
+    #region modifier helper methods
 
     private static bool IsModifier(char character)
     {
@@ -106,25 +301,6 @@ public class FlickInputHandler
                 return true;
             default:
                 return false;
-        }
-    }
-
-    private void HandleModifier(char modChar)
-    {
-        if (inputChar == null) return;
-        switch (modChar)
-        {
-            case '小':
-                inputChar = ApplySmall(inputChar.Value);
-                break;
-            case '゛':
-                inputChar = ApplyHandakuten(inputChar.Value);
-                break;
-            case '゜':
-                inputChar = ApplyDakuten(inputChar.Value);
-                break;
-            default:
-                break;
         }
     }
 
@@ -183,6 +359,8 @@ public class FlickInputHandler
                 return ' ';
         }
     }
+
+    #endregion
 }
 
 
@@ -221,7 +399,7 @@ public class FlickLayout : MonoBehaviour
     public Keyboard keyboard;
 
     // flick button input
-    public FlickInputHandler inputHandler = new FlickInputHandler();
+    private FlickInputHandler inputHandler = new FlickInputHandler();
 
     private void Awake()
     {
@@ -233,10 +411,51 @@ public class FlickLayout : MonoBehaviour
     {
     }
 
+    private void Update()
+    {
+        if (inputHandler.keyboard == null) inputHandler.keyboard = keyboard;
+        SetCellDimensions();
+        UpdateGrid();
+    }
+
+    public void Init()
+    {
+        SetCellDimensions();
+        CreateFlickButtons();
+    }
+
+
+    // change the keyboard to match required type
+    public void SetType(InputType type) 
+    {
+        this.type = type; 
+        for (int r = 0; r < rows; r++)
+        {
+            for (int c = 0; c < columns; c++)
+            {
+                UpdateButtonChars(r, c);
+            }
+        }
+        inputHandler.type = type;
+    }
+
+    public void SetPromptChar(PromptChar promptChar) 
+    {
+        inputHandler.SetPromptChar(promptChar);
+    }
+    
+    // called by buttons
+    public void UpdateFromInput(char newChar)
+    {
+        inputHandler.UpdateCharacter(newChar);
+    }
+
+    #region button setup
+
     private FlickButton.Config GetConfigForGridCell(int r, int c)
     {
         // disabled button
-        if (r == 0 && c == 2) 
+        if (r == 0 && c == 2)
         {
             var config = defaultButtonConfig.Clone();
             config.disabled = true;
@@ -257,7 +476,7 @@ public class FlickLayout : MonoBehaviour
         (string c, string l, string u, string r, string d) =>
         {
             button.charSetup = new FlickButton.CharSetup()
-                { centerChar = c, upChar = u, downChar = d, leftChar = l, rightChar = r };
+            { centerChar = c, upChar = u, downChar = d, leftChar = l, rightChar = r };
             button.UpdateChars();
         };
         switch (type)
@@ -302,31 +521,6 @@ public class FlickLayout : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (inputHandler.keyboard == null) inputHandler.keyboard = keyboard;
-        SetCellDimensions();
-        UpdateGrid();
-    }
-
-    public void Init()
-    {
-        SetCellDimensions();
-        CreateFlickButtons();
-    }
-
-    public void SetType(InputType type)
-    {
-        this.type = type;
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < columns; c++)
-            {
-                UpdateButtonChars(r, c);
-            }
-        }
-    }
-
     private void SetUpButton(int row, int col)
     {
         if (flickCellGrid.Length == 0) return;
@@ -358,6 +552,8 @@ public class FlickLayout : MonoBehaviour
             }
         }
     }
+
+    #endregion
 
     #region UI resizing 
 

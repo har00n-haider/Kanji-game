@@ -77,7 +77,8 @@ public class FlickButton : MonoBehaviour
     public void PointerUp()
     {
         pressed = false;
-        parentFlickLayout.inputHandler.UpdateCharacter(GetCurrentChar());
+        // TODO: Use delegate
+        parentFlickLayout.UpdateFromInput(GetCurrentChar());
         ResetFlicks();
     }
 
