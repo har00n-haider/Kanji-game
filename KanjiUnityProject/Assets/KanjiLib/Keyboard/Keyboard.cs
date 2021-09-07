@@ -96,10 +96,10 @@ public class Keyboard : MonoBehaviour
                 Reset();
                 kanjiMan.UpdateCurrentKanjiTraceable();     
             }
-        }
-        else 
-        {
-            SetPromptChar(currWord.GetChar());
+            else 
+            {
+                SetPromptChar(currWord.GetChar());
+            }
         }
     }
 

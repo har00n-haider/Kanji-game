@@ -104,6 +104,7 @@ public class FlickInputHandler
         {'ョ','ょ'},
         // sokuon
         {'ッ','っ'},
+        {'ー','ー'},
     };
 
     private static readonly Dictionary<char, char> hiraganaToKatana = new Dictionary<char, char>()
@@ -185,6 +186,7 @@ public class FlickInputHandler
         {'ゅ','ュ'},
         {'ょ','ョ'},
         {'っ','ッ'},
+        {'ー','ー'},
     };
     
     #endregion
@@ -234,25 +236,32 @@ public class FlickInputHandler
     private void HandleModifier(char modChar)
     {
         if (inputChar == null) return;
-
-        char inChar = inputChar.Value;
-        if (type == InputType.KeyKatakana) inChar = katakanaToHiragana[inChar];
+        // katakana conversion: convert to 
+        char? inChar = inputChar.Value;
+        if (type == InputType.KeyKatakana) inChar = katakanaToHiragana[inChar.Value];
         switch (modChar)
         {
             case '小':
-                inChar = ApplySmall(inChar);
+                inChar = ApplySmall(inChar.Value);
                 break;
             case '゛':
-                inChar = ApplyHandakuten(inChar);
+                inChar = ApplyHandakuten(inChar.Value);
                 break;
             case '゜':
-                inChar = ApplyDakuten(inChar);
+                inChar = ApplyDakuten(inChar.Value);
                 break;
             default:
                 break;
         }
-        if (type == InputType.KeyKatakana) inChar = hiraganaToKatana[inChar];
-        inputChar = inChar;
+        if(inChar != null) 
+        {
+            // katakana conversion: convert back
+            if (type == InputType.KeyKatakana)
+            {
+                inChar = hiraganaToKatana[inChar.Value];
+            }
+            inputChar = inChar;
+        }
     }
 
     #region modifier helper methods
@@ -304,7 +313,7 @@ public class FlickInputHandler
         }
     }
 
-    private static char ApplySmall(char inputChar)
+    private static char? ApplySmall(char inputChar)
     {
         switch (inputChar)
         {
@@ -313,11 +322,11 @@ public class FlickInputHandler
             case 'よ': return 'ょ';
             case 'つ': return 'っ';
             default:
-                return ' ';
+                return null;
         }
     }
 
-    private static char ApplyHandakuten(char inputChar)
+    private static char? ApplyHandakuten(char inputChar)
     {
         switch (inputChar)
         {
@@ -342,11 +351,11 @@ public class FlickInputHandler
             case 'へ': return 'べ';
             case 'ほ': return 'ぼ';
             default:
-                return ' ';
+                return null;
         }
     }
 
-    private static char ApplyDakuten(char inputChar)
+    private static char? ApplyDakuten(char inputChar)
     {
         switch (inputChar)
         {
@@ -356,7 +365,7 @@ public class FlickInputHandler
             case 'へ': return 'ぺ';
             case 'ほ': return 'ぽ';
             default:
-                return ' ';
+                return null;
         }
     }
 
