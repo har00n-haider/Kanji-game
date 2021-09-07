@@ -20,8 +20,9 @@ public class KanjiTraceable : MonoBehaviour
     public PromptWord currWord { get { return prompt.words[pIdx]; } }
     // prompt string configuration
     Color completedColor = Color.grey;
-    Color currentColor = Color.red;
-    Color upcomingColor = Color.yellow;
+    Color hiraganaColor = Color.red;
+    Color katanaColor = Color.yellow;
+    Color kanjiColor = Color.blue;
 
     // refs
     private RectTransform labelRect;
@@ -104,16 +105,42 @@ public class KanjiTraceable : MonoBehaviour
         string textMeshText = "";
         for (int i = 0; i < prompt.words.Count; i++)
         {
-            switch (prompt.words[i].type)
+            PromptWord pw = prompt.words[i];
+            // Get color
+            Color color = Color.white;
+            if (pw.WordCompleted()) 
+            {
+                color = completedColor;
+            }
+            else 
+            {
+                switch (pw.type)
+                {
+                    case PromptWord.WordType.kanji:
+                        color = kanjiColor;
+                        break;
+                    case PromptWord.WordType.hiragana:
+                        color = hiraganaColor;
+                        break;
+                    case PromptWord.WordType.katakana:
+                        color = katanaColor;
+                        break;
+                }
+            }
+            // Get text
+            string text = string.Empty;
+            switch (pw.type)
             {
                 case PromptWord.WordType.kanji:
                 case PromptWord.WordType.hiragana:
-                    textMeshText += $"{prompt.words[i].hiragana.AddColor(upcomingColor)}";
+                    text = pw.hiragana;
                     break;
                 case PromptWord.WordType.katakana:
-                    textMeshText += $"{prompt.words[i].katakana.AddColor(upcomingColor)}";
+                    text = pw.katakana;
                     break;
             }
+
+            textMeshText += $"{text.AddColor(color)}";
         }
         textMesh.SetText(textMeshText);
     }
