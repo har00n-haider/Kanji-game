@@ -80,6 +80,7 @@ public class FlickButton : MonoBehaviour
         // TODO: Use delegate
         parentFlickLayout.UpdateFromInput(GetCurrentChar());
         ResetFlicks();
+        SetColors();
     }
 
     public void Init()
@@ -121,7 +122,6 @@ public class FlickButton : MonoBehaviour
         }
         flickMap[FlickType.Center].SetVisibility(true);
         currFlick = FlickType.Center;
-        SetColors();
     }
 
     void SetColors()
@@ -147,6 +147,8 @@ public class FlickButton : MonoBehaviour
         // figure out current flick type
         if (!pressed) return;
         UpdatePressed();
+        
+        // figure out the current flick type
         Vector2 mousePosEnd = Input.mousePosition;
         Vector2 mouseDelta = mousePosEnd - mousePosStart;
         // center button
@@ -163,6 +165,8 @@ public class FlickButton : MonoBehaviour
         {
             currFlick = mouseDelta.y > 0 ? FlickType.Up : FlickType.Down;
         }
+
+        // act on the current flick type
         // center scenario
         if (currFlick == FlickType.Center)
         {
