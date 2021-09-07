@@ -20,8 +20,6 @@ public class Keyboard : MonoBehaviour
 
     // state
     public PromptWord currWord { get; set; } = null;
-    private int charIdx = 0;
-    private StringBuilder displayStr = new StringBuilder();
 
     private void Awake() 
     { 
@@ -33,47 +31,22 @@ public class Keyboard : MonoBehaviour
         // flick layout setup
         flickInput.keyboard = this;
         flickInput.Init();
-
         // needs KanjiData from the kanjimanager , i.e. the current kanji to draw
         drawInput.keyboard = this;
     }
 
-    private void Update()
+    private void UpdateDisplayString() 
     {
+        displayTextMesh.text = currWord?.GetDisplayString();
     }
 
     private void Reset()
     {
         currWord = null;
-        charIdx = 0;
-        UpdateDisplayString();
+        displayTextMesh.text = string.Empty;
     }
 
-    private void UpdateDisplayString(int position = -1) 
-    {
-        if (position == -1) 
-        {
-            displayTextMesh.text = string.Empty;
-            displayStr.Clear();
-        }
-        else
-        {
-            displayStr[charIdx] = currWord.chars[charIdx].character;
-            displayTextMesh.text = displayStr.ToString();
-        }
-    }
-
-    private void FillDisplayString() 
-    {
-        displayStr.Clear();
-        foreach(PromptChar p in currWord.chars) 
-        {
-            displayStr.Append('☐');
-        }
-        displayTextMesh.text = displayStr.ToString();
-    }
-
-    private void SetInputType(InputType type) 
+    private void ShowInputForType(InputType type) 
     {
         switch (type)
         {
@@ -86,48 +59,57 @@ public class Keyboard : MonoBehaviour
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
             case InputType.KeyRomaji:
-                flickInput.gameObject.SetActive(true);
                 drawInput.gameObject.SetActive(false);
+                flickInput.gameObject.SetActive(true);
+                flickInput.SetType(type);
                 break;
         }
-        flickInput.SetType(type);
     }
 
-    public void CharUpdatedSuccesfully() 
+    // TODO: should use an interface between the two types of input
+    private void SetPromptChar(PromptChar promptChar)
     {
-        UpdateDisplayString(charIdx);   
-        if (charIdx + 1 < currWord.chars.Length) 
+        switch (currWord.responseType)
         {
-            charIdx++;
-            flickInput.inputHandler.SetPromptChar(currWord.chars[charIdx]);
+            case InputType.WritingHiragana:
+            case InputType.WritingKatakana:
+            case InputType.WritingKanji:
+                drawInput.SetPromptChar(promptChar);
+                break;
+            case InputType.KeyHiragana:
+            case InputType.KeyKatakana:
+            case InputType.KeyRomaji:
+                flickInput.SetPromptChar(promptChar);
+                break;
+        }
+    }
+
+    // progresses through the prompt word
+    public void CharUpdated(char character) 
+    {
+        bool passed = currWord.CheckChar(character);
+        if (passed) 
+        {
+            UpdateDisplayString();
+            if (currWord.WordCompleted()) 
+            {
+                Reset();
+                kanjiMan.UpdateCurrentKanjiTraceable();     
+            }
         }
         else 
         {
-            Reset();
-            kanjiMan.UpdateCurrentKanjiTraceable();     
+            SetPromptChar(currWord.GetChar());
         }
     }
 
     public void SetPromptWord(PromptWord promptWord) 
     {
         currWord = promptWord;
-        // fill the display string
-        FillDisplayString();
         // set the prompt char to the relevant input
-        switch (currWord.responseType)
-        {
-            case InputType.WritingHiragana:
-            case InputType.WritingKatakana:
-            case InputType.WritingKanji:
-                drawInput.SetPromptChar(currWord.chars[charIdx]);
-                break;
-            case InputType.KeyHiragana:
-            case InputType.KeyKatakana:
-            case InputType.KeyRomaji:
-                flickInput.inputHandler.SetPromptChar(currWord.chars[charIdx]);
-                break;
-        }
-        SetInputType(currWord.responseType);
+        ShowInputForType(currWord.responseType);
+        SetPromptChar(promptWord.GetChar());
+        UpdateDisplayString();
     }
 }
 

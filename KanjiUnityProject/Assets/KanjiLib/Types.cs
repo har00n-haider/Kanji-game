@@ -138,9 +138,10 @@ public class PromptWord
     /// </summary>
     [System.NonSerialized]
     public PromptChar[] chars;
+    [System.NonSerialized]
+    private int cIdx = 0;
 
-
-    public string GetString() 
+    public string GetCompletedString() 
     {
         string s = string.Empty;
         foreach(var x in chars) 
@@ -149,6 +150,49 @@ public class PromptWord
         }
         return s;
     }
+
+    #region tracking progress
+
+    public string GetDisplayString() 
+    {
+        string s = string.Empty;
+        for (int i = 0; i < chars.Length; i++)
+        {
+
+            s += i < cIdx ?  chars[i].character : '☐';
+        }        
+        return s;
+    }
+
+    public PromptChar GetChar() 
+    {
+        return chars[cIdx];
+    }
+
+    public bool CheckChar(char c) 
+    {
+        if (c == chars[cIdx].character) 
+        {
+            ++cIdx;
+            return true;
+        }
+        else
+        {
+            return false;
+        } 
+    }
+
+    public bool WordCompleted() 
+    {
+        return cIdx == chars.Length;
+    }
+
+    public void Reset() 
+    {
+        cIdx = 0;
+    }
+
+    #endregion
 }
 
 [System.Serializable]
