@@ -95,7 +95,7 @@ public class Keyboard : MonoBehaviour
 
     public void CharUpdatedSuccesfully() 
     {
-        UpdateDisplayString(charIdx);
+        UpdateDisplayString(charIdx);   
         if (charIdx + 1 < currWord.chars.Length) 
         {
             charIdx++;

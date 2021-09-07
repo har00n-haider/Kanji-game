@@ -75,5 +75,12 @@ public static class Utils
 
     public static string ColorHexFromUnityColor(this Color unityColor) => $"#{ColorUtility.ToHtmlStringRGBA(unityColor)}";
 
+
+    // cloner for simple objects
+    public static T Clone<T>(this T source)
+    {
+        var serialized = JsonUtility.ToJson(source);
+        return JsonUtility.FromJson<T>(serialized);
+    }
 }
 

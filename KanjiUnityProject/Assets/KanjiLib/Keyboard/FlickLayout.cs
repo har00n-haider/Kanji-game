@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FlickInputHandler 
+/// <summary>
+/// Manages the input logic to create the relevant
+/// output (e.g. when using modifier like 小゛゜)
+/// </summary>
+public class FlickInputHandler
 {
     public Keyboard keyboard;
 
@@ -187,12 +191,18 @@ public class FlickInputHandler
 /// </summary>
 public class FlickLayout : MonoBehaviour
 {
+    private class Cell
+    {
+        public RectTransform tranform;
+        public FlickButton button;
+    }
+
     // config
     private readonly int rows = 4;
     private readonly int columns = 3;
     private InputType type;
     [SerializeField]
-    private FlickButton.Config buttonConfig;
+    private FlickButton.Config defaultButtonConfig;
     [SerializeField]
     private float fontSize;
     [SerializeField]
@@ -201,14 +211,12 @@ public class FlickLayout : MonoBehaviour
     // flick key setup
     private float cellWidth;
     private float cellHeight;
-    private RectTransform[,] flickKeyRectArr;
+    private Cell[,] flickCellGrid;
     private RectTransform containerRect;
 
     // refs
     [SerializeField]
     private GameObject buttonPrefab;
-    [SerializeField]
-    private GameObject buttonPlaceholder;
     [HideInInspector]
     public Keyboard keyboard;
 
@@ -217,7 +225,7 @@ public class FlickLayout : MonoBehaviour
 
     private void Awake()
     {
-        flickKeyRectArr = new RectTransform[rows, columns];
+        flickCellGrid = new Cell[rows, columns];
         containerRect = transform.parent.GetComponent<RectTransform>();
     }
 
@@ -225,51 +233,71 @@ public class FlickLayout : MonoBehaviour
     {
     }
 
-    private void SetUpButton(FlickButton button, int r, int c)
+    private FlickButton.Config GetConfigForGridCell(int r, int c)
     {
+        // disabled button
+        if (r == 0 && c == 2) 
+        {
+            var config = defaultButtonConfig.Clone();
+            config.disabled = true;
+            return config;
+        }
+        else
+        {
+            return defaultButtonConfig;
+        }
+    }
+
+    private void SetUpButton(FlickButton button, int row, int col)
+    {
+        // per button setup 
+        Action<string, string, string, string, string> setupButton =
+        (string c, string u, string d, string l, string r) =>
+        {
+            button.charSetup = new FlickButton.CharSetup() 
+                { centerChar = c, upChar = u, downChar = d, leftChar = l, rightChar = r };
+            button.config = GetConfigForGridCell(row, col);
+            button.parentFlickLayout = this;
+            button.name = "button r" + row + "c" + col;
+            button.Init();
+        };
+
         switch (type)
         {
             case InputType.KeyHiragana:
-                if (r == 0 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "小", upChar = "゛", downChar = "゜", leftChar = "　", rightChar = "　" }; }
-                if (r == 0 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "わ", upChar = "ん", downChar = "　", leftChar = "を", rightChar = "ー" }; }
-                if (r == 1 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ま", upChar = "む", downChar = "も", leftChar = "み", rightChar = "め" }; }
-                if (r == 1 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "や", upChar = "ゆ", downChar = "よ", leftChar = "　", rightChar = "　" }; }
-                if (r == 1 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ら", upChar = "る", downChar = "ろ", leftChar = "り", rightChar = "れ" }; }
-                if (r == 2 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "た", upChar = "つ", downChar = "と", leftChar = "ち", rightChar = "て" }; }
-                if (r == 2 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "な", upChar = "ぬ", downChar = "の", leftChar = "に", rightChar = "ね" }; }
-                if (r == 2 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "は", upChar = "ふ", downChar = "ほ", leftChar = "ひ", rightChar = "へ" }; }
-                if (r == 3 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "あ", upChar = "う", downChar = "お", leftChar = "い", rightChar = "え" }; }
-                if (r == 3 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "か", upChar = "く", downChar = "こ", leftChar = "き", rightChar = "け" }; }
-                if (r == 3 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "さ", upChar = "す", downChar = "そ", leftChar = "し", rightChar = "せ" }; }
+                if (row == 0 && col == 0) { setupButton("小", "゛", "゜", "　", "　" ); }
+                if (row == 0 && col == 1) { setupButton("わ", "ん", "　", "を", "ー" ); }
+                if (row == 0 && col == 2) { setupButton("　", "　", "　", "　", "　" ); } 
+                if (row == 1 && col == 0) { setupButton("ま", "む", "も", "み", "め" ); }
+                if (row == 1 && col == 1) { setupButton("や", "ゆ", "よ", "　", "　" ); }
+                if (row == 1 && col == 2) { setupButton("ら", "る", "ろ", "り", "れ" ); }
+                if (row == 2 && col == 0) { setupButton("た", "つ", "と", "ち", "て" ); }
+                if (row == 2 && col == 1) { setupButton("な", "ぬ", "の", "に", "ね" ); }
+                if (row == 2 && col == 2) { setupButton("は", "ふ", "ほ", "ひ", "へ" ); }
+                if (row == 3 && col == 0) { setupButton("あ", "う", "お", "い", "え" ); }
+                if (row == 3 && col == 1) { setupButton("か", "く", "こ", "き", "け" ); }
+                if (row == 3 && col == 2) { setupButton("さ", "す", "そ", "し", "せ" ); }
                 break;
             case InputType.KeyKatakana:
-                if (r == 0 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "小", upChar = "゛", downChar = "゜", leftChar = "　", rightChar = "　" }; }
-                if (r == 0 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ワ", upChar = "ン", downChar = "　", leftChar = "ヲ", rightChar = "ー" }; }
-                if (r == 1 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "マ", upChar = "ム", downChar = "モ", leftChar = "ミ", rightChar = "メ" }; }
-                if (r == 1 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ヤ", upChar = "ユ", downChar = "ヨ", leftChar = "　", rightChar = "　" }; }
-                if (r == 1 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ラ", upChar = "ル", downChar = "ロ", leftChar = "リ", rightChar = "レ" }; }
-                if (r == 2 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "タ", upChar = "ツ", downChar = "ト", leftChar = "チ", rightChar = "テ" }; }
-                if (r == 2 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ナ", upChar = "ヌ", downChar = "ノ", leftChar = "ニ", rightChar = "ネ" }; }
-                if (r == 2 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ハ", upChar = "フ", downChar = "ホ", leftChar = "ヒ", rightChar = "へ" }; }
-                if (r == 3 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ア", upChar = "ウ", downChar = "オ", leftChar = "イ", rightChar = "エ" }; }
-                if (r == 3 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "カ", upChar = "ク", downChar = "コ", leftChar = "キ", rightChar = "ケ" }; }
-                if (r == 3 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "サ", upChar = "ス", downChar = "ソ", leftChar = "シ", rightChar = "セ" }; }
+                if (row == 0 && col == 0) { setupButton("小", "゛", "゜", "　", "　" );}
+                if (row == 0 && col == 1) { setupButton("ワ", "ン", "　", "ヲ", "ー" );}
+                if (row == 0 && col == 2) { setupButton("　", "　", "　", "　", "　" );}
+                if (row == 1 && col == 0) { setupButton("マ", "ム", "モ", "ミ", "メ" );}
+                if (row == 1 && col == 1) { setupButton("ヤ", "ユ", "ヨ", "　", "　" );}
+                if (row == 1 && col == 2) { setupButton("ラ", "ル", "ロ", "リ", "レ" );}
+                if (row == 2 && col == 0) { setupButton("タ", "ツ", "ト", "チ", "テ" );}
+                if (row == 2 && col == 1) { setupButton("ナ", "ヌ", "ノ", "ニ", "ネ" );}
+                if (row == 2 && col == 2) { setupButton("ハ", "フ", "ホ", "ヒ", "へ" );}
+                if (row == 3 && col == 0) { setupButton("ア", "ウ", "オ", "イ", "エ" );}
+                if (row == 3 && col == 1) { setupButton("カ", "ク", "コ", "キ", "ケ" );}
+                if (row == 3 && col == 2) { setupButton("サ", "ス", "ソ", "シ", "セ" );}
                 break;
             case InputType.KeyRomaji:
-                if (r == 0 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "小", upChar = "゛", downChar = "゜", leftChar = "　", rightChar = "　" }; }
-                if (r == 0 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "wa", upChar = "n", downChar = "　", leftChar = "wo", rightChar = "ー" }; }
-                if (r == 1 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ma", upChar = "mu", downChar = "mo", leftChar = "mi", rightChar = "me" }; }
-                if (r == 1 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ya", upChar = "yu", downChar = "yo", leftChar = "　", rightChar = "　" }; }
-                if (r == 1 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ra", upChar = "ru", downChar = "ro", leftChar = "ri", rightChar = "re" }; }
-                if (r == 2 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ta", upChar = "tsu", downChar = "to", leftChar = "chi", rightChar = "te" }; }
-                if (r == 2 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "na", upChar = "nu", downChar = "no", leftChar = "ni", rightChar = "ne" }; }
-                if (r == 2 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ha", upChar = "fu", downChar = "ho", leftChar = "hi", rightChar = "he" }; }
-                if (r == 3 && c == 0) { button.charSetup = new FlickButton.CharSetup() { centerChar = "a", upChar = "u", downChar = "o", leftChar = "ii", rightChar = "e" }; }
-                if (r == 3 && c == 1) { button.charSetup = new FlickButton.CharSetup() { centerChar = "ka", upChar = "ku", downChar = "ko", leftChar = "ki", rightChar = "ke" }; }
-                if (r == 3 && c == 2) { button.charSetup = new FlickButton.CharSetup() { centerChar = "sa", upChar = "su", downChar = "so", leftChar = "shi", rightChar = "se" }; }
+                // romaji is only a visualisation of on prompts and the keyboard display
+            default:
                 break;
         }
-        if (overrideFontSize) 
+        if (overrideFontSize)
         {
             button.fontSize = fontSize;
         }
@@ -277,7 +305,7 @@ public class FlickLayout : MonoBehaviour
 
     void Update()
     {
-        if(inputHandler.keyboard == null) inputHandler.keyboard = keyboard;       
+        if (inputHandler.keyboard == null) inputHandler.keyboard = keyboard;
         SetCellDimensions();
         UpdateGrid();
     }
@@ -300,32 +328,18 @@ public class FlickLayout : MonoBehaviour
         {
             for (int c = 0; c < columns; c++)
             {
-                // buttons we are skipping for the moment
-                bool isPlaceholderButton =
-                    r == 0 && c == 2;
-                GameObject currCell = null;
-                if (isPlaceholderButton)
+                // make button
+                GameObject go = Instantiate(buttonPrefab, transform);
+                Cell cell = new Cell()
                 {
-                    // make placeholder
-                    currCell = Instantiate(buttonPlaceholder, transform);
-                    currCell.GetComponent<Image>().color = buttonConfig.centerButtonColor;
-                    currCell.name = "button " + buttNo;
-                }
-                else
-                {
-                    // make button
-                    FlickButton button = Instantiate(buttonPrefab, transform).GetComponent<FlickButton>();
-                    button.name = "button " + buttNo;
-                    SetUpButton(button, r, c);
-                    button.config = buttonConfig;
-                    button.parentFlickLayout = this;
-                    button.Init();
-                    currCell = button.gameObject;
-                }
-                // get ref to ret for fitting
-                RectTransform cellRect = currCell.GetComponent<RectTransform>();
-                SetGridPosForCell(cellRect, containerRect, r, c);
-                flickKeyRectArr[r, c] = cellRect;
+                    button = go.GetComponent<FlickButton>(),
+                    tranform = go.GetComponent<RectTransform>()
+                };
+                // setting the button up
+                SetUpButton(cell.button, r, c);
+                // get ref matrix for updating the transform of buttons
+                SetGridPosForCell(cell.tranform, containerRect, r, c);
+                flickCellGrid[r, c] = cell;
                 buttNo++;
             }
         }
@@ -345,8 +359,8 @@ public class FlickLayout : MonoBehaviour
         {
             for (int c = 0; c < columns; c++)
             {
-                SetGridPosForCell(flickKeyRectArr[r, c], containerRect, r, c);
-                SetGridCellSizeForCell(flickKeyRectArr[r, c], cellHeight, cellWidth);
+                SetGridPosForCell(flickCellGrid[r, c].tranform, containerRect, r, c);
+                SetGridCellSizeForCell(flickCellGrid[r, c].tranform, cellHeight, cellWidth);
             }
         }
     }

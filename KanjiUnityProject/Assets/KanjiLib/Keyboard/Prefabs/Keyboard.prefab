@@ -48,18 +48,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1563c27962b74c140a2cdc083ffe8029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonConfig:
+  defaultButtonConfig:
     flickThreshold: 30
     relativeDistToCenter: 0.7
     textPadding: 0.07
-    centerButtonColor: {r: 0.023529414, g: 0.54901963, b: 0.1137255, a: 1}
-    centerButtonHighlightColor: {r: 0.24313727, g: 0.6901961, b: 0.32156864, a: 1}
-    flickButtonColor: {r: 0.6039216, g: 0.15686275, b: 0.9058824, a: 1}
-    textColor: {r: 0.85098046, g: 0.82745105, b: 0.82745105, a: 1}
+    centerButtonColor: {r: 0.18823531, g: 0.18823531, b: 0.18823531, a: 1}
+    centerButtonHighlightColor: {r: 0.4431373, g: 0.4431373, b: 0.4431373, a: 1}
+    flickButtonColor: {r: 1, g: 0.7628869, b: 0.33333337, a: 1}
+    textColor: {r: 1, g: 0.2783019, b: 0.34665072, a: 1}
+    disabled: 0
   fontSize: 0
   overrideFontSize: 0
   buttonPrefab: {fileID: 3386287709193714736, guid: 70711d30487cff24990422330bd6bc13, type: 3}
-  buttonPlaceholder: {fileID: 2768931907986097838, guid: ffdbea3e09d49c74d8d7a98f5c73dd64, type: 3}
   keyboard: {fileID: 0}
 --- !u!1 &6562541037948275926
 GameObject:

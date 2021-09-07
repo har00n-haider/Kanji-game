@@ -550,6 +550,54 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.textColor.b
+      value: 0.9383874
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.textColor.g
+      value: 0.9433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.textColor.r
+      value: 0.6719473
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.flickButtonColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.flickButtonColor.g
+      value: 0.33490568
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.flickButtonColor.r
+      value: 0.73187286
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.centerButtonColor.b
+      value: 0.18867922
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.centerButtonColor.g
+      value: 0.18867922
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.centerButtonColor.r
+      value: 0.18867922
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.centerButtonHighlightColor.b
+      value: 0.4433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.centerButtonHighlightColor.g
+      value: 0.4433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 7719313785531242166, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
+      propertyPath: buttonConfig.centerButtonHighlightColor.r
+      value: 0.4433962
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a195fa564e73ff48b93b9f1442cbcea, type: 3}
 --- !u!1001 &1122729218

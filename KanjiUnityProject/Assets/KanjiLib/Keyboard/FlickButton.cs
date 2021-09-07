@@ -13,7 +13,7 @@ public class FlickButton : MonoBehaviour
     public class Config
     {
         [SerializeField]
-        public float flickThreshold = 0.5f;
+        public float flickThreshold = 30;
         [SerializeField]
         public float relativeDistToCenter = 0.7f;
         [SerializeField]
@@ -26,6 +26,8 @@ public class FlickButton : MonoBehaviour
         public Color flickButtonColor;
         [SerializeField]
         public Color textColor;
+        [SerializeField]
+        public bool disabled = false;
     }
 
     [Serializable]
@@ -61,7 +63,7 @@ public class FlickButton : MonoBehaviour
     void Update()
     {
         ResizeFlickButtons();
-        UpdateFlick();
+        if (!config.disabled) UpdateFlick();
     }
 
     // unity event method
