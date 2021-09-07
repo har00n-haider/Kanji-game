@@ -34,8 +34,6 @@ public class FlickInputHandler
     {
         if (curPromptChar == null) return;
 
-        Debug.Log("newChar: " + newChar + ", waitOne: " + waitOne);
-
         if (IsModifier(newChar) && inputChar.HasValue)
         {
             HandleModifier(newChar);

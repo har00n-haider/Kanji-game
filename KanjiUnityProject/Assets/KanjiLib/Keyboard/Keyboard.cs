@@ -16,7 +16,6 @@ public class Keyboard : MonoBehaviour
     private Kanji2D drawInput;
     [SerializeField]
     private TextMeshProUGUI displayTextMesh;
-
     private KanjiManager kanjiMan;
 
     // state
@@ -47,7 +46,31 @@ public class Keyboard : MonoBehaviour
     {
         currWord = null;
         charIdx = 0;
+        UpdateDisplayString();
+    }
+
+    private void UpdateDisplayString(int position = -1) 
+    {
+        if (position == -1) 
+        {
+            displayTextMesh.text = string.Empty;
+            displayStr.Clear();
+        }
+        else
+        {
+            displayStr[charIdx] = currWord.chars[charIdx].character;
+            displayTextMesh.text = displayStr.ToString();
+        }
+    }
+
+    private void FillDisplayString() 
+    {
         displayStr.Clear();
+        foreach(PromptChar p in currWord.chars) 
+        {
+            displayStr.Append('☐');
+        }
+        displayTextMesh.text = displayStr.ToString();
     }
 
     private void SetInputType(InputType type) 
@@ -72,8 +95,7 @@ public class Keyboard : MonoBehaviour
 
     public void CharUpdatedSuccesfully() 
     {
-        displayStr[charIdx] = currWord.chars[charIdx].character;
-        displayTextMesh.text = displayStr.ToString();
+        UpdateDisplayString(charIdx);
         if (charIdx + 1 < currWord.chars.Length) 
         {
             charIdx++;
@@ -90,12 +112,7 @@ public class Keyboard : MonoBehaviour
     {
         currWord = promptWord;
         // fill the display string
-        displayStr.Clear();
-        foreach(PromptChar p in currWord.chars) 
-        {
-            displayStr.Append('☐');
-        }
-        displayTextMesh.text = displayStr.ToString();
+        FillDisplayString();
         // set the prompt char to the relevant input
         switch (currWord.responseType)
         {
