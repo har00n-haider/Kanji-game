@@ -65,7 +65,7 @@ public class KanjiManager : MonoBehaviour
     public void RegisterKanjiTraceable(KanjiTraceable kanjiTraceable) 
     {
         kanjiTraceables.Add(kanjiTraceable);
-        kanjiTraceable.prompt = GeneratePrompt();
+        kanjiTraceable.prompt = GetNextPrompt();
     }
 
     private void UpdateSelection(KanjiTraceable selectedKanji) 
@@ -74,19 +74,33 @@ public class KanjiManager : MonoBehaviour
         keyboard.SetPromptWord(selectedKanji.currWord);
     }
 
-    private Prompt GeneratePrompt()
+    private Prompt GetRandomPrompt()
     {
         Prompt prompt = database.GetRandomPrompt();
+        SetupPromptForTest(ref prompt);
+        return prompt;
+    }
 
-        foreach(PromptWord word in prompt.words) 
+
+    // TODO: debug stuff
+    int pIdx = -1;
+    private Prompt GetNextPrompt() 
+    {
+        ++pIdx;
+        var prompt = database.GetPromptById(pIdx);
+        SetupPromptForTest(ref prompt);
+        return prompt;
+    }
+
+    private void SetupPromptForTest(ref Prompt prompt) 
+    {
+        foreach (PromptWord word in prompt.words)
         {
             // basic setup for testing
             if (word.type == PromptWord.WordType.katakana) word.responseType = InputType.KeyKatakana;
             if (word.type == PromptWord.WordType.hiragana) word.responseType = InputType.KeyHiragana;
             if (word.type == PromptWord.WordType.kanji) word.responseType = InputType.KeyHiragana;
         }
-
-        return prompt;
     }
 
     #region selection

@@ -23,21 +23,36 @@ public class KanjiDatabase
         return kanjiList[idx];
     }
 
+
+    #region prompt methods
+
+
     public Prompt GetRandomPrompt() 
     {
-        if (prompts == null || prompts.sentences.Count == 0) return null;
         var idx = Random.Range(0, prompts.sentences.Count - 1);
-        Prompt prompt = prompts.sentences[idx];
+        return GetPromptById(idx);
+    }
+
+    public Prompt GetPromptById(int id) 
+    {
+        if (prompts == null || prompts.sentences.Count == 0) return null;
+        Prompt prompt = prompts.sentences[id];
+        SetCharsForPrompt(ref prompt);
+        return prompt;
+    }
+
+    private void SetCharsForPrompt(ref Prompt prompt) 
+    {
         // Set the chars to iterate through depending 
         // on the type of the word
-        foreach(PromptWord word in prompt.words) 
+        foreach (PromptWord word in prompt.words)
         {
             List<PromptChar> chars = new List<PromptChar>();
             switch (word.type)
             {
                 case PromptWord.WordType.kanji:
                 case PromptWord.WordType.hiragana:
-                    foreach(char c in word.hiragana) 
+                    foreach (char c in word.hiragana)
                     {
                         chars.Add(new PromptChar()
                         {
@@ -61,8 +76,11 @@ public class KanjiDatabase
             }
             word.chars = chars.ToArray();
         }
-        return prompt;
     }
+
+    #endregion
+
+
 
     public KanjiData GetRandomKanjiFiltered(System.Func<KanjiData, bool> filter) 
     {
