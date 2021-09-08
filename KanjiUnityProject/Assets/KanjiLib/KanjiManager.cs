@@ -68,42 +68,105 @@ public class KanjiManager : MonoBehaviour
         kanjiTraceable.prompt = GetNextPrompt();
     }
 
-    private void UpdateSelection(KanjiTraceable selectedKanji) 
+    #region prompt setup
+
+    int pIdx = -1;
+    // TODO: debug function
+    private Prompt GetNextPrompt() 
     {
-        selectedKanjiTraceable = selectedKanji;
-        keyboard.SetPromptWord(selectedKanji.currWord);
+        ++pIdx;
+        var prompt = database.GetPromptById(pIdx);
+        foreach(var word in prompt.words) 
+        {
+            GetTestSetForWordType(
+                word.type, 
+                out PromptType displayType, 
+                out InputType responseType);
+            word.responseType = responseType;
+            word.displayType = displayType;
+        }
+        return prompt;
+    }
+
+    // TODO: debug function, manually written based on what you want to test
+    private void GetTestSetForWordType(
+    PromptWord.WordType promptType,
+        out PromptType displayType,
+        out InputType responseType)
+    {
+        displayType = PromptType.Kanji;
+        responseType = InputType.KeyHiragana;
+
+        switch (promptType)
+        {
+            case PromptWord.WordType.kanji:
+                displayType = PromptType.Kanji;
+                responseType = InputType.KeyHiragana;
+                break;
+            case PromptWord.WordType.hiragana:
+                displayType = PromptType.Hiragana;
+                responseType = InputType.KeyHiragana; 
+                break;
+            case PromptWord.WordType.katakana:
+                displayType = PromptType.Katana;
+                responseType = InputType.KeyKatakana; 
+                break;
+            default:
+                break;
+        }
     }
 
     private Prompt GetRandomPrompt()
     {
         Prompt prompt = database.GetRandomPrompt();
-        SetupPromptForTest(ref prompt);
-        return prompt;
-    }
-
-
-    // TODO: debug stuff
-    int pIdx = -1;
-    private Prompt GetNextPrompt() 
-    {
-        ++pIdx;
-        var prompt = database.GetPromptById(pIdx);
-        SetupPromptForTest(ref prompt);
-        return prompt;
-    }
-
-    private void SetupPromptForTest(ref Prompt prompt) 
-    {
-        foreach (PromptWord word in prompt.words)
+        foreach (var word in prompt.words)
         {
-            // basic setup for testing
-            if (word.type == PromptWord.WordType.katakana) word.responseType = InputType.KeyKatakana;
-            if (word.type == PromptWord.WordType.hiragana) word.responseType = InputType.KeyHiragana;
-            if (word.type == PromptWord.WordType.kanji) word.responseType = InputType.KeyHiragana;
+            GetRandomTestSetForWordType(
+                word.type,
+                out PromptType displayType,
+                out InputType responseType);
+            word.responseType = responseType;
+            word.displayType = displayType;
+        }
+        return prompt;
+    }
+
+    private void GetRandomTestSetForWordType(
+        PromptWord.WordType promptType, 
+        out PromptType displayType, 
+        out InputType responseType) 
+    {
+        displayType = PromptType.Kanji;
+        responseType = InputType.KeyHiragana;
+
+        switch (promptType)
+        {
+            case PromptWord.WordType.kanji:
+                displayType = KanjiUtils.kanjiPrompts.GetRandomPrompt();
+                responseType = KanjiUtils.kanjiInputs.GetRandomInput();
+                break;
+            case PromptWord.WordType.hiragana:
+                displayType = KanjiUtils.hiraganaPrompts.GetRandomPrompt();
+                responseType = KanjiUtils.hiraganaInputs.GetRandomInput();
+                break;
+            case PromptWord.WordType.katakana:
+                displayType = KanjiUtils.katakanaPrompts.GetRandomPrompt();
+                responseType = KanjiUtils.katakanaInputs.GetRandomInput();
+                break;
+            default:
+                break;
         }
     }
 
+    #endregion
+
     #region selection
+
+    private void UpdateSelection(KanjiTraceable selectedKanji)
+    {
+        selectedKanjiTraceable = selectedKanji;
+        keyboard.SetPromptWord(selectedKanji.currWord);
+    }
 
     private void CheckSelectionInput() 
     {
