@@ -87,6 +87,7 @@ public class Keyboard : MonoBehaviour
     // progresses through the prompt word
     public void CharUpdated(char character) 
     {
+        if (currWord == null) return; 
         bool passed = currWord.CheckChar(character);
         if (passed) 
         {

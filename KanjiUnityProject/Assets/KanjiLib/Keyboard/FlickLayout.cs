@@ -18,8 +18,7 @@ public class FlickInputHandler
     // char detection
     public InputType type;
     private PromptChar curPromptChar = null;
-    private char? inputChar = null;
-    private bool waitOne = false;
+    private char? lastChar = null;
 
     #region kana maps
 
@@ -195,16 +194,11 @@ public class FlickInputHandler
     {
         Reset();
         curPromptChar = promptChar;
-        waitOne = type == InputType.KeyKatakana ?
-            RequiresModifier(katakanaToHiragana[promptChar.character]) :
-            RequiresModifier(promptChar.character);
     }
 
     private void Reset()
     {
-        curPromptChar = null;
-        inputChar = null;
-        waitOne = false;
+        lastChar = null;
     }
 
     // to be called from the buttons
@@ -212,55 +206,48 @@ public class FlickInputHandler
     {
         if (curPromptChar == null) return;
 
-        if (IsModifier(newChar) && inputChar.HasValue)
+        if (IsModifier(newChar) && lastChar.HasValue)
         {
             HandleModifier(newChar);
         }
         else
         {
-            inputChar = newChar;
+            lastChar = newChar;
         }
 
-        // wait if a modifier is required
-        if (!waitOne)
-        {
-            //HACK: should use a delegate 
-            keyboard.CharUpdated(inputChar.Value);
-        }
-        else
-        {
-            waitOne = false;
-        }
+        //HACK: should use a delegate 
+        keyboard.CharUpdated(lastChar.Value);
     }
 
     private void HandleModifier(char modChar)
     {
-        if (inputChar == null) return;
+        // is there anything to modify?
+        if (lastChar == null) return;
         // katakana conversion: convert to 
-        char? inChar = inputChar.Value;
-        if (type == InputType.KeyKatakana) inChar = katakanaToHiragana[inChar.Value];
+        char? charToMod = lastChar.Value;
+        if (type == InputType.KeyKatakana) charToMod = katakanaToHiragana[charToMod.Value];
         switch (modChar)
         {
             case '小':
-                inChar = ApplySmall(inChar.Value);
+                charToMod = ApplySmall(charToMod.Value);
                 break;
             case '゛':
-                inChar = ApplyHandakuten(inChar.Value);
+                charToMod = ApplyHandakuten(charToMod.Value);
                 break;
             case '゜':
-                inChar = ApplyDakuten(inChar.Value);
+                charToMod = ApplyDakuten(charToMod.Value);
                 break;
             default:
                 break;
         }
-        if(inChar != null) 
+        if(charToMod != null) 
         {
             // katakana conversion: convert back
             if (type == InputType.KeyKatakana)
             {
-                inChar = hiraganaToKatana[inChar.Value];
+                charToMod = hiraganaToKatana[charToMod.Value];
             }
-            inputChar = inChar;
+            lastChar = charToMod;
         }
     }
 
