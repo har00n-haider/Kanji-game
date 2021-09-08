@@ -114,29 +114,39 @@ public class KanjiTraceable : MonoBehaviour
             }
             else 
             {
-                switch (pw.type)
+                switch (pw.displayType)
                 {
-                    case PromptWord.WordType.kanji:
+                    case PromptType.Kanji:
                         color = kanjiColor;
                         break;
-                    case PromptWord.WordType.hiragana:
+                    case PromptType.Hiragana:
                         color = hiraganaColor;
                         break;
-                    case PromptWord.WordType.katakana:
+                    case PromptType.Katana:
                         color = katanaColor;
+                        break;
+                    case PromptType.Romaji:
+                    case PromptType.Meaning:
+                    default:
                         break;
                 }
             }
             // Get text
             string text = string.Empty;
-            switch (pw.type)
+            switch (pw.displayType)
             {
-                case PromptWord.WordType.kanji:
-                case PromptWord.WordType.hiragana:
+                case PromptType.Kanji:
+                    text = pw.kanji;
+                    break;
+                case PromptType.Hiragana:
                     text = pw.hiragana;
                     break;
-                case PromptWord.WordType.katakana:
+                case PromptType.Katana:
                     text = pw.katakana;
+                    break;
+                case PromptType.Romaji:
+                case PromptType.Meaning:
+                default:
                     break;
             }
 
