@@ -14,8 +14,10 @@ public class CubicBezier
     public Vector2 p4 = new Vector2();
 }
 
-public class KanjiUtils
+public static class KanjiUtils
 {
+
+    #region svg conversion tools
 
     // t must be a value from 0 - 1
     private static Vector2 GetPntOnCubicBezier(float t, CubicBezier cB)
@@ -154,5 +156,66 @@ public class KanjiUtils
         return points.ConvertAll(p => new Vector2(p.x * (1 / width), 1f + (p.y * (1 / height))));
     }
 
+    #endregion
 
+
+    #region prompt helpers
+
+    public static readonly PromptType[] kanjiPrompts = new PromptType[]
+    {
+                PromptType.Kanji,
+                PromptType.Hiragana,
+                PromptType.Romaji,
+                PromptType.Meaning,
+    };
+
+    public static readonly PromptType[] katakanaPrompts = new PromptType[]
+    {
+                PromptType.Katana,
+                PromptType.Romaji,
+    };
+
+
+    public static readonly PromptType[] hiraganaPrompts = new PromptType[]
+    {
+                PromptType.Hiragana,
+                PromptType.Romaji,
+    };
+
+    public static readonly  InputType[] kanjiInputs = new InputType[]
+    {
+            InputType.KeyHiragana,
+            InputType.KeyRomaji,
+            InputType.Meaning,
+            InputType.WritingHiragana,
+            InputType.WritingKanji,
+    };
+
+    public static readonly InputType[] katakanaInputs = new InputType[]
+    {
+                InputType.KeyKatakana,
+                InputType.KeyRomaji,
+                InputType.WritingKatakana,
+    };
+
+    public static readonly InputType[] hiraganaInputs = new InputType[]
+    {
+                InputType.KeyHiragana,
+                InputType.KeyRomaji,
+                InputType.WritingHiragana,
+    };
+
+    public static InputType GetRandomInput(this InputType[] inputs) 
+    {
+        int idx = Random.Range(0, inputs.Length - 1);
+        return inputs[idx];
+    }
+
+    public static PromptType GetRandomPrompt(this PromptType[] prompts)
+    {
+        int idx = Random.Range(0, prompts.Length - 1);
+        return prompts[idx];
+    }
+
+    #endregion
 }

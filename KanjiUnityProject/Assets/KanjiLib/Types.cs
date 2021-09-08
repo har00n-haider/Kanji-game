@@ -75,6 +75,7 @@ public enum PromptType
     Romaji,
     Hiragana,
     Katana,
+    Meaning
 }
 
 /// <summary>
