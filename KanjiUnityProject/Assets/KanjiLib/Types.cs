@@ -142,7 +142,7 @@ public class PromptWord
     [System.NonSerialized]
     private int cIdx = 0;
 
-    public string GetCompletedString() 
+    public override string ToString() 
     {
         string s = string.Empty;
         foreach(var x in chars) 
@@ -200,6 +200,16 @@ public class PromptWord
 public class Prompt 
 {
     public List<PromptWord> words;
+
+    public override string ToString()
+    {
+        string promptStr = "";
+        foreach(var word in words) 
+        {
+            promptStr+=word.ToString();
+        }
+        return promptStr;
+    }
 }
 
 [System.Serializable]
