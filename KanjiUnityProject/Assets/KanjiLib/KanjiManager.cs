@@ -207,7 +207,7 @@ public class KanjiManager : MonoBehaviour
                     populateCharList(chars, word.hiragana);
                     break;
                 case PromptWord.WordType.katakana:
-                    populateCharList(chars, word.hiragana);
+                    populateCharList(chars, word.katakana);
                     break;
             }
             word.chars = chars.ToArray();
