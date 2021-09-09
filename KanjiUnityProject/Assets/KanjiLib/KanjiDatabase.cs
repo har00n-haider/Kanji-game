@@ -26,7 +26,6 @@ public class KanjiDatabase
 
     #region prompt methods
 
-
     public Prompt GetRandomPrompt() 
     {
         var idx = Random.Range(0, prompts.sentences.Count - 1);
@@ -37,45 +36,7 @@ public class KanjiDatabase
     {
         if (prompts == null || prompts.sentences.Count == 0) return null;
         Prompt prompt = prompts.sentences[id];
-        SetCharsForPrompt(ref prompt);
         return prompt;
-    }
-
-    private void SetCharsForPrompt(ref Prompt prompt) 
-    {
-        // Set the chars to iterate through depending 
-        // on the type of the word
-        foreach (PromptWord word in prompt.words)
-        {
-            List<PromptChar> chars = new List<PromptChar>();
-            switch (word.type)
-            {
-                case PromptWord.WordType.kanji:
-                case PromptWord.WordType.hiragana:
-                    foreach (char c in word.hiragana)
-                    {
-                        chars.Add(new PromptChar()
-                        {
-                            character = c,
-                            data = GetKanji(c)
-                        });
-                    }
-                    break;
-                case PromptWord.WordType.katakana:
-                    foreach (char c in word.katakana)
-                    {
-                        chars.Add(new PromptChar()
-                        {
-                            character = c,
-                            data = GetKanji(c)
-                        });
-                    }
-                    break;
-                default:
-                    break;
-            }
-            word.chars = chars.ToArray();
-        }
     }
 
     #endregion

@@ -135,7 +135,7 @@ public class PromptWord
     [System.NonSerialized]
     public PromptType displayType;
     /// <summary>
-    /// These are iterated through by the input to complete a word
+    /// These are iterated through by the input to complete a word. Not used for display
     /// </summary>
     [System.NonSerialized]
     public PromptChar[] chars;

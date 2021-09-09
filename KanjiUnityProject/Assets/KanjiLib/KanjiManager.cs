@@ -85,6 +85,7 @@ public class KanjiManager : MonoBehaviour
             word.responseType = responseType;
             word.displayType = displayType;
         }
+        SetCharsForPrompt(ref prompt);
         return prompt;
     }
 
@@ -101,7 +102,7 @@ public class KanjiManager : MonoBehaviour
         {
             case PromptWord.WordType.kanji:
                 displayType = PromptType.Kanji;
-                responseType = InputType.KeyHiragana;
+                responseType = InputType.WritingKanji;
                 break;
             case PromptWord.WordType.hiragana:
                 displayType = PromptType.Hiragana;
@@ -128,6 +129,7 @@ public class KanjiManager : MonoBehaviour
             word.responseType = responseType;
             word.displayType = displayType;
         }
+        SetCharsForPrompt(ref prompt);
         return prompt;
     }
 
@@ -155,6 +157,60 @@ public class KanjiManager : MonoBehaviour
                 break;
             default:
                 break;
+        }
+    }
+
+    /// <summary>
+    /// This function should be run out of the database it depends
+    /// on the prompt having been configured for a test
+    /// </summary>
+    /// <param name="prompt">Prompt that has been configured for a test</param>
+    private void SetCharsForPrompt(ref Prompt prompt)
+    {
+        Action<List<PromptChar>, string> populateCharList = 
+        (List<PromptChar> cl, string s) =>
+        {
+            foreach (char c in s)
+            {
+                cl.Add(new PromptChar()
+                {
+                    character = c,
+                    data = database.GetKanji(c)
+                });
+            }
+        };
+
+        // Set the chars to iterate through depending 
+        // on the type of the word and the input type
+        foreach (PromptWord word in prompt.words)
+        {
+            List<PromptChar> chars = new List<PromptChar>();
+            switch (word.type)
+            {
+                case PromptWord.WordType.kanji:
+                    // take the input type into consideration
+                    // for kanji as it could go either of two ways
+                    switch (word.responseType)
+                    {
+                        case InputType.KeyRomaji:
+                        case InputType.KeyHiragana:
+                        case InputType.WritingHiragana:
+                            populateCharList(chars, word.hiragana);
+                            break;
+                        case InputType.WritingKanji:
+                            populateCharList(chars, word.kanji);
+                            break;
+                      }
+                    break;
+                // hiragana/katana will always only have their own char type
+                case PromptWord.WordType.hiragana:
+                    populateCharList(chars, word.hiragana);
+                    break;
+                case PromptWord.WordType.katakana:
+                    populateCharList(chars, word.hiragana);
+                    break;
+            }
+            word.chars = chars.ToArray();
         }
     }
 
