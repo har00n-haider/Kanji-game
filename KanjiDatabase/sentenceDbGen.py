@@ -184,6 +184,7 @@ class WordType(IntEnum):
   hiragana = 2
   katakana = 3  
 
+# Deserialised on the unity side to PrompWord
 class PromptWord:
     def __init__(self, 
     type,
@@ -305,7 +306,7 @@ def GetPromptWordsFromString(sentenceStr):
 
     # Check for splitting on sokuon (ッ). This messes up 
     # the romaji coverter. Will retain all information 
-    # from the first word
+    # from the first word, but will create a compound word
     if (word.feature.kana[-1] == 'ッ'):
       kana = word.feature.kana + nextWord.feature.kana
       skipOne = True
@@ -314,11 +315,12 @@ def GetPromptWordsFromString(sentenceStr):
 
     # Populate prompt word
     if(wordType == WordType.kanji):
-      kanji = str(word)
+      # Taking the compound word detected earlier
+      kanji = (word.surface + GetHiraganaFromKana(nextWord.feature.kana)) if skipOne else word.surface
       meanings = GetMeaningsFromRootWord(word.feature.lemma)
       # Add the kanji to list of required kanji for import
-      for kanji in list(StripKanaFromString(kanji).strip(' ')):
-        reqKanji.add(kanji)
+      for kanjiSingle in list(StripKanaFromString(kanji).strip(' ')):
+        reqKanji.add(kanjiSingle)
     katakana = kana
     hiragana = GetHiraganaFromKana(katakana)
     romaji = GetRomajiFromKana(katakana) 
