@@ -285,9 +285,14 @@ namespace WanaKanaSharp {
                     root.TraverseChildren((node) => {
                         if(blacklist.Contains(node.Key)) return;
 
+                        // dealing with the long vowel
                         var value = node.Value;
-
-                        node.Insert((Key: 'ー', Value: value + value[value.Length - 1]));
+                        var lastChar = value[value.Length - 1];
+                        if (longVowelMap.ContainsKey(lastChar))
+                        {
+                            node.Insert((Key: 'ー', Value: 
+                                value.Remove(value.Length - 1) + longVowelMap[lastChar]));
+                        }
                     });
                 }
             }
@@ -312,5 +317,15 @@ namespace WanaKanaSharp {
 
             return (Token: current.Value, Position: position);
         }
+
+        private static readonly Dictionary<char, char> longVowelMap
+            = new Dictionary<char, char>()
+            {
+                {'a','ā'},
+                {'e','ē'},
+                {'i','ī'},
+                {'o','ō'},
+                {'u','ū'},
+            };
     }
 }
