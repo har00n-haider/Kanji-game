@@ -84,9 +84,11 @@ public enum PromptType
 /// </summary>
 public enum InputType 
 {
+
     KeyHiragana,
     KeyKatakana,
-    KeyRomaji,
+    KeyHiraganaWithRomaji,
+    KeyKatakanaWithRomaji,
     WritingHiragana,
     WritingKatakana,
     WritingKanji,
