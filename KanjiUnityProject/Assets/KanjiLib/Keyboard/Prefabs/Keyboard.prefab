@@ -175,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayRect: {fileID: 475863805078293059}
   inputRect: {fileID: 3254464631161202211}
-  dispHToParentHRatio: 0.1
+  dispHToParentHRatio: 0.15
 --- !u!1 &7976363266500827968
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,7 +363,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
