@@ -144,6 +144,8 @@ public class PromptWord
     [System.NonSerialized]
     private int cIdx = 0;
 
+    private static readonly char fillerChar = '☐';
+
     public override string ToString() 
     {
         string s = string.Empty;
@@ -156,13 +158,22 @@ public class PromptWord
 
     #region tracking progress
 
+    public string GetCompletedKanaString() 
+    {
+        string s = string.Empty;
+        for (int i = 0; i < katakana.Length; i++)
+        {
+            s += i < cIdx ? katakana[i].ToString() : string.Empty;
+        }
+        return s;
+    }
+
     public string GetDisplayString() 
     {
         string s = string.Empty;
         for (int i = 0; i < chars.Length; i++)
         {
-
-            s += i < cIdx ?  chars[i].character : '☐';
+            s += i < cIdx ? chars[i].character : fillerChar;
         }        
         return s;
     }

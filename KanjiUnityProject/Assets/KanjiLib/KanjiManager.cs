@@ -101,8 +101,8 @@ public class KanjiManager : MonoBehaviour
         switch (promptType)
         {
             case PromptWord.WordType.kanji:
-                displayType = PromptType.Hiragana;
-                responseType = InputType.KeyHiraganaWithRomaji;
+                displayType = PromptType.Kanji;
+                responseType = InputType.WritingKanji;
                 break;
             case PromptWord.WordType.hiragana:
                 displayType = PromptType.Hiragana;

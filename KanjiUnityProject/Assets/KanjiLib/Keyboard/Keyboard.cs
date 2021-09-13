@@ -37,7 +37,17 @@ public class Keyboard : MonoBehaviour
 
     private void UpdateDisplayString() 
     {
-        displayTextMesh.text = currWord?.GetDisplayString();
+
+        if(currWord != null) 
+        {
+            bool displayRomaji =
+                currWord.responseType == InputType.KeyHiraganaWithRomaji ||
+                currWord.responseType == InputType.KeyKatakanaWithRomaji;
+
+            string originalString = "<mspace=1em>" + currWord.GetDisplayString() + "</mspace>";
+            displayTextMesh.text = !displayRomaji ? originalString :
+                WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;        
+        }
     }
 
     private void Reset()
