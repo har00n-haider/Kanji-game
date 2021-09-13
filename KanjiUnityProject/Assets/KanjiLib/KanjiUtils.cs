@@ -185,7 +185,7 @@ public static class KanjiUtils
     public static readonly  InputType[] kanjiInputs = new InputType[]
     {
             InputType.KeyHiragana,
-            InputType.KeyRomaji,
+            InputType.KeyHiraganaWithRomaji,
             InputType.Meaning,
             InputType.WritingHiragana,
             InputType.WritingKanji,
@@ -194,14 +194,14 @@ public static class KanjiUtils
     public static readonly InputType[] katakanaInputs = new InputType[]
     {
                 InputType.KeyKatakana,
-                InputType.KeyRomaji,
+                InputType.KeyKatakanaWithRomaji,
                 InputType.WritingKatakana,
     };
 
     public static readonly InputType[] hiraganaInputs = new InputType[]
     {
                 InputType.KeyHiragana,
-                InputType.KeyRomaji,
+                InputType.KeyHiraganaWithRomaji,
                 InputType.WritingHiragana,
     };
 

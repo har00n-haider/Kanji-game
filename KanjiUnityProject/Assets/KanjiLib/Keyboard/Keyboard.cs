@@ -58,7 +58,8 @@ public class Keyboard : MonoBehaviour
                 break;
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
-            case InputType.KeyRomaji:
+            case InputType.KeyHiraganaWithRomaji:
+            case InputType.KeyKatakanaWithRomaji:
                 drawInput.gameObject.SetActive(false);
                 flickInput.gameObject.SetActive(true);
                 flickInput.SetType(type);
@@ -78,7 +79,8 @@ public class Keyboard : MonoBehaviour
                 break;
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
-            case InputType.KeyRomaji:
+            case InputType.KeyKatakanaWithRomaji:
+            case InputType.KeyHiraganaWithRomaji:
                 flickInput.SetPromptChar(promptChar);
                 break;
         }

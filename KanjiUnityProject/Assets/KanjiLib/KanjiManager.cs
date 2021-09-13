@@ -101,16 +101,16 @@ public class KanjiManager : MonoBehaviour
         switch (promptType)
         {
             case PromptWord.WordType.kanji:
-                displayType = PromptType.Kanji;
-                responseType = InputType.WritingKanji;
+                displayType = PromptType.Hiragana;
+                responseType = InputType.KeyHiraganaWithRomaji;
                 break;
             case PromptWord.WordType.hiragana:
                 displayType = PromptType.Hiragana;
-                responseType = InputType.KeyHiragana; 
+                responseType = InputType.KeyHiraganaWithRomaji; 
                 break;
             case PromptWord.WordType.katakana:
                 displayType = PromptType.Katana;
-                responseType = InputType.KeyKatakana; 
+                responseType = InputType.KeyKatakanaWithRomaji; 
                 break;
             default:
                 break;
@@ -192,7 +192,7 @@ public class KanjiManager : MonoBehaviour
                     // for kanji as it could go either of two ways
                     switch (word.responseType)
                     {
-                        case InputType.KeyRomaji:
+                        case InputType.KeyHiraganaWithRomaji:
                         case InputType.KeyHiragana:
                         case InputType.WritingHiragana:
                             populateCharList(chars, word.hiragana);
