@@ -30,9 +30,10 @@ public class FlickButtonDirectional
     private TextMeshProUGUI textMesh;
     private Image image;
     private FlickType type;
+    public string inputChar;
     public Vector2 relativePosScale;
 
-    public string character
+    public string displayChar
     {
         get
         {

@@ -30,25 +30,26 @@ public class FlickButton : MonoBehaviour
         public bool disabled = false;
     }
 
-    [Serializable]
     public class CharSetup 
     {
-        [SerializeField]
-        public string centerChar = "a";
-        [SerializeField]
-        public string upChar = "b";
-        [SerializeField]
-        public string downChar = "c";
-        [SerializeField]
-        public string leftChar = "d";
-        [SerializeField]
-        public string rightChar = "e";
+        // for input
+        public string iCenterChar = "a";
+        public string iUpChar = "b";
+        public string iDownChar = "c";
+        public string iLeftChar = "d";
+        public string iRightChar = "e";
+        // for display
+        public string dCenterChar = "a";
+        public string dUpChar = "b";
+        public string dDownChar = "c";
+        public string dLeftChar = "d";
+        public string dRightChar = "e";
     }
 
     // config
     public float? fontSize = null;
     public Config config;
-    public CharSetup charSetup;
+    public CharSetup charSetup = new CharSetup();
 
 
     // state
@@ -135,11 +136,17 @@ public class FlickButton : MonoBehaviour
 
     public void UpdateChars()
     {
-        flickMap[FlickType.Up].character     = charSetup.upChar;
-        flickMap[FlickType.Down].character   = charSetup.downChar;
-        flickMap[FlickType.Left].character   = charSetup.leftChar;
-        flickMap[FlickType.Right].character  = charSetup.rightChar;
-        flickMap[FlickType.Center].character = charSetup.centerChar;
+        flickMap[FlickType.Up].displayChar     = charSetup.dUpChar;
+        flickMap[FlickType.Down].displayChar   = charSetup.dDownChar;
+        flickMap[FlickType.Left].displayChar   = charSetup.dLeftChar;
+        flickMap[FlickType.Right].displayChar  = charSetup.dRightChar;
+        flickMap[FlickType.Center].displayChar = charSetup.dCenterChar;
+
+        flickMap[FlickType.Up].inputChar     = charSetup.iUpChar;
+        flickMap[FlickType.Down].inputChar   = charSetup.iDownChar;
+        flickMap[FlickType.Left].inputChar   = charSetup.iLeftChar;
+        flickMap[FlickType.Right].inputChar  = charSetup.iRightChar;
+        flickMap[FlickType.Center].inputChar = charSetup.iCenterChar;
     }
 
     void UpdateFlick()
@@ -195,6 +202,6 @@ public class FlickButton : MonoBehaviour
     private char GetCurrentChar()
     {
         //TODO: Fix me 
-        return flickMap[currFlick].character[0];
+        return flickMap[currFlick].inputChar[0];
     }
 }
