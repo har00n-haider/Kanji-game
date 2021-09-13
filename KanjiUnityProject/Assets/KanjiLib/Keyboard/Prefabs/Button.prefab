@@ -54,20 +54,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 247bcefb638332b428ccd62811e91d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  centerButton: {fileID: 7146837757520368630}
-  buttonConfig:
-    centerChar: 97
-    upChar: 98
-    downChar: 99
-    leftChar: 100
-    rightChar: 101
-    flickThreshold: 0.5
-    relativeDistToCenter: 0.98
-    padding: 0.07
-    centerButtonColor: {r: 0.15895337, g: 0.7169812, b: 0.3048016, a: 1}
-    centerButtonHighlightColor: {r: 0.5566928, g: 0.8490566, b: 0.6328721, a: 1}
-    flickButtonColor: {r: 0.87243366, g: 0.30647027, b: 0.9150943, a: 1}
-    textColor: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 1}
+  config:
+    flickThreshold: 30
+    relativeDistToCenter: 0.7
+    textPadding: 0.07
+    centerButtonColor: {r: 0, g: 0, b: 0, a: 0}
+    centerButtonHighlightColor: {r: 0, g: 0, b: 0, a: 0}
+    flickButtonColor: {r: 0, g: 0, b: 0, a: 0}
+    textColor: {r: 0, g: 0, b: 0, a: 0}
+    disabled: 0
+  charSetup:
+    centerChar: a
+    upChar: b
+    downChar: c
+    leftChar: d
+    rightChar: e
+  parentFlickLayout: {fileID: 0}
 --- !u!114 &2044315463240852577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,7 +215,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 4096
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -347,7 +349,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 4096
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -709,7 +711,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 4096
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -843,7 +845,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 4096
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1129,7 +1131,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 4096
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
