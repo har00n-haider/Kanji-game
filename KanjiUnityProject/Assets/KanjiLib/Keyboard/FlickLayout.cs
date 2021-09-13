@@ -225,7 +225,8 @@ public class FlickInputHandler
         if (lastChar == null) return;
         // katakana conversion: convert to 
         char? charToMod = lastChar.Value;
-        if (type == InputType.KeyKatakana) charToMod = katakanaToHiragana[charToMod.Value];
+        bool requiresConversion = type == InputType.KeyKatakana || type == InputType.KeyKatakanaWithRomaji;
+        if (requiresConversion) charToMod = katakanaToHiragana[charToMod.Value];
         switch (modChar)
         {
             case '小':
@@ -243,7 +244,7 @@ public class FlickInputHandler
         if(charToMod != null) 
         {
             // katakana conversion: convert back
-            if (type == InputType.KeyKatakana)
+            if (requiresConversion)
             {
                 charToMod = hiraganaToKatana[charToMod.Value];
             }
@@ -467,48 +468,104 @@ public class FlickLayout : MonoBehaviour
     {
         if (flickCellGrid.Length == 0) return;
         FlickButton button = flickCellGrid[row, col].button;
-        // per button setup 
-        Action<string, string, string, string, string> updateChars =
+        // helpers functions: per button setup 
+        Action<string, string, string, string, string> setInputChars =
         (string c, string l, string u, string r, string d) =>
         {
             button.charSetup = new FlickButton.CharSetup()
-            { centerChar = c, upChar = u, downChar = d, leftChar = l, rightChar = r };
+            { 
+                iCenterChar = c, 
+                iUpChar = u, 
+                iDownChar = d, 
+                iLeftChar = l, 
+                iRightChar = r,
+
+                dCenterChar = c,
+                dUpChar = u,
+                dDownChar = d,
+                dLeftChar = l,
+                dRightChar = r
+            };
             button.UpdateChars();
         };
+        Action<string, string, string, string, string> addRomaji =
+        (string c, string l, string u, string r, string d) =>
+        {
+            string romajiStr(string s) => "\n<size=50%>" + s.AddColor(Color.white);
+            button.charSetup.dCenterChar = button.charSetup.iCenterChar + romajiStr(c);
+            button.charSetup.dUpChar     = button.charSetup.iUpChar     + romajiStr(u);
+            button.charSetup.dDownChar   = button.charSetup.iDownChar   + romajiStr(d);
+            button.charSetup.dLeftChar   = button.charSetup.iLeftChar   + romajiStr(l);
+            button.charSetup.dRightChar  = button.charSetup.iRightChar  + romajiStr(r);
+            button.UpdateChars();
+        };
+        // helper functions: layout setup
+        Action<int, int> setKatakanaLayout =
+        (int r, int c) =>
+        {
+            if (r == 0 && c == 0) { setInputChars("小", "　", "゛", "　", "゜"); }
+            if (r == 0 && c == 1) { setInputChars("ワ", "ヲ", "ン", "ー", "　"); }
+            if (r == 0 && c == 2) { setInputChars("　", "　", "　", "　", "　"); }
+            if (r == 1 && c == 0) { setInputChars("マ", "ミ", "ム", "メ", "モ"); }
+            if (r == 1 && c == 1) { setInputChars("ヤ", "　", "ユ", "　", "ヨ"); }
+            if (r == 1 && c == 2) { setInputChars("ラ", "リ", "ル", "レ", "ロ"); }
+            if (r == 2 && c == 0) { setInputChars("タ", "チ", "ツ", "テ", "ト"); }
+            if (r == 2 && c == 1) { setInputChars("ナ", "ニ", "ヌ", "ネ", "ノ"); }
+            if (r == 2 && c == 2) { setInputChars("ハ", "ヒ", "フ", "へ", "ホ"); }
+            if (r == 3 && c == 0) { setInputChars("ア", "イ", "ウ", "エ", "オ"); }
+            if (r == 3 && c == 1) { setInputChars("カ", "キ", "ク", "ケ", "コ"); }
+            if (r == 3 && c == 2) { setInputChars("サ", "シ", "ス", "セ", "ソ"); }
+        };
+        Action<int, int> setHiraganaLayout =
+        (int r, int c) =>
+        {
+            if (r == 0 && c == 0) { setInputChars("小", "　", "゛", "　", "゜"); }
+            if (r == 0 && c == 1) { setInputChars("わ", "を", "ん", "ー", "　"); }
+            if (r == 0 && c == 2) { setInputChars("　", "　", "　", "　", "　"); }
+            if (r == 1 && c == 0) { setInputChars("ま", "み", "む", "め", "も"); }
+            if (r == 1 && c == 1) { setInputChars("や", "　", "ゆ", "　", "よ"); }
+            if (r == 1 && c == 2) { setInputChars("ら", "り", "る", "れ", "ろ"); }
+            if (r == 2 && c == 0) { setInputChars("た", "ち", "つ", "て", "と"); }
+            if (r == 2 && c == 1) { setInputChars("な", "に", "ぬ", "ね", "の"); }
+            if (r == 2 && c == 2) { setInputChars("は", "ひ", "ふ", "へ", "ほ"); }
+            if (r == 3 && c == 0) { setInputChars("あ", "い", "う", "え", "お"); }
+            if (r == 3 && c == 1) { setInputChars("か", "き", "く", "け", "こ"); }
+            if (r == 3 && c == 2) { setInputChars("さ", "し", "す", "せ", "そ"); }
+
+        };
+        Action<int, int> addRomajiToLayout =
+        (int r, int c) =>
+        {
+            // this are just hint texts added to the button
+            if (row == 0 && col == 0) { addRomaji("", "", "", "", ""); }
+            if (row == 0 && col == 1) { addRomaji("wa", "wo", "n", "", ""); }
+            if (row == 0 && col == 2) { addRomaji("", "", "", "", ""); } 
+            if (row == 1 && col == 0) { addRomaji("ma", "mi", "mu", "me", "mo"); }
+            if (row == 1 && col == 1) { addRomaji("ya", "　", "yu", "　", "yo"); }
+            if (row == 1 && col == 2) { addRomaji("ra", "ri", "ru", "re", "ro"); }
+            if (row == 2 && col == 0) { addRomaji("ta", "chi", "tsu", "te", "to"); }
+            if (row == 2 && col == 1) { addRomaji("na", "ni", "nu", "ne", "no"); }
+            if (row == 2 && col == 2) { addRomaji("ha", "hi", "fu", "he", "ho"); }
+            if (row == 3 && col == 0) { addRomaji("a", "i", "u", "e", "o"); }
+            if (row == 3 && col == 1) { addRomaji("ka", "ki", "ku", "ke", "ko"); }
+            if (row == 3 && col == 2) { addRomaji("sa", "shi", "su", "se", "so"); }
+        };
+
         switch (type)
         {
             case InputType.KeyHiragana:
-
-                if (row == 0 && col == 0) { updateChars("小", "　", "゛", "　", "゜"); }
-                if (row == 0 && col == 1) { updateChars("わ", "を", "ん", "ー", "　"); }
-                if (row == 0 && col == 2) { updateChars("　", "　", "　", "　", "　"); }
-                if (row == 1 && col == 0) { updateChars("ま", "み", "む", "め", "も"); }
-                if (row == 1 && col == 1) { updateChars("や", "　", "ゆ", "　", "よ"); }
-                if (row == 1 && col == 2) { updateChars("ら", "り", "る", "れ", "ろ"); }
-                if (row == 2 && col == 0) { updateChars("た", "ち", "つ", "て", "と"); }
-                if (row == 2 && col == 1) { updateChars("な", "に", "ぬ", "ね", "の"); }
-                if (row == 2 && col == 2) { updateChars("は", "ひ", "ふ", "へ", "ほ"); }
-                if (row == 3 && col == 0) { updateChars("あ", "い", "う", "え", "お"); }
-                if (row == 3 && col == 1) { updateChars("か", "き", "く", "け", "こ"); }
-                if (row == 3 && col == 2) { updateChars("さ", "し", "す", "せ", "そ"); }
+                setHiraganaLayout(row, col);
                 break;
             case InputType.KeyKatakana:
-                if (row == 0 && col == 0) { updateChars("小", "　", "゛", "　", "゜"); }
-                if (row == 0 && col == 1) { updateChars("ワ", "ヲ", "ン", "ー", "　"); }
-                if (row == 0 && col == 2) { updateChars("　", "　", "　", "　", "　"); }
-                if (row == 1 && col == 0) { updateChars("マ", "ミ", "ム", "メ", "モ"); }
-                if (row == 1 && col == 1) { updateChars("ヤ", "　", "ユ", "　", "ヨ"); }
-                if (row == 1 && col == 2) { updateChars("ラ", "リ", "ル", "レ", "ロ"); }
-                if (row == 2 && col == 0) { updateChars("タ", "チ", "ツ", "テ", "ト"); }
-                if (row == 2 && col == 1) { updateChars("ナ", "ニ", "ヌ", "ネ", "ノ"); }
-                if (row == 2 && col == 2) { updateChars("ハ", "ヒ", "フ", "へ", "ホ"); }
-                if (row == 3 && col == 0) { updateChars("ア", "イ", "ウ", "エ", "オ"); }
-                if (row == 3 && col == 1) { updateChars("カ", "キ", "ク", "ケ", "コ"); }
-                if (row == 3 && col == 2) { updateChars("サ", "シ", "ス", "セ", "ソ"); }
+                setKatakanaLayout(row, col);
                 break;
-            case InputType.KeyRomaji:
-            // romaji is only a visualisation of on prompts and the keyboard display
-            default:
+            case InputType.KeyHiraganaWithRomaji:
+                setHiraganaLayout(row, col);
+                addRomajiToLayout(row, col);
+                break;
+            case InputType.KeyKatakanaWithRomaji:
+                setKatakanaLayout(row, col);
+                addRomajiToLayout(row, col);
                 break;
         }
         if (overrideFontSize)
