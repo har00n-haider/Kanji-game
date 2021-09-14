@@ -14,6 +14,7 @@ public class KanjiDatabase
     private Dictionary<string, KanjiData> kanjis = new Dictionary<string, KanjiData>();
     private PromptList prompts = new PromptList();
     public bool kanjiDataBaseLoaded = false;
+    private List<string> meaningsFillerList = new List<string>();
 
     public KanjiData GetRandomKanji()
     {
@@ -22,7 +23,6 @@ public class KanjiDatabase
         var idx = Random.Range(0, kanjiList.Count - 1);
         return kanjiList[idx];
     }
-
 
     #region prompt methods
 
@@ -41,7 +41,25 @@ public class KanjiDatabase
 
     #endregion
 
-
+    public List<string> GetRandomFillerMeanings(int noOfStrings, string except) 
+    {
+        if (noOfStrings > meaningsFillerList.Count) return new List<string>();
+        HashSet<string> meanings = new HashSet<string>();
+        while(meanings.Count < noOfStrings) 
+        {
+            int ridx = Random.Range(0, meaningsFillerList.Count);
+            // check for the except string that should not be included
+            if(except != null && meaningsFillerList[ridx] != except) 
+            {
+                meanings.Add(meaningsFillerList[ridx]);
+            }
+            else 
+            {
+                meanings.Add(meaningsFillerList[ridx]);
+            }
+        }
+        return meanings.ToList();
+    }
 
     public KanjiData GetRandomKanjiFiltered(System.Func<KanjiData, bool> filter) 
     {
@@ -73,6 +91,7 @@ public class KanjiDatabase
     {
         kanjis = LoadKanjiDatabase(kanjiDataBaseFile).ToDictionary(x => x.code, c => c);
         prompts = LoadSentenceDatabase(sentenceDataBaseFile);
+        meaningsFillerList = LoadMeaningsFillerList();
     }
 
     private List<KanjiData> LoadKanjiDatabase(TextAsset dataBaseFile) 
@@ -122,6 +141,25 @@ public class KanjiDatabase
     private PromptList LoadSentenceDatabase(TextAsset dataBaseFile)     
     {
         return JsonUtility.FromJson<PromptList>(dataBaseFile.text);
+    }
+
+    private List<string> LoadMeaningsFillerList() 
+    {
+        HashSet<string> fillerMeanings = new HashSet<string>();
+        foreach(Prompt p in prompts.sentences) 
+        {
+            foreach(PromptWord w in p.words) 
+            {
+                if(w.meanings != null) 
+                {
+                    foreach(string m in w.meanings) 
+                    {
+                        fillerMeanings.Add(m);
+                    }
+                }
+            }
+        }
+        return fillerMeanings.ToList();
     }
 }
 

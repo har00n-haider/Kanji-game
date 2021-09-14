@@ -68,6 +68,11 @@ public class KanjiManager : MonoBehaviour
         kanjiTraceable.prompt = GetNextPrompt();
     }
 
+    public List<string> GetRandomMeanings(int noOfMeanings, string except = null) 
+    {
+        return database.GetRandomFillerMeanings(noOfMeanings, except);
+    }
+
     #region prompt setup
 
     int pIdx = -1;
@@ -102,7 +107,7 @@ public class KanjiManager : MonoBehaviour
         {
             case PromptWord.WordType.kanji:
                 displayType = PromptType.Kanji;
-                responseType = InputType.WritingKanji;
+                responseType = InputType.Meaning;
                 break;
             case PromptWord.WordType.hiragana:
                 displayType = PromptType.Hiragana;
@@ -189,7 +194,7 @@ public class KanjiManager : MonoBehaviour
             {
                 case PromptWord.WordType.kanji:
                     // take the input type into consideration
-                    // for kanji as it could go either of two ways
+                    // for kanji as it could go multpile ways
                     switch (word.responseType)
                     {
                         case InputType.KeyHiraganaWithRomaji:
@@ -198,6 +203,7 @@ public class KanjiManager : MonoBehaviour
                             populateCharList(chars, word.hiragana);
                             break;
                         case InputType.WritingKanji:
+                        case InputType.Meaning:
                             populateCharList(chars, word.kanji);
                             break;
                       }
