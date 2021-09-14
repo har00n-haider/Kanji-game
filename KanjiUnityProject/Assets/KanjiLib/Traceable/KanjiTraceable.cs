@@ -23,6 +23,7 @@ public class KanjiTraceable : MonoBehaviour
     Color hiraganaColor = Color.red;
     Color katanaColor = Color.yellow;
     Color kanjiColor = Color.blue;
+    Color romajiColor = Color.green;
 
     // refs
     private RectTransform labelRect;
@@ -126,6 +127,8 @@ public class KanjiTraceable : MonoBehaviour
                         color = katanaColor;
                         break;
                     case PromptType.Romaji:
+                        color = romajiColor;
+                        break;
                     case PromptType.Meaning:
                     default:
                         break;
@@ -145,6 +148,8 @@ public class KanjiTraceable : MonoBehaviour
                     text = pw.katakana;
                     break;
                 case PromptType.Romaji:
+                    text = WanaKanaSharp.WanaKana.ToRomaji(pw.katakana);
+                    break;
                 case PromptType.Meaning:
                 default:
                     break;
