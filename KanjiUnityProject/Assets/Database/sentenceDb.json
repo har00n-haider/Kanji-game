@@ -160,7 +160,9 @@
                 {
                     "type": 1,
                     "kanji": "私",
-                    "meanings": null,
+                    "meanings": [
+                        "I me"
+                    ],
                     "romaji": "watakushi",
                     "hiragana": "わたくし",
                     "katakana": "ワタクシ"

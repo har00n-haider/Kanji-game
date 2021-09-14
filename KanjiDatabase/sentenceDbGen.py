@@ -247,6 +247,7 @@ def GetHiraganaFromKana(kanaStr):
 
 def GetMeaningsFromRootWord(wordStr):
   definition = jam.lookup(wordStr)
+  defList = None
   if len(definition.entries) > 0:
     defList = definition.entries[0].senses
     for i in range(len(defList)):
@@ -317,7 +318,9 @@ def GetPromptWordsFromString(sentenceStr):
     if(wordType == WordType.kanji):
       # Taking the compound word detected earlier
       kanji = (word.surface + GetHiraganaFromKana(nextWord.feature.kana)) if skipOne else word.surface
-      meanings = GetMeaningsFromRootWord(word.feature.lemma)
+      meanings = GetMeaningsFromRootWord(word.feature.lemma.split('-')[0]) # sometimes lemma has 
+      if meanings == None:
+        raise Exception('No meaning found for word ' + kanji);
       # Add the kanji to list of required kanji for import
       for kanjiSingle in list(StripKanaFromString(kanji).strip(' ')):
         reqKanji.add(kanjiSingle)
