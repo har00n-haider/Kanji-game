@@ -16,7 +16,9 @@ public class Keyboard : MonoBehaviour
     private Kanji2D drawInput;
     [SerializeField]
     private TextMeshProUGUI displayTextMesh;
-    private KanjiManager kanjiMan;
+    [SerializeField]
+    private MeaningInput meaningInput;
+    public KanjiManager kanjiMan;
 
     // state
     public PromptWord currWord { get; set; } = null;
@@ -33,20 +35,26 @@ public class Keyboard : MonoBehaviour
         flickInput.Init();
         // needs KanjiData from the kanjimanager , i.e. the current kanji to draw
         drawInput.keyboard = this;
+        meaningInput.keyboard = this;
     }
 
     private void UpdateDisplayString() 
     {
-
         if(currWord != null) 
         {
-            bool displayRomaji =
-                currWord.responseType == InputType.KeyHiraganaWithRomaji ||
-                currWord.responseType == InputType.KeyKatakanaWithRomaji;
-
-            string originalString = "<mspace=1em>" + currWord.GetDisplayString() + "</mspace>";
-            displayTextMesh.text = !displayRomaji ? originalString :
-                WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;        
+            if (currWord.responseType == InputType.Meaning)
+            {
+                displayTextMesh.text = currWord.ToString();
+            }
+            else
+            {
+                bool displayRomaji =
+                    currWord.responseType == InputType.KeyHiraganaWithRomaji ||
+                    currWord.responseType == InputType.KeyKatakanaWithRomaji;
+                string originalString = "<mspace=1em>" + currWord.GetDisplayString() + "</mspace>";
+                displayTextMesh.text = !displayRomaji ? originalString :
+                    WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;  
+            }
         }
     }
 
@@ -64,15 +72,22 @@ public class Keyboard : MonoBehaviour
             case InputType.WritingKatakana:
             case InputType.WritingKanji:
                 flickInput.gameObject.SetActive(false);
+                meaningInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
             case InputType.KeyHiraganaWithRomaji:
             case InputType.KeyKatakanaWithRomaji:
+                meaningInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(false);
                 flickInput.gameObject.SetActive(true);
                 flickInput.SetType(type);
+                break;
+            case InputType.Meaning:
+                drawInput.gameObject.SetActive(false);
+                flickInput.gameObject.SetActive(false);
+                meaningInput.gameObject.SetActive(true);
                 break;
         }
     }
@@ -106,8 +121,7 @@ public class Keyboard : MonoBehaviour
             UpdateDisplayString();
             if (currWord.WordCompleted()) 
             {
-                Reset();
-                kanjiMan.UpdateCurrentKanjiTraceable();     
+                WordCompleted();
             }
             else 
             {
@@ -116,12 +130,25 @@ public class Keyboard : MonoBehaviour
         }
     }
 
+    public void WordCompleted() 
+    {
+        Reset();
+        kanjiMan.UpdateCurrentKanjiTraceable();
+    }
+
     public void SetPromptWord(PromptWord promptWord) 
     {
         currWord = promptWord;
         // set the prompt char to the relevant input
         ShowInputForType(currWord.responseType);
-        SetPromptChar(promptWord.GetChar());
+        if(currWord.responseType == InputType.Meaning) 
+        {
+            meaningInput.SetPromptWord(promptWord);
+        }
+        else 
+        {
+            SetPromptChar(promptWord.GetChar());
+        }
         UpdateDisplayString();
     }
 }
