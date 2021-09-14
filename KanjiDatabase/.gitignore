@@ -8,5 +8,8 @@ kanjiVG/
 
 *.xml
 
+# tatoeba files
+*.tsv
+
 # outputs of the scripts
 out/
