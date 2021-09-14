@@ -178,6 +178,8 @@ unreqDicWords = {
   ''
   }
 reqKanji = set()
+skipPattern = re.compile('[A-Za-z0-9０-９&、/]')
+subPattern = re.compile('[。・？、\n 「」！!]')
 
 class WordType(IntEnum):
   kanji = 1
@@ -300,6 +302,11 @@ def GetPromptWordsFromString(sentenceStr):
       continue
 
     word = wordList[i]
+
+    # HACK to deal with messed up regex in the preprocessing of the sentences
+    if skipPattern.match(str(word)):
+      return None
+
     nextWord = wordList[i + 1] if (i + 1 < len(wordList)) else None
     wordType = GetTypeFromOriginalWord(str(word))
     kanji = None
@@ -308,6 +315,8 @@ def GetPromptWordsFromString(sentenceStr):
     # Check for splitting on sokuon (ッ). This messes up 
     # the romaji coverter. Will retain all information 
     # from the first word, but will create a compound word
+    if (word.feature.kana == None or nextWord == None):
+      return None
     if (word.feature.kana[-1] == 'ッ'):
       kana = word.feature.kana + nextWord.feature.kana
       skipOne = True
@@ -320,7 +329,7 @@ def GetPromptWordsFromString(sentenceStr):
       kanji = (word.surface + GetHiraganaFromKana(nextWord.feature.kana)) if skipOne else word.surface
       meanings = GetMeaningsFromRootWord(word.feature.lemma.split('-')[0]) # sometimes lemma has 
       if meanings == None:
-        raise Exception('No meaning found for word ' + kanji);
+        return None
       # Add the kanji to list of required kanji for import
       for kanjiSingle in list(StripKanaFromString(kanji).strip(' ')):
         reqKanji.add(kanjiSingle)
@@ -331,15 +340,30 @@ def GetPromptWordsFromString(sentenceStr):
 
   return promptWords
 
-# can load this in from tatoeba eventually
-inputSentences = [
-  '忘れちゃった',
-  'メロンが半分食べられた',
-  'パイソンが大好きです',
-  'オリンピックで残ったマスク',
-  '私ブラックコーヒーが大好き',
-  '彼女は決して肉を食べない'
-]
+
+
+def CleanString(sentence):
+    # limit size 
+    if(len(sentence) > 14):
+      return
+    # skip chars
+    if(skipPattern.match(sentence)):
+      return
+    # substitute chars
+    cleanSentence = subPattern.sub('', sentence)
+    return cleanSentence
+
+inputSentences = []
+
+with open("kanjiTatoebaSentences/jpn_sentences.tsv", "r", encoding='utf-8') as file:
+  for line in file:
+    sentence = line[9:]
+    sentence = CleanString(sentence)
+    if(sentence == None):
+      continue
+    else:
+      inputSentences.append(sentence)
+
 
 # process the sentences to prompt strings
 prompts = {
@@ -350,7 +374,8 @@ for rawSentence in inputSentences:
     'words' : []
   }
   sentence['words'] = GetPromptWordsFromString(rawSentence)
-  prompts['sentences'].append(sentence)
+  if(sentence['words'] != None):
+    prompts['sentences'].append(sentence)
 
 # save a json file with the promp strings
 data = json.dumps(
