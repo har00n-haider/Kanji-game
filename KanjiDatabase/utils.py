@@ -123,6 +123,9 @@ def GetPromptWordsFromString(sentenceStr, reqKanji = None):
     # Check for splitting on sokuon (ッ). This messes up 
     # the romaji coverter. Will retain all information 
     # from the first word, but will create a compound word
+    if (word.feature.kana == None): 
+      # Not handling non japanese words (yet...?)
+      return None
     if (word.feature.kana[-1] == 'ッ'):
       kana = word.feature.kana + nextWord.feature.kana
       skipOne = True

@@ -10,6 +10,7 @@ dictionaryPath = 'kanjidic2.xml/kanjidic2.xml'
 kanjiDbName = 'kanjiDatabase.xml'
 sentenceDbName = 'sentenceDatabase.json'
 tatoebaPath = 'kanjiTatoebaSentences/jpn_sentences.tsv'
+joyoSetPath = 'kanjiSets/joyo.txt'
 
 # libs
 kks = pykakasi.kakasi()

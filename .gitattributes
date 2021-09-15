@@ -1,2 +1,3 @@
 KanjiUnityProject/Assets/Resources/Fonts/NotoSansJP-Regular[[:space:]]SDF[[:space:]]F1.asset filter=lfs diff=lfs merge=lfs -text
 KanjiUnityProject/Assets/Resources/Fonts/NotoSansJP-Regular[[:space:]]SDF.asset filter=lfs diff=lfs merge=lfs -text
+KanjiDatabase/KanjiDatabaseResources.7z filter=lfs diff=lfs merge=lfs -text
