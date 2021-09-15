@@ -12,7 +12,7 @@ __pycache__/
 kanjidic2.xml/
 kanjiKeywords/
 kanjiVG/
-
+kanjiSets/
 *.xml
 
 # tatoeba files
