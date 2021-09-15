@@ -1,6 +1,7 @@
 from enum import IntEnum
 import re
 import globals as gl
+from progress.bar import Bar
 
 class WordType(IntEnum):
   kanji = 1
@@ -155,11 +156,17 @@ def GetPromptsFromListOfStrings(inputSentences, reqKanji):
   prompts = {
     'sentences' : []
   }
-  for rawSentence in inputSentences:
+  noOfSentences = len(inputSentences)
+
+  bar = Bar('Generating prompts', max=noOfSentences)
+
+  for idx, rawSentence in enumerate(inputSentences):
     sentence = {
       'words' : []
     }
     sentence['words'] = GetPromptWordsFromString(rawSentence, reqKanji)
     if(sentence['words'] != None):
       prompts['sentences'].append(sentence)
+    bar.next()
+  bar.finish()
   return prompts
