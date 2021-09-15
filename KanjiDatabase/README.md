@@ -1,3 +1,7 @@
+# Database generation scripts
+
+The point of these scripts is to generate the resources that will be used by the game to do a number of things (.eg. create sentence prompts, track progress etc.)
+
 # Reference links
 
 ## Kanji writing
