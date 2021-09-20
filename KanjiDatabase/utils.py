@@ -2,6 +2,8 @@ from enum import IntEnum
 import re
 import globals as gl
 from progress.bar import Bar
+import json
+from os import path
 
 class WordType(IntEnum):
   kanji = 1
@@ -170,3 +172,12 @@ def GetPromptsFromListOfStrings(inputSentences, reqKanji):
     bar.next()
   bar.finish()
   return prompts
+
+def PrintPromptDatabaseSummary():
+  with open(path.join(gl.outDir, gl.sentenceDbName), 'r', encoding='utf-8') as file:
+    # returns JSON object as
+    # a dictionary
+    data = json.load(file)
+    length = len(data['sentences'])
+    print('database has: ' + length + ' sentences')
+  return

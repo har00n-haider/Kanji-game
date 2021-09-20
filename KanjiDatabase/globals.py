@@ -8,10 +8,10 @@ outDir = 'out/'
 kanjiDir = 'kanjiVG/'
 dictionaryPath = 'kanjidic2.xml/kanjidic2.xml'
 kanjiDbName = 'kanjiDatabase.xml'
-sentenceDbName = 'sentenceDatabase.json'
+sentenceDbName = 'promptDatabase.json'
 tatoebaPath = 'kanjiTatoebaSentences/jpn_sentences.tsv'
 joyoSetPath = 'kanjiSets/joyo.txt'
-
+customListPath = 'kanjiCustomList/customList.txt'
 # libs
 kks = pykakasi.kakasi()
 jam = Jamdict()
@@ -22,6 +22,7 @@ unreqDicWords = {
   'noun',
   'common',
   'futsuumeishi',
+  'fukushi'
   'ichidan',
   'verb',
   'transitive',

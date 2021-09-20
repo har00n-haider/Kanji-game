@@ -127,12 +127,11 @@ def GenerateSentenceDatabaseFromPrompts(prompts):
     default=lambda o: o.__dict__,
     ensure_ascii=False,
     indent=4)
-  with open(path.join(gl.outDir, gl.kanjiDbName), "w", encoding='utf-8') as file:
+  with open(path.join(gl.outDir, gl.sentenceDbName), "w", encoding='utf-8') as file:
     file.write(data)
   return
 
 #endregion
-
 def PrintRequiredCharsForTextMeshPro():
   """ For when you want to explicitly set the
   kanji that text mesh pro can handle"""
@@ -169,13 +168,26 @@ def PrintRequiredCharsForTextMeshPro():
   return
 
 
+def GetPromptsFromWordList(wordsListPath, reqKanji):
+  inputSentences = []
+  with open(wordsListPath, "r", encoding='utf-8') as file:
+    for line in file:
+      if(line == None):
+        continue
+      else:
+        inputSentences.append(line.strip('\n'))
+  prompts = ut.GetPromptsFromListOfStrings(inputSentences, reqKanji)
+
+  return prompts
+
 # Get the prompts from tatoeba
 reqKanji = set()
-prompts = GetPromptsFromTatoeba(gl.tatoebaPath, reqKanji)
+prompts = GetPromptsFromWordList(gl.customListPath, reqKanji)
 
 # Save the sentence database
 GenerateSentenceDatabaseFromPrompts(prompts)
 GenerateKanjiDatabase(reqKanji)
+
 
 
 
