@@ -7,6 +7,7 @@ TagManager:
   - KanjiManager
   - MainCanvas
   - Keyboard
+  - MainCharacter
   layers:
   - Default
   - TransparentFX
