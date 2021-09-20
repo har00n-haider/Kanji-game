@@ -7,7 +7,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(BoxCollider))]
-public class MissileSpawnVolume : MonoBehaviour
+public class GruntSpawnVolume : MonoBehaviour
 {
     [Serializable]
     public class MissileSpawnConfig 
@@ -26,13 +26,13 @@ public class MissileSpawnVolume : MonoBehaviour
     private float timeSinceLastSpawn = 0;
     private BoxCollider boxCollider;
     private bool canGenerate = true;
-    private List<Missile> missiles = new List<Missile>();
+    private List<Grunt> missiles = new List<Grunt>();
     private int noOfMissileDestroyed;
 
     // unity references
     public Target target;
     public KanjiManager kanjiManager;
-    public Missile missilePrefab;
+    public Grunt missilePrefab;
 
     // kanji loading
 
@@ -84,10 +84,10 @@ public class MissileSpawnVolume : MonoBehaviour
             Random.Range(bounds.min.y, bounds.max.y),
             Random.Range(bounds.min.z, bounds.max.z)
         );
-        Missile missile = Instantiate(
+        Grunt missile = Instantiate(
             missilePrefab,
             spawnLoc,
-            new Quaternion()).GetComponent<Missile>();
+            new Quaternion()).GetComponent<Grunt>();
         missile.gameObject.transform.LookAt(target.transform.position);
 
         float speedMax = config.missileSpeed + config.missileSpeedRng;
