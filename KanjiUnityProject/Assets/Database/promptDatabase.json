@@ -1,0 +1,722 @@
+{
+    "sentences": [
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "大人",
+                    "meanings": [
+                        "adult grown"
+                    ],
+                    "romaji": "otona",
+                    "hiragana": "おとな",
+                    "katakana": "オトナ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "一人",
+                    "meanings": [
+                        "one person",
+                        "being alone",
+                        "being single",
+                        "by oneself",
+                        "just only"
+                    ],
+                    "romaji": "hitori",
+                    "hiragana": "ひとり",
+                    "katakana": "ヒトリ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "人工",
+                    "meanings": [
+                        "artificial man"
+                    ],
+                    "romaji": "jinkou",
+                    "hiragana": "じんこう",
+                    "katakana": "ジンコウ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "大きい",
+                    "meanings": [
+                        "big large",
+                        "loud adjective",
+                        "extensive spacious",
+                        "important decisive",
+                        "older grown"
+                    ],
+                    "romaji": "ookii",
+                    "hiragana": "おおきい",
+                    "katakana": "オオキイ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "下",
+                    "meanings": [
+                        "below down",
+                        "bottom ",
+                        "beneath underneath",
+                        "just after",
+                        "inferiority one",
+                        "trade in",
+                        "preliminary preparatory"
+                    ],
+                    "romaji": "shita",
+                    "hiragana": "した",
+                    "katakana": "シタ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "八",
+                    "meanings": [
+                        "eight numeric"
+                    ],
+                    "romaji": "hachi",
+                    "hiragana": "はち",
+                    "katakana": "ハチ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "八つ",
+                    "meanings": [
+                        "eight numeric"
+                    ],
+                    "romaji": "yattsu",
+                    "hiragana": "やっつ",
+                    "katakana": "ヤッツ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "入り口",
+                    "meanings": [
+                        "entrance entry"
+                    ],
+                    "romaji": "iriguchi",
+                    "hiragana": "いりぐち",
+                    "katakana": "イリグチ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "大した",
+                    "meanings": [
+                        "considerable great"
+                    ],
+                    "romaji": "taishita",
+                    "hiragana": "たいした",
+                    "katakana": "タイシタ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "山",
+                    "meanings": [
+                        "mountain hill",
+                        "mine e",
+                        "heap pile",
+                        "crown of",
+                        "climax peak",
+                        "guess speculation",
+                        "criminal case",
+                        "mountain climbing",
+                        "festival float",
+                        "deck of",
+                        "wall wall",
+                        "temple temple",
+                        "wild used"
+                    ],
+                    "romaji": "yama",
+                    "hiragana": "やま",
+                    "katakana": "ヤマ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "口",
+                    "meanings": [
+                        "mouth ",
+                        "opening hole",
+                        "mouth of",
+                        "gate door",
+                        "speaking speech",
+                        "taste palate",
+                        "mouth to",
+                        "opening i",
+                        "invitation summons",
+                        "kind sort",
+                        "opening i",
+                        "counter for"
+                    ],
+                    "romaji": "kuchi",
+                    "hiragana": "くち",
+                    "katakana": "クチ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "fuji",
+                    "hiragana": "ふじ",
+                    "katakana": "フジ"
+                },
+                {
+                    "type": 1,
+                    "kanji": "山",
+                    "meanings": [
+                        "mountain hill",
+                        "mine e",
+                        "heap pile",
+                        "crown of",
+                        "climax peak",
+                        "guess speculation",
+                        "criminal case",
+                        "mountain climbing",
+                        "festival float",
+                        "deck of",
+                        "wall wall",
+                        "temple temple",
+                        "wild used"
+                    ],
+                    "romaji": "yama",
+                    "hiragana": "やま",
+                    "katakana": "ヤマ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "九",
+                    "meanings": [
+                        "nine numeric"
+                    ],
+                    "romaji": "kyuu",
+                    "hiragana": "きゅう",
+                    "katakana": "キュウ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "九",
+                    "meanings": [
+                        "nine numeric"
+                    ],
+                    "romaji": "kokono",
+                    "hiragana": "ここの",
+                    "katakana": "ココノ"
+                },
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "tsu",
+                    "hiragana": "つ",
+                    "katakana": "ツ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "一",
+                    "meanings": [
+                        "one numeric",
+                        "best nouns",
+                        "first foremost",
+                        "beginning start",
+                        "a single",
+                        "ace playing",
+                        "bottom string"
+                    ],
+                    "romaji": "ichi",
+                    "hiragana": "いち",
+                    "katakana": "イチ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "一",
+                    "meanings": [
+                        "one numeric",
+                        "best nouns",
+                        "first foremost",
+                        "beginning start",
+                        "a single",
+                        "ace playing",
+                        "bottom string"
+                    ],
+                    "romaji": "hito",
+                    "hiragana": "ひと",
+                    "katakana": "ヒト"
+                },
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "tsu",
+                    "hiragana": "つ",
+                    "katakana": "ツ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "人",
+                    "meanings": [
+                        " ian",
+                        " er",
+                        "man person"
+                    ],
+                    "romaji": "hito",
+                    "hiragana": "ひと",
+                    "katakana": "ヒト"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "下さい",
+                    "meanings": [
+                        "to give",
+                        "to kindly"
+                    ],
+                    "romaji": "kudasai",
+                    "hiragana": "ください",
+                    "katakana": "クダサイ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "人口",
+                    "meanings": [
+                        "population ",
+                        "talk "
+                    ],
+                    "romaji": "jinkou",
+                    "hiragana": "じんこう",
+                    "katakana": "ジンコウ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "力",
+                    "meanings": [
+                        "force strength",
+                        "capability ability",
+                        "efficacy effect",
+                        "effort endeavours",
+                        "power authority",
+                        "support help",
+                        "stress emphasis",
+                        "means resources"
+                    ],
+                    "romaji": "chikara",
+                    "hiragana": "ちから",
+                    "katakana": "チカラ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "川",
+                    "meanings": [
+                        "river stream",
+                        "River the"
+                    ],
+                    "romaji": "gawa",
+                    "hiragana": "がわ",
+                    "katakana": "ガワ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "七",
+                    "meanings": [
+                        "seven numeric",
+                        "hepta prefix"
+                    ],
+                    "romaji": "nana",
+                    "hiragana": "なな",
+                    "katakana": "ナナ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "七",
+                    "meanings": [
+                        "seven numeric",
+                        "hepta prefix"
+                    ],
+                    "romaji": "nana",
+                    "hiragana": "なな",
+                    "katakana": "ナナ"
+                },
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "tsu",
+                    "hiragana": "つ",
+                    "katakana": "ツ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "大き",
+                    "meanings": [
+                        "big large",
+                        "loud adjective",
+                        "extensive spacious",
+                        "important decisive",
+                        "older grown"
+                    ],
+                    "romaji": "ooki",
+                    "hiragana": "おおき",
+                    "katakana": "オオキ"
+                },
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "sa",
+                    "hiragana": "さ",
+                    "katakana": "サ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "十",
+                    "meanings": [
+                        "ten numeric",
+                        "ten years"
+                    ],
+                    "romaji": "juu",
+                    "hiragana": "じゅう",
+                    "katakana": "ジュウ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "三",
+                    "meanings": [
+                        "three numeric",
+                        "tri prefix"
+                    ],
+                    "romaji": "san",
+                    "hiragana": "さん",
+                    "katakana": "サン"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "三",
+                    "meanings": [
+                        "three numeric",
+                        "tri prefix"
+                    ],
+                    "romaji": "san",
+                    "hiragana": "さん",
+                    "katakana": "サン"
+                },
+                {
+                    "type": 1,
+                    "kanji": "人",
+                    "meanings": [
+                        " ian",
+                        " er",
+                        "man person"
+                    ],
+                    "romaji": "nin",
+                    "hiragana": "にん",
+                    "katakana": "ニン"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "三つ",
+                    "meanings": [
+                        "three numeric",
+                        "tri prefix"
+                    ],
+                    "romaji": "mittsu",
+                    "hiragana": "みっつ",
+                    "katakana": "ミッツ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "入る",
+                    "meanings": [
+                        "to get"
+                    ],
+                    "romaji": "hairu",
+                    "hiragana": "はいる",
+                    "katakana": "ハイル"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "下げる",
+                    "meanings": [
+                        "to hang",
+                        "to lower",
+                        "to demote",
+                        "to clear",
+                        "to keep"
+                    ],
+                    "romaji": "sageru",
+                    "hiragana": "さげる",
+                    "katakana": "サゲル"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "上げる",
+                    "meanings": [
+                        "to raise",
+                        "to do",
+                        "to fly",
+                        "to land",
+                        "to deep",
+                        "to show",
+                        "to give",
+                        "to send",
+                        "to enrol",
+                        "to increase",
+                        "to make",
+                        "to earn",
+                        "to praise",
+                        "to give",
+                        "to summon",
+                        "to arrest",
+                        "to nominate",
+                        "to summon",
+                        "to offer",
+                        "to bear",
+                        "to conduct",
+                        " of",
+                        "to vomit",
+                        "to do",
+                        "to complete",
+                        "to humbly"
+                    ],
+                    "romaji": "ageru",
+                    "hiragana": "あげる",
+                    "katakana": "アゲル"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "二",
+                    "meanings": [
+                        "two numeric"
+                    ],
+                    "romaji": "ni",
+                    "hiragana": "に",
+                    "katakana": "ニ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "二人",
+                    "meanings": [
+                        "two persons"
+                    ],
+                    "romaji": "futari",
+                    "hiragana": "ふたり",
+                    "katakana": "フタリ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "二",
+                    "meanings": [
+                        "two numeric"
+                    ],
+                    "romaji": "futa",
+                    "hiragana": "ふた",
+                    "katakana": "フタ"
+                },
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "tsu",
+                    "hiragana": "つ",
+                    "katakana": "ツ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "力",
+                    "meanings": [
+                        "force strength",
+                        "capability ability",
+                        "efficacy effect",
+                        "effort endeavours",
+                        "power authority",
+                        "support help",
+                        "stress emphasis",
+                        "means resources"
+                    ],
+                    "romaji": "chikara",
+                    "hiragana": "ちから",
+                    "katakana": "チカラ"
+                },
+                {
+                    "type": 2,
+                    "kanji": null,
+                    "meanings": null,
+                    "romaji": "ippai",
+                    "hiragana": "いっぱい",
+                    "katakana": "イッパイ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "上",
+                    "meanings": [
+                        "above up",
+                        "top summit",
+                        "surface ",
+                        "before previous",
+                        "superiority one",
+                        "on top",
+                        "upon further",
+                        "matters concerning",
+                        "since i",
+                        "honorable venerable",
+                        "place of",
+                        "emperor sovereign",
+                        "noblewoman esp"
+                    ],
+                    "romaji": "ue",
+                    "hiragana": "うえ",
+                    "katakana": "ウエ"
+                }
+            ]
+        },
+        {
+            "words": [
+                {
+                    "type": 1,
+                    "kanji": "女",
+                    "meanings": [
+                        "female woman",
+                        "female lover"
+                    ],
+                    "romaji": "onna",
+                    "hiragana": "おんな",
+                    "katakana": "オンナ"
+                }
+            ]
+        }
+    ]
+}

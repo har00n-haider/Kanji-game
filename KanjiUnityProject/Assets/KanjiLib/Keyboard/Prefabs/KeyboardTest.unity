@@ -964,11 +964,11 @@ PrefabInstance:
     - target: {fileID: 930016233078496434, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
       propertyPath: kanjiDataBaseFile
       value: 
-      objectReference: {fileID: 4900000, guid: b596e44a221d6c74a822d8ca9b82b0da, type: 3}
+      objectReference: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
     - target: {fileID: 930016233078496434, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
       propertyPath: sentenceDataBaseFile
       value: 
-      objectReference: {fileID: 4900000, guid: b7f32f2a934fa544eb97290ff68d11b8, type: 3}
+      objectReference: {fileID: 4900000, guid: 756d864509e00964fa4cd399eab3d318, type: 3}
     - target: {fileID: 5333870931083577166, guid: f9ab60febe43cab449a0fe53fe633615, type: 3}
       propertyPath: m_Name
       value: KanjiManager
