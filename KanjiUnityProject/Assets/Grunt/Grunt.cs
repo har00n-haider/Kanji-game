@@ -8,23 +8,36 @@ public class Grunt : MonoBehaviour, IKankiTraceable
 {
     public float speed = 0.1f;
 
-    // unity references
-    public AudioClip explosionSound;
-    public AudioClip ricochetSound;
-    public ParticleSystem explosionPrefab;
-
     public bool canMove = true;
     public System.Action onDestroy;
 
-    void Awake() 
-    {
+    // unity references
+    [SerializeField]
+    private AudioClip explosionSound;
 
+    [SerializeField]
+    private AudioClip ricochetSound;
+
+    [SerializeField]
+    private ParticleSystem explosionPrefab;
+
+    private GameObject mainCharacter = null;
+
+    private void Awake()
+    {
+        mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter");
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if(canMove) gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
+        if (canMove) Move();
+    }
+
+    private void Move()
+    {
+        gameObject.transform.LookAt(mainCharacter.transform);
+        gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
     }
 
     public void Destroy()
@@ -36,17 +49,18 @@ public class Grunt : MonoBehaviour, IKankiTraceable
             gameObject.transform.position,
             gameObject.transform.rotation);
         Destroy(gameObject);
-        Destroy(explosion.gameObject, explosionPrefab.main.duration - 2.3f);
+        Destroy(explosion.gameObject, explosionPrefab.main.duration - 2.4f);
         onDestroy?.Invoke();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (canMove) 
+        if (canMove)
         {
-            Target target = other.gameObject.GetComponent<Target>();
-            if (target != null) target.TakeDamage();
-            Destroy();
+            if (other.transform == mainCharacter.transform)
+            {
+                Destroy();
+            }
         }
     }
 }

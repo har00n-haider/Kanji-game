@@ -10,44 +10,43 @@ using Random = UnityEngine.Random;
 public class GruntSpawnVolume : MonoBehaviour
 {
     [Serializable]
-    public class MissileSpawnConfig 
+    public class GruntSpawnConfig
     {
         // spawn timing
         public float spawnPeriod = 4.3f;
+
         public float spawnPeriodInc = 0.03f;
+
         // speed
-        public float missileSpeed = 2;
-        public float missileSpeedInc = 0.1f;
-        public float missileSpeedRng = 0.5f;
-        public int noOfMissilesToDestroy = 10;
+        public float gruntSpeed = 2;
+
+        public float gruntSpeedInc = 0.1f;
+        public float gruntSpeedRng = 0.5f;
+        public int noOfgruntsToDestroy = 10;
     }
 
-    public MissileSpawnConfig config = new MissileSpawnConfig();
+    public GruntSpawnConfig config = new GruntSpawnConfig();
     private float timeSinceLastSpawn = 0;
     private BoxCollider boxCollider;
     private bool canGenerate = true;
-    private List<Grunt> missiles = new List<Grunt>();
-    private int noOfMissileDestroyed;
+    private List<Grunt> grunts = new List<Grunt>();
 
     // unity references
-    public Target target;
-    public KanjiManager kanjiManager;
-    public Grunt missilePrefab;
+    public Grunt gruntPrefab;
 
     // kanji loading
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         boxCollider = GetComponent<BoxCollider>();
         timeSinceLastSpawn = config.spawnPeriod;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!canGenerate) return;
-        if (target == null) return;
 
         if (timeSinceLastSpawn < config.spawnPeriod)
         {
@@ -55,48 +54,28 @@ public class GruntSpawnVolume : MonoBehaviour
         }
         else
         {
-            SpawnMissile();
+            SpawnGrunt();
             timeSinceLastSpawn = 0;
         }
     }
 
-    void OnMissileDestroyed() 
+    private void SpawnGrunt()
     {
-        config.missileSpeed += config.missileSpeedInc;
-        config.spawnPeriod -= config.spawnPeriodInc;
-        noOfMissileDestroyed++;
-        if (config.noOfMissilesToDestroy == noOfMissileDestroyed)
-        {
-            canGenerate = false;
-            target.GetComponent<MeshRenderer>().material.color = Color.green;
-        }
-    }
-
-    void SpawnMissile()
-    {
-        KanjiData kanji = kanjiManager.database.GetRandomKanji();
-
-        if (kanji == null) return;
-
         var bounds = boxCollider.bounds;
         Vector3 spawnLoc = new Vector3(
             Random.Range(bounds.min.x, bounds.max.x),
             Random.Range(bounds.min.y, bounds.max.y),
             Random.Range(bounds.min.z, bounds.max.z)
         );
-        Grunt missile = Instantiate(
-            missilePrefab,
+        Grunt grunt = Instantiate(
+            gruntPrefab,
             spawnLoc,
             new Quaternion()).GetComponent<Grunt>();
-        missile.gameObject.transform.LookAt(target.transform.position);
 
-        float speedMax = config.missileSpeed + config.missileSpeedRng;
-        float speedMin = config.missileSpeed - config.missileSpeedRng;
-        missile.speed = Random.Range(speedMin, speedMax);
-        missile.speed = Mathf.Clamp(missile.speed, 0, speedMax);
-        missile.onDestroy = OnMissileDestroyed;
-        missiles.Add(missile);
+        float speedMax = config.gruntSpeed + config.gruntSpeedRng;
+        float speedMin = config.gruntSpeed - config.gruntSpeedRng;
+        grunt.speed = Random.Range(speedMin, speedMax);
+        grunt.speed = Mathf.Clamp(grunt.speed, 0, speedMax);
+        grunts.Add(grunt);
     }
-
-
 }

@@ -61,6 +61,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5cd309e9fd313242b613cc795dee370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0.1
+  canMove: 1
+  explosionSound: {fileID: 8300000, guid: 49c2332cc03a64249bf28cc6bd2f9a70, type: 3}
+  ricochetSound: {fileID: 8300000, guid: 4031e628cfc564d93ac39f8955afbbda, type: 3}
+  explosionPrefab: {fileID: 198000012942003240, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
 --- !u!54 &8139775409017143637
 Rigidbody:
   m_ObjectHideFlags: 0
