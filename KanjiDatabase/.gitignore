@@ -13,6 +13,7 @@ kanjidic2.xml/
 kanjiKeywords/
 kanjiVG/
 kanjiSets/
+kanjiCustomList/
 *.xml
 
 # tatoeba files
