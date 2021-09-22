@@ -6,25 +6,28 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class Keyboard : MonoBehaviour
 {
     // refs
     [SerializeField]
     private FlickLayout flickInput;
+
     [SerializeField]
     private Kanji2D drawInput;
+
     [SerializeField]
     private TextMeshProUGUI displayTextMesh;
+
     [SerializeField]
     private MeaningInput meaningInput;
+
     public KanjiManager kanjiMan;
 
     // state
     public PromptWord currWord { get; set; } = null;
 
-    private void Awake() 
-    { 
+    private void Awake()
+    {
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
     }
 
@@ -38,9 +41,9 @@ public class Keyboard : MonoBehaviour
         meaningInput.keyboard = this;
     }
 
-    private void UpdateDisplayString() 
+    private void UpdateDisplayString()
     {
-        if(currWord != null) 
+        if (currWord != null)
         {
             if (currWord.responseType == InputType.Meaning)
             {
@@ -53,7 +56,7 @@ public class Keyboard : MonoBehaviour
                     currWord.responseType == InputType.KeyKatakanaWithRomaji;
                 string originalString = "<mspace=1em>" + currWord.GetDisplayString() + "</mspace>";
                 displayTextMesh.text = !displayRomaji ? originalString :
-                    WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;  
+                    WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;
             }
         }
     }
@@ -64,7 +67,7 @@ public class Keyboard : MonoBehaviour
         displayTextMesh.text = string.Empty;
     }
 
-    private void ShowInputForType(InputType type) 
+    private void ShowInputForType(InputType type)
     {
         switch (type)
         {
@@ -75,6 +78,7 @@ public class Keyboard : MonoBehaviour
                 meaningInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
+
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
             case InputType.KeyHiraganaWithRomaji:
@@ -84,6 +88,7 @@ public class Keyboard : MonoBehaviour
                 flickInput.gameObject.SetActive(true);
                 flickInput.SetType(type);
                 break;
+
             case InputType.Meaning:
                 drawInput.gameObject.SetActive(false);
                 flickInput.gameObject.SetActive(false);
@@ -102,6 +107,7 @@ public class Keyboard : MonoBehaviour
             case InputType.WritingKanji:
                 drawInput.SetPromptChar(promptChar);
                 break;
+
             case InputType.KeyHiragana:
             case InputType.KeyKatakana:
             case InputType.KeyKatakanaWithRomaji:
@@ -112,45 +118,43 @@ public class Keyboard : MonoBehaviour
     }
 
     // progresses through the prompt word
-    public void CharUpdated(char character) 
+    public void CharUpdated(char character)
     {
-        if (currWord == null) return; 
+        if (currWord == null) return;
         bool passed = currWord.CheckChar(character);
-        if (passed) 
+        if (passed)
         {
             UpdateDisplayString();
-            if (currWord.WordCompleted()) 
+            if (currWord.WordCompleted())
             {
                 WordCompleted();
             }
-            else 
+            else
             {
                 SetPromptChar(currWord.GetChar());
             }
         }
     }
 
-    public void WordCompleted() 
+    public void WordCompleted()
     {
         Reset();
-        kanjiMan.UpdateCurrentKanjiTraceable();
+        kanjiMan.UpdateCurrentPromptHolder();
     }
 
-    public void SetPromptWord(PromptWord promptWord) 
+    public void SetPromptWord(PromptWord promptWord)
     {
         currWord = promptWord;
         // set the prompt char to the relevant input
         ShowInputForType(currWord.responseType);
-        if(currWord.responseType == InputType.Meaning) 
+        if (currWord.responseType == InputType.Meaning)
         {
             meaningInput.SetPromptWord(promptWord);
         }
-        else 
+        else
         {
             SetPromptChar(promptWord.GetChar());
         }
         UpdateDisplayString();
     }
 }
-
-

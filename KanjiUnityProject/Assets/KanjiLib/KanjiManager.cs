@@ -7,8 +7,8 @@ using UnityEngine;
 
 /// <summary>
 /// Manages objects in the scene that hold kanji prompts
-/// 
-/// Middle man between the input <-> kanjiprompt
+///
+/// Middle man between the keyboard <-> promptholders
 /// </summary>
 public class KanjiManager : MonoBehaviour
 {
@@ -18,21 +18,24 @@ public class KanjiManager : MonoBehaviour
     public static readonly int hideWritingRefThreshold = 3;
 
     // kanji holder managment
-    private KanjiTraceable selectedKanjiTraceable = null;
-    private List<KanjiTraceable> kanjiTraceables = new List<KanjiTraceable>();
+    private PromptHolder selectedPromptHolder = null;
+
+    private List<PromptHolder> promptHolders = new List<PromptHolder>();
 
     // database
     public KanjiDatabase database;
+
     public TextAsset kanjiDataBaseFile;
     public TextAsset sentenceDataBaseFile;
 
-    // ui 
+    // ui
     public GameObject reticule;
+
     private RectTransform reticuleTransform;
     public float reticuleRotationrate = 0.12f;
 
     // refs
-    Keyboard keyboard;
+    private Keyboard keyboard;
 
     private void Awake()
     {
@@ -42,50 +45,51 @@ public class KanjiManager : MonoBehaviour
         keyboard = GameObject.FindGameObjectWithTag("Keyboard").GetComponent<Keyboard>();
     }
 
-    void Update()
+    private void Update()
     {
         CheckSelectionInput();
         UpdateReticule();
     }
 
     // called by the keyboard
-    public void UpdateCurrentKanjiTraceable()
+    public void UpdateCurrentPromptHolder()
     {
-        bool completed = selectedKanjiTraceable.MoveNext();
-        if (completed) 
+        bool completed = selectedPromptHolder.MoveNext();
+        if (completed)
         {
-            selectedKanjiTraceable.Destroy();
+            selectedPromptHolder.Destroy();
         }
-        else 
+        else
         {
-            keyboard.SetPromptWord(selectedKanjiTraceable.currWord);
+            keyboard.SetPromptWord(selectedPromptHolder.currWord);
         }
     }
 
-    public void RegisterKanjiTraceable(KanjiTraceable kanjiTraceable) 
+    public void RegisterPromptHolder(PromptHolder promptHolder)
     {
-        kanjiTraceables.Add(kanjiTraceable);
-        kanjiTraceable.prompt = GetNextPrompt();
+        promptHolders.Add(promptHolder);
+        promptHolder.prompt = GetNextPrompt();
     }
 
-    public List<string> GetRandomMeanings(int noOfMeanings, string except = null) 
+    public List<string> GetRandomMeanings(int noOfMeanings, string except = null)
     {
         return database.GetRandomFillerMeanings(noOfMeanings, except);
     }
 
     #region prompt setup
 
-    int pIdx = -1;
+    private int pIdx = -1;
+
     // TODO: debug function
-    private Prompt GetNextPrompt() 
+    private Prompt GetNextPrompt()
     {
         ++pIdx;
         var prompt = database.GetPromptById(pIdx);
-        foreach(var word in prompt.words) 
+        foreach (var word in prompt.words)
         {
             GetTestSetForWordType(
-                word.type, 
-                out PromptType displayType, 
+                word.type,
+                out PromptType displayType,
                 out InputType responseType);
             word.responseType = responseType;
             word.displayType = displayType;
@@ -109,14 +113,17 @@ public class KanjiManager : MonoBehaviour
                 displayType = PromptType.Kanji;
                 responseType = InputType.Meaning;
                 break;
+
             case PromptWord.WordType.hiragana:
                 displayType = PromptType.Hiragana;
-                responseType = InputType.KeyHiraganaWithRomaji; 
+                responseType = InputType.KeyHiraganaWithRomaji;
                 break;
+
             case PromptWord.WordType.katakana:
                 displayType = PromptType.Katana;
-                responseType = InputType.KeyKatakanaWithRomaji; 
+                responseType = InputType.KeyKatakanaWithRomaji;
                 break;
+
             default:
                 break;
         }
@@ -139,9 +146,9 @@ public class KanjiManager : MonoBehaviour
     }
 
     private void GetRandomTestSetForWordType(
-        PromptWord.WordType promptType, 
-        out PromptType displayType, 
-        out InputType responseType) 
+        PromptWord.WordType promptType,
+        out PromptType displayType,
+        out InputType responseType)
     {
         displayType = PromptType.Kanji;
         responseType = InputType.KeyHiragana;
@@ -152,14 +159,17 @@ public class KanjiManager : MonoBehaviour
                 displayType = KanjiUtils.kanjiPrompts.GetRandomPrompt();
                 responseType = KanjiUtils.kanjiInputs.GetRandomInput();
                 break;
+
             case PromptWord.WordType.hiragana:
                 displayType = KanjiUtils.hiraganaPrompts.GetRandomPrompt();
                 responseType = KanjiUtils.hiraganaInputs.GetRandomInput();
                 break;
+
             case PromptWord.WordType.katakana:
                 displayType = KanjiUtils.katakanaPrompts.GetRandomPrompt();
                 responseType = KanjiUtils.katakanaInputs.GetRandomInput();
                 break;
+
             default:
                 break;
         }
@@ -172,7 +182,7 @@ public class KanjiManager : MonoBehaviour
     /// <param name="prompt">Prompt that has been configured for a test</param>
     private void SetCharsForPrompt(ref Prompt prompt)
     {
-        Action<List<PromptChar>, string> populateCharList = 
+        Action<List<PromptChar>, string> populateCharList =
         (List<PromptChar> cl, string s) =>
         {
             foreach (char c in s)
@@ -185,7 +195,7 @@ public class KanjiManager : MonoBehaviour
             }
         };
 
-        // Set the chars to iterate through depending 
+        // Set the chars to iterate through depending
         // on the type of the word and the input type
         foreach (PromptWord word in prompt.words)
         {
@@ -202,16 +212,18 @@ public class KanjiManager : MonoBehaviour
                         case InputType.WritingHiragana:
                             populateCharList(chars, word.hiragana);
                             break;
+
                         case InputType.WritingKanji:
                         case InputType.Meaning:
                             populateCharList(chars, word.kanji);
                             break;
-                      }
+                    }
                     break;
                 // hiragana/katana will always only have their own char type
                 case PromptWord.WordType.hiragana:
                     populateCharList(chars, word.hiragana);
                     break;
+
                 case PromptWord.WordType.katakana:
                     populateCharList(chars, word.katakana);
                     break;
@@ -220,17 +232,17 @@ public class KanjiManager : MonoBehaviour
         }
     }
 
-    #endregion
+    #endregion prompt setup
 
     #region selection
 
-    private void UpdateSelection(KanjiTraceable selectedKanji)
+    private void UpdateSelection(PromptHolder selectedKanji)
     {
-        selectedKanjiTraceable = selectedKanji;
+        selectedPromptHolder = selectedKanji;
         keyboard.SetPromptWord(selectedKanji.currWord);
     }
 
-    private void CheckSelectionInput() 
+    private void CheckSelectionInput()
     {
         // see if user selected a kanji holder object
         if (Input.GetMouseButtonUp(0))
@@ -238,7 +250,7 @@ public class KanjiManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                var selectedKanji = hitInfo.collider.gameObject.GetComponent<KanjiTraceable>();
+                var selectedKanji = hitInfo.collider.gameObject.GetComponent<PromptHolder>();
                 if (selectedKanji != null)
                 {
                     UpdateSelection(selectedKanji);
@@ -247,22 +259,20 @@ public class KanjiManager : MonoBehaviour
         }
     }
 
-    private void UpdateReticule() 
+    private void UpdateReticule()
     {
-        if(selectedKanjiTraceable != null && !selectedKanjiTraceable.IsDestroyed()) 
+        if (selectedPromptHolder != null && !selectedPromptHolder.IsDestroyed())
         {
             reticule.SetActive(true);
-            reticuleTransform.position = 
-                Camera.main.WorldToScreenPoint(selectedKanjiTraceable.transform.position);
-            reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate*Time.deltaTime);
+            reticuleTransform.position =
+                Camera.main.WorldToScreenPoint(selectedPromptHolder.transform.position);
+            reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate * Time.deltaTime);
         }
-        else 
+        else
         {
             reticule.SetActive(false);
         }
     }
 
-    #endregion
-
+    #endregion selection
 }
-

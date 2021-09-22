@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
 public class ParsedKanjiData
 {
     public float width;
@@ -15,7 +14,7 @@ public class ParsedKanjiData
     public float centerYOffset;
     public float scaledWidth;
     public float scaledHeight;
-    public List<RawStroke> strokes = new List<RawStroke>();   
+    public List<RawStroke> strokes = new List<RawStroke>();
 
     public ParsedKanjiData(float width, float height, float scale, List<RawStroke> strokes = null)
     {
@@ -30,7 +29,7 @@ public class ParsedKanjiData
     }
 }
 
-public class RawStroke 
+public class RawStroke
 {
     public int orderNo;
     public List<Vector2> points = new List<Vector2>();
@@ -40,7 +39,7 @@ public class RawStroke
 /// Holds all data relevant to a given kanji
 /// Required by the kanji draw classes
 /// </summary>
-public class KanjiData 
+public class KanjiData
 {
     public string literal = string.Empty;
     public string code = string.Empty;
@@ -53,20 +52,22 @@ public class KanjiData
     public KanjiProgress progress = new KanjiProgress();
 }
 
-public class KanjiProgress 
+public class KanjiProgress
 {
     public int clears = 0;
     public int flawlessClears = 0;
 }
 
+// Interface throught which the Prompt holder can control the main script
+// of a given game object that interacts with the prompt system
 
-public interface IKankiTraceable
+public interface IPromptHolderControllable
 {
     void Destroy();
 }
 
 /// <summary>
-/// What is displayed in the prompt. 
+/// What is displayed in the prompt.
 /// Limited by word type
 /// </summary>
 public enum PromptType
@@ -79,12 +80,11 @@ public enum PromptType
 }
 
 /// <summary>
-/// What the input needs to supply (Call/Response type). 
+/// What the input needs to supply (Call/Response type).
 /// Limited by word type
 /// </summary>
-public enum InputType 
+public enum InputType
 {
-
     KeyHiragana,
     KeyKatakana,
     KeyHiraganaWithRomaji,
@@ -95,12 +95,11 @@ public enum InputType
     Meaning,
 }
 
-public class PromptChar 
+public class PromptChar
 {
     public char character = ' ';
     public KanjiData data = null;
 }
-
 
 [System.Serializable]
 public class PromptWord
@@ -109,17 +108,18 @@ public class PromptWord
     /// Cassification of the word. Can only perform
     /// certain call/responses for certain word types
     /// </summary>
-    public enum WordType 
+    public enum WordType
     {
-      kanji = 1,
-      hiragana = 2,
-      katakana = 3  
+        kanji = 1,
+        hiragana = 2,
+        katakana = 3
     }
 
     /// <summary>
     /// Classification of the word
     /// </summary>
     public WordType type;
+
     public string kanji;
     public string[] meanings;
     public string romaji;
@@ -131,25 +131,28 @@ public class PromptWord
     /// </summary>
     [System.NonSerialized]
     public InputType responseType;
+
     /// <summary>
     /// Determines the way the word will be displayed on a prompt
     /// </summary>
     [System.NonSerialized]
     public PromptType displayType;
+
     /// <summary>
     /// These are iterated through by the input to complete a word. Not used for display
     /// </summary>
     [System.NonSerialized]
     public PromptChar[] chars;
+
     [System.NonSerialized]
     private int cIdx = 0;
 
     private static readonly char fillerChar = '☐';
 
-    public override string ToString() 
+    public override string ToString()
     {
         string s = string.Empty;
-        foreach(var x in chars) 
+        foreach (var x in chars)
         {
             s += x.character;
         }
@@ -158,7 +161,7 @@ public class PromptWord
 
     #region tracking progress
 
-    public string GetCompletedKanaString() 
+    public string GetCompletedKanaString()
     {
         string s = string.Empty;
         for (int i = 0; i < katakana.Length; i++)
@@ -168,24 +171,24 @@ public class PromptWord
         return s;
     }
 
-    public string GetDisplayString() 
+    public string GetDisplayString()
     {
         string s = string.Empty;
         for (int i = 0; i < chars.Length; i++)
         {
             s += i < cIdx ? chars[i].character : fillerChar;
-        }        
+        }
         return s;
     }
 
-    public PromptChar GetChar() 
+    public PromptChar GetChar()
     {
         return chars[cIdx];
     }
 
-    public bool CheckChar(char c) 
+    public bool CheckChar(char c)
     {
-        if (c == chars[cIdx].character) 
+        if (c == chars[cIdx].character)
         {
             ++cIdx;
             return true;
@@ -193,33 +196,33 @@ public class PromptWord
         else
         {
             return false;
-        } 
+        }
     }
 
-    public bool WordCompleted() 
+    public bool WordCompleted()
     {
         return cIdx == chars.Length;
     }
 
-    public void Reset() 
+    public void Reset()
     {
         cIdx = 0;
     }
 
-    #endregion
+    #endregion tracking progress
 }
 
 [System.Serializable]
-public class Prompt 
+public class Prompt
 {
     public List<PromptWord> words;
 
     public override string ToString()
     {
         string promptStr = "";
-        foreach(var word in words) 
+        foreach (var word in words)
         {
-            promptStr+=word.ToString();
+            promptStr += word.ToString();
         }
         return promptStr;
     }
@@ -230,9 +233,3 @@ public class PromptList
 {
     public List<Prompt> sentences;
 }
-
-
-
-
-
-

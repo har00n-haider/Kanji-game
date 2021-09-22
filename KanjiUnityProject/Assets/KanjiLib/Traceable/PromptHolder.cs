@@ -4,57 +4,62 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 
-public class KanjiTraceable : MonoBehaviour
+public class PromptHolder : MonoBehaviour
 {
     public bool selected { get; set; }
 
     // label config
     public Color labelColor;
+
     public Color textColor;
     public float labelOffsetYPercentage;
     private bool setColliderSize = false;
 
     // prompt string content
     public Prompt prompt;
+
     private int pIdx { get; set; } = 0;
     public PromptWord currWord { get { return prompt.words[pIdx]; } }
+
     // prompt string configuration
-    Color completedColor = Color.grey;
-    Color hiraganaColor = Color.red;
-    Color katanaColor = Color.yellow;
-    Color kanjiColor = Color.blue;
-    Color romajiColor = Color.green;
+    private Color completedColor = Color.grey;
+
+    private Color hiraganaColor = Color.red;
+    private Color katanaColor = Color.yellow;
+    private Color kanjiColor = Color.blue;
+    private Color romajiColor = Color.green;
 
     // refs
     private RectTransform labelRect;
+
     private TextMeshProUGUI textMesh;
     public GameObject labelPrefab;
     private KanjiManager kanjiMan;
-    private IKankiTraceable controlledGameObject;
+    private IPromptHolderControllable controlledGameObject;
 
     private void Awake()
     {
-        controlledGameObject = GetComponent<IKankiTraceable>();
+        controlledGameObject = GetComponent<IPromptHolderControllable>();
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
 
         // always place the label on the main canvas
         GameObject mainCanvas = GameObject.FindGameObjectWithTag("MainCanvas");
-        GameObject label =  Instantiate(labelPrefab, mainCanvas.transform);
+        GameObject label = Instantiate(labelPrefab, mainCanvas.transform);
         labelRect = label.GetComponentInChildren<RectTransform>();
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        kanjiMan.RegisterKanjiTraceable(this);
+        kanjiMan.RegisterPromptHolder(this);
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // the label takes a frame or so to get the right size (mayebe the content fitter?)
-        if (!setColliderSize && labelRect.rect.size.magnitude > 0) 
+        if (!setColliderSize && labelRect.rect.size.magnitude > 0)
         {
             ConfigureLabel(labelRect.gameObject);
             setColliderSize = true;
@@ -67,7 +72,7 @@ public class KanjiTraceable : MonoBehaviour
         return gameObject == null;
     }
 
-    private void ConfigureLabel(GameObject label) 
+    private void ConfigureLabel(GameObject label)
     {
         textMesh = label.GetComponentInChildren<TextMeshProUGUI>();
         textMesh.font = Resources.Load<TMP_FontAsset>("Fonts/NotoSansJP-Regular SDF");
@@ -94,14 +99,14 @@ public class KanjiTraceable : MonoBehaviour
         lRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
 
-    public bool MoveNext() 
+    public bool MoveNext()
     {
         pIdx++;
         SetTextMesh();
         return pIdx == prompt.words.Count;
     }
 
-    private void SetTextMesh() 
+    private void SetTextMesh()
     {
         string textMeshText = "";
         for (int i = 0; i < prompt.words.Count; i++)
@@ -109,26 +114,30 @@ public class KanjiTraceable : MonoBehaviour
             PromptWord pw = prompt.words[i];
             // Get color
             Color color = Color.white;
-            if (pw.WordCompleted()) 
+            if (pw.WordCompleted())
             {
                 color = completedColor;
             }
-            else 
+            else
             {
                 switch (pw.displayType)
                 {
                     case PromptType.Kanji:
                         color = kanjiColor;
                         break;
+
                     case PromptType.Hiragana:
                         color = hiraganaColor;
                         break;
+
                     case PromptType.Katana:
                         color = katanaColor;
                         break;
+
                     case PromptType.Romaji:
                         color = romajiColor;
                         break;
+
                     case PromptType.Meaning:
                     default:
                         break;
@@ -141,15 +150,19 @@ public class KanjiTraceable : MonoBehaviour
                 case PromptType.Kanji:
                     text = pw.kanji;
                     break;
+
                 case PromptType.Hiragana:
                     text = pw.hiragana;
                     break;
+
                 case PromptType.Katana:
                     text = pw.katakana;
                     break;
+
                 case PromptType.Romaji:
                     text = WanaKanaSharp.WanaKana.ToRomaji(pw.katakana);
                     break;
+
                 case PromptType.Meaning:
                 default:
                     break;
@@ -160,7 +173,7 @@ public class KanjiTraceable : MonoBehaviour
         textMesh.SetText(textMeshText);
     }
 
-    public void Destroy() 
+    public void Destroy()
     {
         Destroy(labelRect.gameObject);
         controlledGameObject.Destroy();
