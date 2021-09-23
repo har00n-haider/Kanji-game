@@ -52,6 +52,7 @@ public class KanjiManager : MonoBehaviour
     {
         CheckSelectionInput();
         UpdateReticule();
+        if (selectedPromptHolder == null) AutoTarget();
     }
 
     // called by the keyboard
@@ -63,6 +64,11 @@ public class KanjiManager : MonoBehaviour
         if (!selectedPromptHolder.Completed())
         {
             keyboard.SetPromptWord(selectedPromptHolder.GetCurrentWord());
+        }
+        else
+        {
+            promptHolders.Remove(selectedPromptHolder);
+            AutoTarget();
         }
     }
 
@@ -236,6 +242,25 @@ public class KanjiManager : MonoBehaviour
     #endregion prompt setup
 
     #region selection
+
+    private void AutoTarget()
+    {
+        if (promptHolders.Count == 0) return;
+        // populate array of distances
+        Tuple<float, PromptHolder>[] distToPromptHolder = new Tuple<float, PromptHolder>[promptHolders.Count];
+        for (int i = 0; i < promptHolders.Count; i++)
+        {
+            distToPromptHolder[i] = new Tuple<float, PromptHolder>
+            (
+                (mainCharacter.transform.position - promptHolders[i].transform.position).magnitude,
+                promptHolders[i]
+            );
+        }
+        // select the closest
+        var closestPromptHolder = distToPromptHolder.Aggregate((curMin, x) =>
+                (curMin == null || x.Item1 < curMin.Item1 ? x : curMin)).Item2;
+        UpdateSelection(closestPromptHolder);
+    }
 
     private void UpdateSelection(PromptHolder selectedKanji)
     {
