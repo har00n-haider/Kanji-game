@@ -144,9 +144,11 @@ public class PromptWord
     [System.NonSerialized]
     public PromptChar[] chars;
 
+    // state
     [System.NonSerialized]
     private int cIdx = 0;
 
+    private bool meaningCompleted = false;
     private static readonly char fillerChar = '☐';
 
     public override string ToString()
@@ -159,7 +161,49 @@ public class PromptWord
         return s;
     }
 
-    #region tracking progress
+    public void Reset()
+    {
+        cIdx = 0;
+        meaningCompleted = false;
+    }
+
+    public bool Completed()
+    {
+        switch (responseType)
+        {
+            case InputType.KeyHiragana:
+            case InputType.KeyKatakana:
+            case InputType.KeyHiraganaWithRomaji:
+            case InputType.KeyKatakanaWithRomaji:
+            case InputType.WritingHiragana:
+            case InputType.WritingKatakana:
+            case InputType.WritingKanji:
+                return cIdx == chars.Length;
+
+            case InputType.Meaning:
+                return meaningCompleted;
+
+            default:
+                return false;
+        }
+    }
+
+    #region Meaning tracking
+
+    public string GetMeaning()
+    {
+        return meanings.Length > 0 ? meanings[0] : "-----";
+    }
+
+    public bool CheckMeaning(string input)
+    {
+        meaningCompleted = input == GetMeaning();
+        return meaningCompleted;
+    }
+
+    #endregion Meaning tracking
+
+    #region Input tracking progress
 
     public string GetCompletedKanaString()
     {
@@ -199,17 +243,7 @@ public class PromptWord
         }
     }
 
-    public bool WordCompleted()
-    {
-        return cIdx == chars.Length;
-    }
-
-    public void Reset()
-    {
-        cIdx = 0;
-    }
-
-    #endregion tracking progress
+    #endregion Input tracking progress
 }
 
 [System.Serializable]

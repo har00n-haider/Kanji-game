@@ -121,11 +121,11 @@ public class Keyboard : MonoBehaviour
     public void CharUpdated(char character)
     {
         if (currWord == null) return;
-        bool passed = currWord.CheckChar(character);
-        if (passed)
+        // fire the word completed only once
+        if (!currWord.Completed() && currWord.CheckChar(character))
         {
             UpdateDisplayString();
-            if (currWord.WordCompleted())
+            if (currWord.Completed())
             {
                 WordCompleted();
             }

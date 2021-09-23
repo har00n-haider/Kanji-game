@@ -114,7 +114,7 @@ public class PromptHolder : MonoBehaviour
             PromptWord pw = prompt.words[i];
             // Get color
             Color color = Color.white;
-            if (pw.WordCompleted())
+            if (pw.Completed())
             {
                 color = completedColor;
             }
