@@ -64,6 +64,14 @@ public class KanjiProgress
 public interface IPromptHolderControllable
 {
     void Destroy();
+
+    void SetHealth(int health);
+
+    void TakeDamage(int damage);
+
+    Transform getTransform { get; }
+
+    bool isDestroyed { get; }
 }
 
 /// <summary>

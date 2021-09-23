@@ -33,9 +33,12 @@ public class PromptHolder : MonoBehaviour
     private RectTransform labelRect;
 
     private TextMeshProUGUI textMesh;
-    public GameObject labelPrefab;
+
+    [SerializeField]
+    private GameObject labelPrefab;
+
     private KanjiManager kanjiMan;
-    private IPromptHolderControllable controlledGameObject;
+    public IPromptHolderControllable controlledGameObject;
 
     private void Awake()
     {
@@ -52,6 +55,7 @@ public class PromptHolder : MonoBehaviour
     private void Start()
     {
         kanjiMan.RegisterPromptHolder(this);
+        controlledGameObject.SetHealth(prompt.words.Count);
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 
@@ -59,7 +63,7 @@ public class PromptHolder : MonoBehaviour
     private void Update()
     {
         // the label takes a frame or so to get the right size (mayebe the content fitter?)
-        if (!setColliderSize && labelRect.rect.size.magnitude > 0)
+        if (!setColliderSize && labelRect?.rect.size.magnitude > 0)
         {
             ConfigureLabel(labelRect.gameObject);
             setColliderSize = true;
@@ -85,6 +89,7 @@ public class PromptHolder : MonoBehaviour
 
     private void UpdateLabelScreenPos(RectTransform lRect, float yOffsetPercentage)
     {
+        if (lRect == null) return;
         float labelRectW = lRect.rect.width;
         float labelRectH = lRect.rect.height;
         float sH = Camera.main.pixelHeight;
@@ -103,7 +108,9 @@ public class PromptHolder : MonoBehaviour
     {
         pIdx++;
         SetTextMesh();
-        return pIdx == prompt.words.Count;
+        bool completed = pIdx == prompt.words.Count;
+        if (completed) Destroy(labelRect.gameObject);
+        return completed;
     }
 
     private void SetTextMesh()
@@ -171,11 +178,5 @@ public class PromptHolder : MonoBehaviour
             textMeshText += $"{text.AddColor(color)}";
         }
         textMesh.SetText(textMeshText);
-    }
-
-    public void Destroy()
-    {
-        Destroy(labelRect.gameObject);
-        controlledGameObject.Destroy();
     }
 }

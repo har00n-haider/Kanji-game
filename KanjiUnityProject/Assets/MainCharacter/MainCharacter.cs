@@ -17,7 +17,7 @@ public class MainCharacter : MonoBehaviour
     {
     }
 
-    public void FireBullet(GameObject target)
+    public void FireBullet(IPromptHolderControllable target)
     {
         Bullet b = Instantiate(bulletPrefab, transform.position, transform.rotation).GetComponent<Bullet>();
         b.Init(target);

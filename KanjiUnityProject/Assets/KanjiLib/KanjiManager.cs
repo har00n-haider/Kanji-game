@@ -58,7 +58,7 @@ public class KanjiManager : MonoBehaviour
     public void UpdateCurrentPromptHolder()
     {
         if (selectedPromptHolder == null) return;
-        mainCharacter.FireBullet(selectedPromptHolder.gameObject);
+        mainCharacter.FireBullet(selectedPromptHolder.controlledGameObject);
         bool completed = selectedPromptHolder.MoveNext();
         if (!completed)
         {

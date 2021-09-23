@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public GameObject target = null;
+    public IPromptHolderControllable target = null;
     public float speed = 0f;
 
-    public void Init(GameObject target)
+    public void Init(IPromptHolderControllable target)
     {
         this.target = target;
     }
@@ -25,10 +25,19 @@ public class Bullet : MonoBehaviour
 
     private void Move()
     {
-        if (target != null)
+        if (!target.isDestroyed)
         {
-            gameObject.transform.LookAt(target.transform);
+            gameObject.transform.LookAt(target.getTransform);
             gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
+        }
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.transform == target.getTransform)
+        {
+            target.TakeDamage(1);
+            Destroy(gameObject);
         }
     }
 }

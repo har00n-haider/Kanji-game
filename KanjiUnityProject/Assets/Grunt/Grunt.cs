@@ -6,10 +6,14 @@ using UnityEngine.UI;
 
 public class Grunt : MonoBehaviour, IPromptHolderControllable
 {
+    // configuration
     public float speed = 0.1f;
 
     public bool canMove = true;
     public System.Action onDestroy;
+
+    // state
+    private int health;
 
     // unity references
     [SerializeField]
@@ -53,14 +57,20 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
         onDestroy?.Invoke();
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void SetHealth(int health)
     {
-        if (canMove)
-        {
-            if (other.transform == mainCharacter.transform)
-            {
-                Destroy();
-            }
-        }
+        this.health = health;
     }
+
+    public void TakeDamage(int damage)
+    {
+        if (health > 0) health -= damage;
+        if (health <= 0) Destroy();
+    }
+
+    public int MyProperty { get; set; }
+
+    public Transform getTransform => transform;
+
+    public bool isDestroyed => this == null;
 }
