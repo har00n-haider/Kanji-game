@@ -16,10 +16,7 @@ public class PromptHolder : MonoBehaviour
     private bool setColliderSize = false;
 
     // prompt string content
-    public Prompt prompt;
-
-    private int pIdx { get; set; } = 0;
-    public PromptWord currWord { get { return prompt.words[pIdx]; } }
+    private Prompt prompt { get; set; }
 
     // prompt string configuration
     private Color completedColor = Color.grey;
@@ -104,15 +101,6 @@ public class PromptHolder : MonoBehaviour
         lRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
 
-    public bool MoveNext()
-    {
-        pIdx++;
-        SetTextMesh();
-        bool completed = pIdx == prompt.words.Count;
-        if (completed) Destroy(labelRect.gameObject);
-        return completed;
-    }
-
     private void SetTextMesh()
     {
         string textMeshText = "";
@@ -178,5 +166,28 @@ public class PromptHolder : MonoBehaviour
             textMeshText += $"{text.AddColor(color)}";
         }
         textMesh.SetText(textMeshText);
+    }
+
+    public bool MoveNext()
+    {
+        prompt.MoveNext();
+        SetTextMesh();
+        if (prompt.Completed()) Destroy(labelRect.gameObject);
+        return prompt.Completed();
+    }
+
+    public bool Completed()
+    {
+        return prompt.Completed();
+    }
+
+    public PromptWord GetCurrentWord()
+    {
+        return prompt.currWord;
+    }
+
+    public void SetPrompt(Prompt prompt)
+    {
+        this.prompt = prompt;
     }
 }

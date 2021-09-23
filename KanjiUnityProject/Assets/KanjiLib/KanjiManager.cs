@@ -59,17 +59,17 @@ public class KanjiManager : MonoBehaviour
     {
         if (selectedPromptHolder == null) return;
         mainCharacter.FireBullet(selectedPromptHolder.controlledGameObject);
-        bool completed = selectedPromptHolder.MoveNext();
-        if (!completed)
+        selectedPromptHolder.MoveNext();
+        if (!selectedPromptHolder.Completed())
         {
-            keyboard.SetPromptWord(selectedPromptHolder.currWord);
+            keyboard.SetPromptWord(selectedPromptHolder.GetCurrentWord());
         }
     }
 
     public void RegisterPromptHolder(PromptHolder promptHolder)
     {
         promptHolders.Add(promptHolder);
-        promptHolder.prompt = GetNextPrompt();
+        promptHolder.SetPrompt(GetNextPrompt());
     }
 
     public List<string> GetRandomMeanings(int noOfMeanings, string except = null)
@@ -240,7 +240,7 @@ public class KanjiManager : MonoBehaviour
     private void UpdateSelection(PromptHolder selectedKanji)
     {
         selectedPromptHolder = selectedKanji;
-        keyboard.SetPromptWord(selectedKanji.currWord);
+        keyboard.SetPromptWord(selectedKanji.GetCurrentWord());
     }
 
     private void CheckSelectionInput()

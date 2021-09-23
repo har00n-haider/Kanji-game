@@ -258,6 +258,19 @@ public class PromptWord
 public class Prompt
 {
     public List<PromptWord> words;
+    private int pIdx { get; set; } = 0;
+    public PromptWord currWord { get { return words[pIdx]; } }
+
+    public bool MoveNext()
+    {
+        if (pIdx + 1 < words.Count) pIdx++;
+        return Completed();
+    }
+
+    public bool Completed()
+    {
+        return pIdx == (words.Count - 1);
+    }
 
     public override string ToString()
     {
