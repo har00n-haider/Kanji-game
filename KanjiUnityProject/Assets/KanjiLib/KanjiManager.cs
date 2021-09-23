@@ -37,12 +37,15 @@ public class KanjiManager : MonoBehaviour
     // refs
     private Keyboard keyboard;
 
+    private MainCharacter mainCharacter;
+
     private void Awake()
     {
         database = new KanjiDatabase();
         database.Load(kanjiDataBaseFile, sentenceDataBaseFile);
         reticuleTransform = reticule.GetComponent<RectTransform>();
         keyboard = GameObject.FindGameObjectWithTag("Keyboard").GetComponent<Keyboard>();
+        mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
     }
 
     private void Update()
@@ -54,12 +57,10 @@ public class KanjiManager : MonoBehaviour
     // called by the keyboard
     public void UpdateCurrentPromptHolder()
     {
+        if (selectedPromptHolder == null) return;
+        mainCharacter.FireBullet(selectedPromptHolder.gameObject);
         bool completed = selectedPromptHolder.MoveNext();
-        if (completed)
-        {
-            selectedPromptHolder.Destroy();
-        }
-        else
+        if (!completed)
         {
             keyboard.SetPromptWord(selectedPromptHolder.currWord);
         }

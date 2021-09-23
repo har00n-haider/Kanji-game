@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7352282674262715460}
   - component: {fileID: 7352282674262715463}
   - component: {fileID: 7352282674262715462}
+  - component: {fileID: 3678128302125329996}
   m_Layer: 0
   m_Name: MainCharacter
   m_TagString: MainCharacter
@@ -96,3 +97,16 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3678128302125329996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7352282674262715457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be4585013d5adf14ba94334ada37e255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 4943432243137260147, guid: 439a34c772133d04fa79511fd8a96c70, type: 3}
