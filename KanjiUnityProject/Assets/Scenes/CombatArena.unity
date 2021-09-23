@@ -295,10 +295,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grunt
       objectReference: {fileID: 0}
-    - target: {fileID: 2123810831800778200, guid: d904c6b3b857c9c46ba4ad720a162782, type: 3}
-      propertyPath: speed
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6472020716429253179, guid: d904c6b3b857c9c46ba4ad720a162782, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -924,10 +920,6 @@ PrefabInstance:
     - target: {fileID: 7352282674262715461, guid: 22a36c1667c1e29468e1551e13a9a19b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7352282674262715462, guid: 22a36c1667c1e29468e1551e13a9a19b, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22a36c1667c1e29468e1551e13a9a19b, type: 3}
