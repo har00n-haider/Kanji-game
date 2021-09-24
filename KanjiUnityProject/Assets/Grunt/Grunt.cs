@@ -12,31 +12,39 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
     public bool canMove = true;
     public System.Action onDestroy;
     public PromptConfiguration promptConfig;
+    public float attackInterval = 2f;
+    public float attackCounter;
 
     // state
     private int health;
 
-    // unity references
-    [SerializeField]
-    private AudioClip explosionSound;
+    private bool canAttack = false;
 
-    [SerializeField]
-    private AudioClip ricochetSound;
-
-    [SerializeField]
-    private ParticleSystem explosionPrefab;
-
+    // refs
     private MainCharacter mainCharacter = null;
+
+    private Effect deathEffect;
+    private Effect attackEffect;
 
     private void Awake()
     {
         mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
+        Effect[] effects = GetComponents<Effect>();
+        foreach (Effect effect in effects)
+        {
+            if (effect.effectName == "death effect") deathEffect = effect;
+            if (effect.effectName == "attack effect") attackEffect = effect;
+        }
+        // allows grunt to immedeatley attack when in range
+        attackCounter = attackInterval;
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (mainCharacter.health <= 0) Stop();
         if (canMove) Move();
+        if (canAttack) Attack();
     }
 
     private void Move()
@@ -45,20 +53,42 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
         float distToPlayer = (mainCharacter.transform.position - transform.position).magnitude;
         if (distToPlayer > mainCharacter.personalSpaceDist)
         {
+            canAttack = false;
             transform.position += gameObject.transform.forward * speed * Time.deltaTime;
         }
+        else
+        {
+            canAttack = true;
+        }
     }
+
+    private void Attack()
+    {
+        if (attackCounter < attackInterval)
+        {
+            attackCounter += Time.deltaTime;
+        }
+        else
+        {
+            attackEffect.StartEffect(mainCharacter.transform);
+            mainCharacter.TakeDamage(1);
+            attackCounter = 0;
+        }
+    }
+
+    private void Stop()
+    {
+        canAttack = false;
+        canMove = false;
+    }
+
+    #region IPromptHolderControllable implementation
 
     public void Destroy()
     {
         if (this == null) return;
-        AudioSource.PlayClipAtPoint(explosionSound, gameObject.transform.position);
-        ParticleSystem explosion = Instantiate(
-            explosionPrefab,
-            gameObject.transform.position,
-            gameObject.transform.rotation);
+        deathEffect.StartEffect(transform);
         Destroy(gameObject);
-        Destroy(explosion.gameObject, explosionPrefab.main.duration - 2.4f);
         onDestroy?.Invoke();
     }
 
@@ -73,11 +103,11 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
         if (health <= 0) Destroy();
     }
 
-    public int MyProperty { get; set; }
-
     public Transform getTransform => transform;
 
     public bool isDestroyed => this == null;
 
     public PromptConfiguration getPromptConfig => promptConfig;
+
+    #endregion IPromptHolderControllable implementation
 }
