@@ -52,7 +52,7 @@ public class KanjiManager : MonoBehaviour
     {
         CheckSelectionInput();
         UpdateReticule();
-        if (selectedPromptHolder == null) AutoTarget();
+        //if (selectedPromptHolder == null) AutoTarget();
     }
 
     // called by the keyboard
@@ -67,7 +67,8 @@ public class KanjiManager : MonoBehaviour
         }
         else
         {
-            promptHolders.Remove(selectedPromptHolder);
+            // TODO: Move this to the prompt holder
+            RemovePromptHolder(selectedPromptHolder);
             AutoTarget();
         }
     }
@@ -75,7 +76,11 @@ public class KanjiManager : MonoBehaviour
     public void RegisterPromptHolder(PromptHolder promptHolder)
     {
         promptHolders.Add(promptHolder);
-        promptHolder.SetPrompt(GetNextPrompt());
+    }
+
+    public void RemovePromptHolder(PromptHolder promptHolder)
+    {
+        promptHolders.Remove(promptHolder);
     }
 
     public List<string> GetRandomMeanings(int noOfMeanings, string except = null)
@@ -84,6 +89,8 @@ public class KanjiManager : MonoBehaviour
     }
 
     #region prompt setup
+
+#if UNITY_EDITOR
 
     private int pIdx = -1;
 
@@ -96,8 +103,8 @@ public class KanjiManager : MonoBehaviour
         {
             GetTestSetForWordType(
                 word.type,
-                out PromptType displayType,
-                out InputType responseType);
+                out PromptDisplayType displayType,
+                out PromptInputType responseType);
             word.responseType = responseType;
             word.displayType = displayType;
         }
@@ -108,32 +115,46 @@ public class KanjiManager : MonoBehaviour
     // TODO: debug function, manually written based on what you want to test
     private void GetTestSetForWordType(
     PromptWord.WordType promptType,
-        out PromptType displayType,
-        out InputType responseType)
+        out PromptDisplayType displayType,
+        out PromptInputType responseType)
     {
-        displayType = PromptType.Kanji;
-        responseType = InputType.KeyHiragana;
+        displayType = PromptDisplayType.Kanji;
+        responseType = PromptInputType.KeyHiragana;
 
         switch (promptType)
         {
             case PromptWord.WordType.kanji:
-                displayType = PromptType.Kanji;
-                responseType = InputType.Meaning;
+                displayType = PromptDisplayType.Kanji;
+                responseType = PromptInputType.Meaning;
                 break;
 
             case PromptWord.WordType.hiragana:
-                displayType = PromptType.Hiragana;
-                responseType = InputType.KeyHiraganaWithRomaji;
+                displayType = PromptDisplayType.Hiragana;
+                responseType = PromptInputType.KeyHiraganaWithRomaji;
                 break;
 
             case PromptWord.WordType.katakana:
-                displayType = PromptType.Katana;
-                responseType = InputType.KeyKatakanaWithRomaji;
+                displayType = PromptDisplayType.Katana;
+                responseType = PromptInputType.KeyKatakanaWithRomaji;
                 break;
 
             default:
                 break;
         }
+    }
+
+#endif
+
+    public Prompt GetPrompt(PromptConfiguration promptConfig)
+    {
+        Prompt prompt = database.GetPrompt(promptConfig.promptType);
+        foreach (var word in prompt.words)
+        {
+            word.responseType = promptConfig.responseType;
+            word.displayType = promptConfig.displayType;
+        }
+        SetCharsForPrompt(ref prompt);
+        return prompt;
     }
 
     private Prompt GetRandomPrompt()
@@ -143,8 +164,8 @@ public class KanjiManager : MonoBehaviour
         {
             GetRandomTestSetForWordType(
                 word.type,
-                out PromptType displayType,
-                out InputType responseType);
+                out PromptDisplayType displayType,
+                out PromptInputType responseType);
             word.responseType = responseType;
             word.displayType = displayType;
         }
@@ -154,11 +175,11 @@ public class KanjiManager : MonoBehaviour
 
     private void GetRandomTestSetForWordType(
         PromptWord.WordType promptType,
-        out PromptType displayType,
-        out InputType responseType)
+        out PromptDisplayType displayType,
+        out PromptInputType responseType)
     {
-        displayType = PromptType.Kanji;
-        responseType = InputType.KeyHiragana;
+        displayType = PromptDisplayType.Kanji;
+        responseType = PromptInputType.KeyHiragana;
 
         switch (promptType)
         {
@@ -214,14 +235,14 @@ public class KanjiManager : MonoBehaviour
                     // for kanji as it could go multpile ways
                     switch (word.responseType)
                     {
-                        case InputType.KeyHiraganaWithRomaji:
-                        case InputType.KeyHiragana:
-                        case InputType.WritingHiragana:
+                        case PromptInputType.KeyHiraganaWithRomaji:
+                        case PromptInputType.KeyHiragana:
+                        case PromptInputType.WritingHiragana:
                             populateCharList(chars, word.hiragana);
                             break;
 
-                        case InputType.WritingKanji:
-                        case InputType.Meaning:
+                        case PromptInputType.WritingKanji:
+                        case PromptInputType.Meaning:
                             populateCharList(chars, word.kanji);
                             break;
                     }
