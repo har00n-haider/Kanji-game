@@ -63,6 +63,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   canMove: 1
+  promptConfig:
+    promptType: 1
+    wordCount: 0
+    responseType: 6
+    displayType: 0
   explosionSound: {fileID: 8300000, guid: 49c2332cc03a64249bf28cc6bd2f9a70, type: 3}
   ricochetSound: {fileID: 8300000, guid: 4031e628cfc564d93ac39f8955afbbda, type: 3}
   explosionPrefab: {fileID: 198000012942003240, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
@@ -97,8 +102,6 @@ MonoBehaviour:
   labelColor: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
   textColor: {r: 0.8207547, g: 0.63676924, b: 0.30662158, a: 1}
   labelOffsetYPercentage: 0.05
-  prompt:
-    words: []
   labelPrefab: {fileID: 110205840051118631, guid: 0a16f924c01918944bc05ea4c3efec6d, type: 3}
 --- !u!1 &7564373152661950173
 GameObject:

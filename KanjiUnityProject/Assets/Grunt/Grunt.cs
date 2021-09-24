@@ -11,6 +11,7 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
 
     public bool canMove = true;
     public System.Action onDestroy;
+    public PromptConfiguration promptConfig;
 
     // state
     private int health;
@@ -73,4 +74,6 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
     public Transform getTransform => transform;
 
     public bool isDestroyed => this == null;
+
+    public PromptConfiguration getPromptConfig => promptConfig;
 }

@@ -72,26 +72,28 @@ public interface IPromptHolderControllable
     Transform getTransform { get; }
 
     bool isDestroyed { get; }
+
+    PromptConfiguration getPromptConfig { get; }
 }
 
 /// <summary>
 /// What is displayed in the prompt.
 /// Limited by word type
 /// </summary>
-public enum PromptType
+public enum PromptDisplayType
 {
     Kanji,
     Romaji,
     Hiragana,
     Katana,
-    Meaning
+    Meaning,
 }
 
 /// <summary>
 /// What the input needs to supply (Call/Response type).
 /// Limited by word type
 /// </summary>
-public enum InputType
+public enum PromptInputType
 {
     KeyHiragana,
     KeyKatakana,
@@ -128,26 +130,28 @@ public class PromptWord
     /// </summary>
     public WordType type;
 
-    public string kanji;
-    public string[] meanings;
-    public string romaji;
-    public string hiragana;
-    public string katakana;
+    public string kanji = null;
+    public string[] meanings = null;
+    public string romaji = null;
+    public string hiragana = null;
+    public string katakana = null;
 
     /// <summary>
     /// Type of response required to complete the word
     /// </summary>
     [System.NonSerialized]
-    public InputType responseType;
+    public PromptInputType responseType;
 
     /// <summary>
     /// Determines the way the word will be displayed on a prompt
     /// </summary>
     [System.NonSerialized]
-    public PromptType displayType;
+    public PromptDisplayType displayType;
 
     /// <summary>
-    /// These are iterated through by the input to complete a word. Not used for display
+    /// These are iterated through by the input to complete a word. Not used for display.
+    /// They are populated at runtime by the KanjiMananger as the contents are only
+    /// known at that time.
     /// </summary>
     [System.NonSerialized]
     public PromptChar[] chars;
@@ -179,16 +183,16 @@ public class PromptWord
     {
         switch (responseType)
         {
-            case InputType.KeyHiragana:
-            case InputType.KeyKatakana:
-            case InputType.KeyHiraganaWithRomaji:
-            case InputType.KeyKatakanaWithRomaji:
-            case InputType.WritingHiragana:
-            case InputType.WritingKatakana:
-            case InputType.WritingKanji:
+            case PromptInputType.KeyHiragana:
+            case PromptInputType.KeyKatakana:
+            case PromptInputType.KeyHiraganaWithRomaji:
+            case PromptInputType.KeyKatakanaWithRomaji:
+            case PromptInputType.WritingHiragana:
+            case PromptInputType.WritingKatakana:
+            case PromptInputType.WritingKanji:
                 return cIdx == chars.Length;
 
-            case InputType.Meaning:
+            case PromptInputType.Meaning:
                 return meaningCompleted;
 
             default:
@@ -257,7 +261,7 @@ public class PromptWord
 [System.Serializable]
 public class Prompt
 {
-    public List<PromptWord> words;
+    public List<PromptWord> words = new List<PromptWord>();
     private int pIdx { get; set; } = 0;
     public PromptWord currWord { get { return words[pIdx]; } }
 
@@ -286,5 +290,30 @@ public class Prompt
 [System.Serializable]
 public class PromptList
 {
+    // TODO: rename this to simply prompts?
     public List<Prompt> sentences;
+}
+
+/// <summary>
+/// Used to request prompts from the database
+/// </summary>
+public enum PromptRequestType
+{
+    SingleKana, // Prompt contains one kana
+    SingleKanji,// Prompt contains one kanji
+    SingleWord, // Prompt contains one word
+    Sentence, // The prompt contains a list of words that form comprehensible sentence
+    Mixed, // A list of random mixed stuff
+}
+
+[System.Serializable]
+public class PromptConfiguration
+{
+    public PromptRequestType promptType;
+
+    public int wordCount;
+
+    public PromptInputType responseType;
+
+    public PromptDisplayType displayType;
 }
