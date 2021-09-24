@@ -5,10 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
 public static class Utils
 {
-
     public static Rect RectTranfromToScreenRect(RectTransform transform)
     {
         Vector3[] WorldCorners = new Vector3[4];
@@ -32,7 +30,7 @@ public static class Utils
     }
 
     /// <summary>
-    /// For when the position of a given rect needs to stay constant relative 
+    /// For when the position of a given rect needs to stay constant relative
     /// to the parent, when its size is changing
     /// </summary>
     /// <param name="rect"></param>
@@ -75,12 +73,16 @@ public static class Utils
 
     public static string ColorHexFromUnityColor(this Color unityColor) => $"#{ColorUtility.ToHtmlStringRGBA(unityColor)}";
 
-
     // cloner for simple objects
     public static T Clone<T>(this T source)
     {
         var serialized = JsonUtility.ToJson(source);
         return JsonUtility.FromJson<T>(serialized);
     }
-}
 
+    public static T PickRandom<T>(this List<T> source)
+    {
+        int idx = UnityEngine.Random.Range(0, source.Count() - 1);
+        return source[idx];
+    }
+}
