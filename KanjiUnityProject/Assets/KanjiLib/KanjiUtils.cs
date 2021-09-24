@@ -161,57 +161,57 @@ public static class KanjiUtils
 
     #region prompt helpers
 
-    public static readonly PromptType[] kanjiPrompts = new PromptType[]
+    public static readonly PromptDisplayType[] kanjiPrompts = new PromptDisplayType[]
     {
-                PromptType.Kanji,
-                PromptType.Hiragana,
-                PromptType.Romaji,
-                PromptType.Meaning,
+                PromptDisplayType.Kanji,
+                PromptDisplayType.Hiragana,
+                PromptDisplayType.Romaji,
+                PromptDisplayType.Meaning,
     };
 
-    public static readonly PromptType[] katakanaPrompts = new PromptType[]
+    public static readonly PromptDisplayType[] katakanaPrompts = new PromptDisplayType[]
     {
-                PromptType.Katana,
-                PromptType.Romaji,
+                PromptDisplayType.Katana,
+                PromptDisplayType.Romaji,
     };
 
 
-    public static readonly PromptType[] hiraganaPrompts = new PromptType[]
+    public static readonly PromptDisplayType[] hiraganaPrompts = new PromptDisplayType[]
     {
-                PromptType.Hiragana,
-                PromptType.Romaji,
+                PromptDisplayType.Hiragana,
+                PromptDisplayType.Romaji,
     };
 
-    public static readonly  InputType[] kanjiInputs = new InputType[]
+    public static readonly  PromptInputType[] kanjiInputs = new PromptInputType[]
     {
-            InputType.KeyHiragana,
-            InputType.KeyHiraganaWithRomaji,
-            InputType.Meaning,
-            InputType.WritingHiragana,
-            InputType.WritingKanji,
+            PromptInputType.KeyHiragana,
+            PromptInputType.KeyHiraganaWithRomaji,
+            PromptInputType.Meaning,
+            PromptInputType.WritingHiragana,
+            PromptInputType.WritingKanji,
     };
 
-    public static readonly InputType[] katakanaInputs = new InputType[]
+    public static readonly PromptInputType[] katakanaInputs = new PromptInputType[]
     {
-                InputType.KeyKatakana,
-                InputType.KeyKatakanaWithRomaji,
-                InputType.WritingKatakana,
+                PromptInputType.KeyKatakana,
+                PromptInputType.KeyKatakanaWithRomaji,
+                PromptInputType.WritingKatakana,
     };
 
-    public static readonly InputType[] hiraganaInputs = new InputType[]
+    public static readonly PromptInputType[] hiraganaInputs = new PromptInputType[]
     {
-                InputType.KeyHiragana,
-                InputType.KeyHiraganaWithRomaji,
-                InputType.WritingHiragana,
+                PromptInputType.KeyHiragana,
+                PromptInputType.KeyHiraganaWithRomaji,
+                PromptInputType.WritingHiragana,
     };
 
-    public static InputType GetRandomInput(this InputType[] inputs) 
+    public static PromptInputType GetRandomInput(this PromptInputType[] inputs) 
     {
         int idx = Random.Range(0, inputs.Length - 1);
         return inputs[idx];
     }
 
-    public static PromptType GetRandomPrompt(this PromptType[] prompts)
+    public static PromptDisplayType GetRandomPrompt(this PromptDisplayType[] prompts)
     {
         int idx = Random.Range(0, prompts.Length - 1);
         return prompts[idx];

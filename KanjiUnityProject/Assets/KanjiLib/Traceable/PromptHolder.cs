@@ -52,6 +52,9 @@ public class PromptHolder : MonoBehaviour
     private void Start()
     {
         kanjiMan.RegisterPromptHolder(this);
+        // Get a prompt that matches the form that the game object wants
+        prompt = kanjiMan.GetPrompt(controlledGameObject.getPromptConfig);
+
         controlledGameObject.SetHealth(prompt.words.Count);
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
@@ -117,23 +120,23 @@ public class PromptHolder : MonoBehaviour
             {
                 switch (pw.displayType)
                 {
-                    case PromptType.Kanji:
+                    case PromptDisplayType.Kanji:
                         color = kanjiColor;
                         break;
 
-                    case PromptType.Hiragana:
+                    case PromptDisplayType.Hiragana:
                         color = hiraganaColor;
                         break;
 
-                    case PromptType.Katana:
+                    case PromptDisplayType.Katana:
                         color = katanaColor;
                         break;
 
-                    case PromptType.Romaji:
+                    case PromptDisplayType.Romaji:
                         color = romajiColor;
                         break;
 
-                    case PromptType.Meaning:
+                    case PromptDisplayType.Meaning:
                     default:
                         break;
                 }
@@ -142,23 +145,23 @@ public class PromptHolder : MonoBehaviour
             string text = string.Empty;
             switch (pw.displayType)
             {
-                case PromptType.Kanji:
+                case PromptDisplayType.Kanji:
                     text = pw.kanji;
                     break;
 
-                case PromptType.Hiragana:
+                case PromptDisplayType.Hiragana:
                     text = pw.hiragana;
                     break;
 
-                case PromptType.Katana:
+                case PromptDisplayType.Katana:
                     text = pw.katakana;
                     break;
 
-                case PromptType.Romaji:
+                case PromptDisplayType.Romaji:
                     text = WanaKanaSharp.WanaKana.ToRomaji(pw.katakana);
                     break;
 
-                case PromptType.Meaning:
+                case PromptDisplayType.Meaning:
                 default:
                     break;
             }
@@ -184,10 +187,5 @@ public class PromptHolder : MonoBehaviour
     public PromptWord GetCurrentWord()
     {
         return prompt.currWord;
-    }
-
-    public void SetPrompt(Prompt prompt)
-    {
-        this.prompt = prompt;
     }
 }

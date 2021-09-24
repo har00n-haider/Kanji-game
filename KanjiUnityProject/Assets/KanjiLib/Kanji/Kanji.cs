@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
 public class Kanji : MonoBehaviour
 {
     #region classes
@@ -13,8 +12,10 @@ public class Kanji : MonoBehaviour
     public class StrokeResult
     {
         public bool pass = false;
+
         // same order and size as the refpoints
         public List<float?> refPointDistances = new List<float?>();
+
         public int tightPointIdx = -1;
     }
 
@@ -31,6 +32,7 @@ public class Kanji : MonoBehaviour
     {
         // configuration for strokes
         public int noRefPointsInStroke { get; private set; } = 5;
+
         public float compThreshTight = 0.3f;
         public float compThreshLoose = 0.7f;
         public float lengthBuffer = 1f;
@@ -42,10 +44,11 @@ public class Kanji : MonoBehaviour
         public float thickness;
     }
 
-    #endregion
+    #endregion classes
 
     // current state of the kanji
     protected Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
+
     protected StrokePair curStroke { get { return strokes[curStrokeIdx]; } }
     protected int curStrokeIdx = 0;
     public bool completed { get; private set; } = false;
@@ -55,6 +58,7 @@ public class Kanji : MonoBehaviour
     // kanji data
     [SerializeField]
     private KanjiConfig _config;
+
     public KanjiConfig config { get { return _config; } private set { _config = value; } }
     public KanjiData kanjiData { get; private set; } = null;
     protected ParsedKanjiData parsedKanjiData = null;
@@ -145,7 +149,7 @@ public class Kanji : MonoBehaviour
         {
             score = strokes.Count(sp => sp.Value.strokeResult.pass) / (float)strokes.Count;
             pass = score > 0;
-            Debug.Log(string.Format("{0} completed, pass: {1}, score: {2:0.00}", kanjiData.literal, pass, score));
+            //Debug.Log(string.Format("{0} completed, pass: {1}, score: {2:0.00}", kanjiData.literal, pass, score));
             // update progress for the kanji
             if (score >= 1)
             {
@@ -175,7 +179,7 @@ public class Kanji : MonoBehaviour
 
     private Stroke GenerateInpStroke()
     {
-        // create the first input stroke 
+        // create the first input stroke
         var inputStroke = Instantiate(strokePrefab, transform).GetComponent<Stroke>();
         inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
         inputStroke.Init(this);
@@ -231,12 +235,12 @@ public class Kanji : MonoBehaviour
     ///  y/\
     ///   |
     ///   |
-    ///    -----> x 
-    /// relative to a rect in which the kanji exists 
+    ///    -----> x
+    /// relative to a rect in which the kanji exists
     /// </summary>
     protected virtual void UpdateInput() { }
 
-    protected virtual void Completed() { }
-
+    protected virtual void Completed()
+    {
+    }
 }
-

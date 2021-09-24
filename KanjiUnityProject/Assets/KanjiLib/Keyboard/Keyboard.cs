@@ -45,15 +45,15 @@ public class Keyboard : MonoBehaviour
     {
         if (currWord != null)
         {
-            if (currWord.responseType == InputType.Meaning)
+            if (currWord.responseType == PromptInputType.Meaning)
             {
                 displayTextMesh.text = currWord.ToString();
             }
             else
             {
                 bool displayRomaji =
-                    currWord.responseType == InputType.KeyHiraganaWithRomaji ||
-                    currWord.responseType == InputType.KeyKatakanaWithRomaji;
+                    currWord.responseType == PromptInputType.KeyHiraganaWithRomaji ||
+                    currWord.responseType == PromptInputType.KeyKatakanaWithRomaji;
                 string originalString = "<mspace=1em>" + currWord.GetDisplayString() + "</mspace>";
                 displayTextMesh.text = !displayRomaji ? originalString :
                     WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;
@@ -67,29 +67,29 @@ public class Keyboard : MonoBehaviour
         displayTextMesh.text = string.Empty;
     }
 
-    private void ShowInputForType(InputType type)
+    private void ShowInputForType(PromptInputType type)
     {
         switch (type)
         {
-            case InputType.WritingHiragana:
-            case InputType.WritingKatakana:
-            case InputType.WritingKanji:
+            case PromptInputType.WritingHiragana:
+            case PromptInputType.WritingKatakana:
+            case PromptInputType.WritingKanji:
                 flickInput.gameObject.SetActive(false);
                 meaningInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(true);
                 break;
 
-            case InputType.KeyHiragana:
-            case InputType.KeyKatakana:
-            case InputType.KeyHiraganaWithRomaji:
-            case InputType.KeyKatakanaWithRomaji:
+            case PromptInputType.KeyHiragana:
+            case PromptInputType.KeyKatakana:
+            case PromptInputType.KeyHiraganaWithRomaji:
+            case PromptInputType.KeyKatakanaWithRomaji:
                 meaningInput.gameObject.SetActive(false);
                 drawInput.gameObject.SetActive(false);
                 flickInput.gameObject.SetActive(true);
                 flickInput.SetType(type);
                 break;
 
-            case InputType.Meaning:
+            case PromptInputType.Meaning:
                 drawInput.gameObject.SetActive(false);
                 flickInput.gameObject.SetActive(false);
                 meaningInput.gameObject.SetActive(true);
@@ -102,16 +102,16 @@ public class Keyboard : MonoBehaviour
     {
         switch (currWord.responseType)
         {
-            case InputType.WritingHiragana:
-            case InputType.WritingKatakana:
-            case InputType.WritingKanji:
+            case PromptInputType.WritingHiragana:
+            case PromptInputType.WritingKatakana:
+            case PromptInputType.WritingKanji:
                 drawInput.SetPromptChar(promptChar);
                 break;
 
-            case InputType.KeyHiragana:
-            case InputType.KeyKatakana:
-            case InputType.KeyKatakanaWithRomaji:
-            case InputType.KeyHiraganaWithRomaji:
+            case PromptInputType.KeyHiragana:
+            case PromptInputType.KeyKatakana:
+            case PromptInputType.KeyKatakanaWithRomaji:
+            case PromptInputType.KeyHiraganaWithRomaji:
                 flickInput.SetPromptChar(promptChar);
                 break;
         }
@@ -147,7 +147,7 @@ public class Keyboard : MonoBehaviour
         currWord = promptWord;
         // set the prompt char to the relevant input
         ShowInputForType(currWord.responseType);
-        if (currWord.responseType == InputType.Meaning)
+        if (currWord.responseType == PromptInputType.Meaning)
         {
             meaningInput.SetPromptWord(promptWord);
         }

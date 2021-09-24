@@ -16,7 +16,7 @@ public class FlickInputHandler
     public Keyboard keyboard;
 
     // char detection
-    public InputType type;
+    public PromptInputType type;
     private PromptChar curPromptChar = null;
     private char? lastChar = null;
 
@@ -225,7 +225,7 @@ public class FlickInputHandler
         if (lastChar == null) return;
         // katakana conversion: convert to 
         char? charToMod = lastChar.Value;
-        bool requiresConversion = type == InputType.KeyKatakana || type == InputType.KeyKatakanaWithRomaji;
+        bool requiresConversion = type == PromptInputType.KeyKatakana || type == PromptInputType.KeyKatakanaWithRomaji;
         if (requiresConversion) charToMod = katakanaToHiragana[charToMod.Value];
         switch (modChar)
         {
@@ -375,7 +375,7 @@ public class FlickLayout : MonoBehaviour
     // config
     private readonly int rows = 4;
     private readonly int columns = 3;
-    private InputType type;
+    private PromptInputType type;
     [SerializeField]
     private FlickButton.Config defaultButtonConfig;
     [SerializeField]
@@ -423,7 +423,7 @@ public class FlickLayout : MonoBehaviour
 
 
     // change the keyboard to match required type
-    public void SetType(InputType type) 
+    public void SetType(PromptInputType type) 
     {
         this.type = type; 
         for (int r = 0; r < rows; r++)
@@ -553,17 +553,17 @@ public class FlickLayout : MonoBehaviour
 
         switch (type)
         {
-            case InputType.KeyHiragana:
+            case PromptInputType.KeyHiragana:
                 setHiraganaLayout(row, col);
                 break;
-            case InputType.KeyKatakana:
+            case PromptInputType.KeyKatakana:
                 setKatakanaLayout(row, col);
                 break;
-            case InputType.KeyHiraganaWithRomaji:
+            case PromptInputType.KeyHiraganaWithRomaji:
                 setHiraganaLayout(row, col);
                 addRomajiToLayout(row, col);
                 break;
-            case InputType.KeyKatakanaWithRomaji:
+            case PromptInputType.KeyKatakanaWithRomaji:
                 setKatakanaLayout(row, col);
                 addRomajiToLayout(row, col);
                 break;
