@@ -295,6 +295,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grunt
       objectReference: {fileID: 0}
+    - target: {fileID: 2123810831800778200, guid: d904c6b3b857c9c46ba4ad720a162782, type: 3}
+      propertyPath: speed
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6472020716429253179, guid: d904c6b3b857c9c46ba4ad720a162782, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -818,7 +822,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2123810831800778200, guid: d904c6b3b857c9c46ba4ad720a162782, type: 3}
       propertyPath: speed
-      value: 1.4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6472020716429253179, guid: d904c6b3b857c9c46ba4ad720a162782, type: 3}
       propertyPath: m_RootOrder
