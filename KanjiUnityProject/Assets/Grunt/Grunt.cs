@@ -26,11 +26,11 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
     [SerializeField]
     private ParticleSystem explosionPrefab;
 
-    private GameObject mainCharacter = null;
+    private MainCharacter mainCharacter = null;
 
     private void Awake()
     {
-        mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter");
+        mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
     }
 
     // Update is called once per frame
@@ -42,7 +42,11 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
     private void Move()
     {
         gameObject.transform.LookAt(mainCharacter.transform);
-        gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
+        float distToPlayer = (mainCharacter.transform.position - transform.position).magnitude;
+        if (distToPlayer > mainCharacter.personalSpaceDist)
+        {
+            transform.position += gameObject.transform.forward * speed * Time.deltaTime;
+        }
     }
 
     public void Destroy()

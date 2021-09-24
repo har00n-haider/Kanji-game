@@ -7,6 +7,8 @@ public class MainCharacter : MonoBehaviour
     // refs
     public GameObject bulletPrefab = null;
 
+    public float personalSpaceDist;
+
     // Start is called before the first frame update
     private void Start()
     {
