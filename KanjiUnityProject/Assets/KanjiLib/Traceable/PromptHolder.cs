@@ -40,6 +40,9 @@ public class PromptHolder : MonoBehaviour
     private void Awake()
     {
         controlledGameObject = GetComponent<IPromptHolderControllable>();
+
+        controlledGameObject.onDestroy += HandleControlledGameObjectDestroyed;
+
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
 
         // always place the label on the main canvas
@@ -187,5 +190,10 @@ public class PromptHolder : MonoBehaviour
     public PromptWord GetCurrentWord()
     {
         return prompt.currWord;
+    }
+
+    private void HandleControlledGameObjectDestroyed()
+    {
+        Destroy(labelRect.gameObject);
     }
 }

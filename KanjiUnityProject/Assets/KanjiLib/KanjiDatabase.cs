@@ -47,6 +47,13 @@ public class KanjiDatabase
         switch (promptType)
         {
             case PromptRequestType.SingleKana:
+                // get a random kanji from the kanji list
+                KanjiData selectedKana = kanjis.Values.Where(k => k.category == "hiragana set").ToList().PickRandom();
+                prompt.words.Add(new PromptWord()
+                {
+                    type = PromptWord.WordType.hiragana,
+                    hiragana = selectedKana.literal,
+                });
                 break;
 
             case PromptRequestType.SingleKanji:

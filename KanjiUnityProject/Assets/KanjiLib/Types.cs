@@ -74,6 +74,8 @@ public interface IPromptHolderControllable
     bool isDestroyed { get; }
 
     PromptConfiguration getPromptConfig { get; }
+
+    System.Action onDestroy { get; set; }
 }
 
 /// <summary>
