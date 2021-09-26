@@ -41,6 +41,8 @@ public class KanjiDatabase
 
     // The responsibility of this function is to return
     // a prompt that matches the prompt type
+    // TODO: Need to specify exactly what state a prompt is in
+    // before returning it
     public Prompt GetPrompt(PromptRequestType promptType)
     {
         Prompt prompt = new Prompt();
@@ -48,11 +50,11 @@ public class KanjiDatabase
         {
             case PromptRequestType.SingleKana:
                 // get a random kanji from the kanji list
-                KanjiData selectedKana = kanjis.Values.Where(k => k.category == "hiragana set").ToList().PickRandom();
+                char selectedKana = KanjiUtils.unmodifiedHiragana.ToList().PickRandom();
                 prompt.words.Add(new PromptWord()
                 {
                     type = PromptWord.WordType.hiragana,
-                    hiragana = selectedKana.literal,
+                    hiragana = selectedKana.ToString(),
                 });
                 break;
 

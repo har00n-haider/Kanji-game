@@ -5,7 +5,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-
 public class CubicBezier
 {
     public Vector2 p1 = new Vector2();
@@ -16,7 +15,6 @@ public class CubicBezier
 
 public static class KanjiUtils
 {
-
     #region svg conversion tools
 
     // t must be a value from 0 - 1
@@ -156,8 +154,7 @@ public static class KanjiUtils
         return points.ConvertAll(p => new Vector2(p.x * (1 / width), 1f + (p.y * (1 / height))));
     }
 
-    #endregion
-
+    #endregion svg conversion tools
 
     #region prompt helpers
 
@@ -175,14 +172,13 @@ public static class KanjiUtils
                 PromptDisplayType.Romaji,
     };
 
-
     public static readonly PromptDisplayType[] hiraganaPrompts = new PromptDisplayType[]
     {
                 PromptDisplayType.Hiragana,
                 PromptDisplayType.Romaji,
     };
 
-    public static readonly  PromptInputType[] kanjiInputs = new PromptInputType[]
+    public static readonly PromptInputType[] kanjiInputs = new PromptInputType[]
     {
             PromptInputType.KeyHiragana,
             PromptInputType.KeyHiraganaWithRomaji,
@@ -205,7 +201,7 @@ public static class KanjiUtils
                 PromptInputType.WritingHiragana,
     };
 
-    public static PromptInputType GetRandomInput(this PromptInputType[] inputs) 
+    public static PromptInputType GetRandomInput(this PromptInputType[] inputs)
     {
         int idx = Random.Range(0, inputs.Length - 1);
         return inputs[idx];
@@ -217,5 +213,55 @@ public static class KanjiUtils
         return prompts[idx];
     }
 
-    #endregion
+    #endregion prompt helpers
+
+    public static char[] unmodifiedHiragana = new char[]
+    {
+        'あ',
+        'い',
+        'う',
+        'え',
+        'お',
+        'か',
+        'き',
+        'く',
+        'け',
+        'こ',
+        'さ',
+        'し',
+        'す',
+        'せ',
+        'そ',
+        'た',
+        'ち',
+        'つ',
+        'て',
+        'と',
+        'な',
+        'に',
+        'ぬ',
+        'ね',
+        'の',
+        'は',
+        'ひ',
+        'ふ',
+        'へ',
+        'ほ',
+        'ま',
+        'み',
+        'む',
+        'め',
+        'も',
+        'や',
+        'ゆ',
+        'よ',
+        'ら',
+        'り',
+        'る',
+        'れ',
+        'ろ',
+        'わ',
+        'を',
+        'ん',
+    };
 }
