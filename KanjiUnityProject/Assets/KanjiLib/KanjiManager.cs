@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Manages objects in the scene that hold kanji prompts
@@ -50,7 +51,7 @@ public class KanjiManager : MonoBehaviour
 
     private void Update()
     {
-        CheckSelectionInput();
+        UpdateSelectedPromptHolderFromScene();
         UpdateReticule();
         //if (selectedPromptHolder == null) AutoTarget();
     }
@@ -67,8 +68,6 @@ public class KanjiManager : MonoBehaviour
         }
         else
         {
-            // TODO: Move this to the prompt holder
-            RemovePromptHolder(selectedPromptHolder);
             AutoTarget();
         }
     }
@@ -289,9 +288,18 @@ public class KanjiManager : MonoBehaviour
         keyboard.SetPromptWord(selectedKanji.GetCurrentWord());
     }
 
-    private void CheckSelectionInput()
+    // unity event method
+    // So that we can get select the prompt from the label aswell
+    public void UpdateSelectedPromptHolderFromLabel(PromptHolder selectedPrompt)
     {
-        // see if user selected a kanji holder object
+        if (selectedPrompt != null)
+        {
+            UpdateSelection(selectedPrompt);
+        }
+    }
+
+    private void UpdateSelectedPromptHolderFromScene()
+    {
         if (Input.GetMouseButtonUp(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

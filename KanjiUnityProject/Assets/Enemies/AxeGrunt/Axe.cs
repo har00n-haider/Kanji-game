@@ -10,10 +10,18 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
 
     private Effect hitEffect;
 
+    //TODO: turn this into a regular class
+    private Effect deflectedEffect;
+
     // Start is called before the first frame update
     private void Start()
     {
-        hitEffect = GetComponent<Effect>();
+        Effect[] effects = GetComponents<Effect>();
+        foreach (Effect effect in effects)
+        {
+            if (effect.effectName == "hit effect") hitEffect = effect;
+            if (effect.effectName == "deflected effect") deflectedEffect = effect;
+        }
     }
 
     // Update is called once per frame
@@ -30,8 +38,10 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
         this.target = target;
     }
 
+    // when the axe hits the target
     private void OnTriggerEnter(Collider collider)
     {
+        if (this == null) return;
         if (collider.transform == target.transform)
         {
             target.TakeDamage(1);
@@ -43,9 +53,13 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
 
     #region IPromptHolderControllable
 
+    // when the axe is deflected
     public void Destroy()
     {
-        throw new System.NotImplementedException();
+        if (this == null) return;
+        deflectedEffect.StartEffect(transform);
+        Destroy(gameObject);
+        onDestroy?.Invoke();
     }
 
     public void SetHealth(int health)
@@ -54,12 +68,12 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
 
     public void TakeDamage(int damage)
     {
-        throw new System.NotImplementedException();
+        Destroy();
     }
 
-    public Transform getTransform => throw new System.NotImplementedException();
+    public Transform getTransform => transform;
 
-    public bool isDestroyed => throw new System.NotImplementedException();
+    public bool isDestroyed => this == null;
 
     public PromptConfiguration getPromptConfig => promptConfig;
 

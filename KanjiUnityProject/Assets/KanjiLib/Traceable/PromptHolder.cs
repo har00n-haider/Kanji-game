@@ -41,14 +41,17 @@ public class PromptHolder : MonoBehaviour
     {
         controlledGameObject = GetComponent<IPromptHolderControllable>();
 
-        controlledGameObject.onDestroy += HandleControlledGameObjectDestroyed;
+        controlledGameObject.onDestroy += Destroy;
 
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
 
         // always place the label on the main canvas
         GameObject mainCanvas = GameObject.FindGameObjectWithTag("MainCanvas");
-        GameObject label = Instantiate(labelPrefab, mainCanvas.transform);
-        labelRect = label.GetComponentInChildren<RectTransform>();
+        // set up the label
+        PromptLabel label = Instantiate(labelPrefab, mainCanvas.transform).GetComponent<PromptLabel>();
+        label.kanjiManager = kanjiMan;
+        label.promptHolder = this;
+        labelRect = label.gameObject.GetComponentInChildren<RectTransform>();
     }
 
     // Start is called before the first frame update
@@ -178,7 +181,10 @@ public class PromptHolder : MonoBehaviour
     {
         prompt.MoveNext();
         SetTextMesh();
-        if (prompt.Completed()) Destroy(labelRect.gameObject);
+        if (prompt.Completed())
+        {
+            Destroy();
+        }
         return prompt.Completed();
     }
 
@@ -192,8 +198,9 @@ public class PromptHolder : MonoBehaviour
         return prompt.currWord;
     }
 
-    private void HandleControlledGameObjectDestroyed()
+    private void Destroy()
     {
-        Destroy(labelRect.gameObject);
+        kanjiMan.RemovePromptHolder(this);
+        if (labelRect != null) Destroy(labelRect.gameObject);
     }
 }
