@@ -136,6 +136,7 @@ MonoBehaviour:
     displayType: 0
   attackInterval: 5
   attackCounter: 0
+  color: {r: 0.46281555, g: 0.024608415, b: 0.745283, a: 0}
   axeAngle: 45
   axeSpin: {x: -20, y: 0, z: 0}
   axePrefab: {fileID: 2225807313667997308, guid: 1f64e06703e27f044a97bccb90b4b227, type: 3}

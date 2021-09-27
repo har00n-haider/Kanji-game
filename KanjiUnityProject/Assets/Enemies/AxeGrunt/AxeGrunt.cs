@@ -13,6 +13,7 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     public PromptConfiguration promptConfig;
     public float attackInterval = 3f;
     public float attackCounter;
+    public Color color;
 
     [SerializeField]
     [Range(10f, 80f)]
@@ -47,6 +48,9 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         // allows grunt to immedeatley attack when in range
         attackCounter = attackInterval;
         canAttack = true;
+
+        // update color
+        gameObject.GetComponentInChildren<Renderer>().material.color = color;
     }
 
     // Update is called once per frame
