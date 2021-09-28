@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class Axe : MonoBehaviour, IPromptHolderControllable
 {
+    // configuration
+    public float rotationSpeedDegPerSecond;
+
+    public float speed;
+
     public PromptConfiguration promptConfig;
 
+    // refs
     private MainCharacter target;
 
     private Effect hitEffect;
-
-    //TODO: turn this into a regular class
     private Effect deflectedEffect;
+    private Transform axeMeshTransform;
 
     // Start is called before the first frame update
     private void Start()
@@ -22,11 +27,14 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
             if (effect.effectName == "hit effect") hitEffect = effect;
             if (effect.effectName == "deflected effect") deflectedEffect = effect;
         }
+        axeMeshTransform = transform.Find("AxeMeshes");
     }
 
     // Update is called once per frame
     private void Update()
     {
+        axeMeshTransform.Rotate(Vector3.right, rotationSpeedDegPerSecond * Time.deltaTime);
+        gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
     }
 
     private void FixedUpdate()

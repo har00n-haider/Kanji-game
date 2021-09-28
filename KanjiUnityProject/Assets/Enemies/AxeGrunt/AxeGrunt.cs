@@ -77,13 +77,9 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 
     private void ThrowAxe(Vector3 point)
     {
-        var velocity = PhysUtils.BallisticVelocity(transform.position, point, axeAngle);
         Axe axe = Instantiate(axePrefab, transform.position, Quaternion.identity).GetComponent<Axe>();
         axe.Init(mainCharacter);
-        Rigidbody axeRb = axe.GetComponent<Rigidbody>();
-        axeRb.transform.position = transform.position;
-        axeRb.velocity = velocity;
-        axeRb.angularVelocity = axeSpin;
+        axe.transform.LookAt(mainCharacter.transform);
     }
 
     private void Stop()

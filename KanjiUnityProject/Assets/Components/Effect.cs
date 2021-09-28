@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//TODO: turn this into a regular class
 public class Effect : MonoBehaviour
 {
     [Header("Effects configuration")]

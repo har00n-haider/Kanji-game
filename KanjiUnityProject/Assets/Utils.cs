@@ -86,21 +86,3 @@ public static class Utils
         return source[idx];
     }
 }
-
-public static class PhysUtils
-{
-    public static Vector3 BallisticVelocity(Vector3 sourcePos, Vector3 targetPos, float angle)
-    {
-        Vector3 dir = targetPos - sourcePos; // get Target Direction
-        float height = dir.y; // get height difference
-        dir.y = 0; // retain only the horizontal difference
-        float dist = dir.magnitude; // get horizontal direction
-        float a = angle * Mathf.Deg2Rad; // Convert angle to radians
-        dir.y = dist * Mathf.Tan(a); // set dir to the elevation angle.
-        dist += height / Mathf.Tan(a); // Correction for small height differences
-
-        // Calculate the velocity magnitude
-        float velocity = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
-        return velocity * dir.normalized; // Return a normalized vector.
-    }
-}
