@@ -29,7 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4717688954517404655}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -893.3, y: -285.1, z: -3.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -129,16 +129,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.1
   canMove: 1
-  promptConfig:
+  promptConfigPhase1:
     promptType: 2
     wordCount: 0
     responseType: 0
     displayType: 0
+    word: 
+    useSpecificWord: 0
+  promptConfigPhase2:
+    promptType: 2
+    wordCount: 0
+    responseType: 7
+    displayType: 0
+    word: 
+    useSpecificWord: 0
+  phase2Configured: 0
   attackInterval: 5
   attackCounter: 0
   color: {r: 0.46281555, g: 0.024608415, b: 0.745283, a: 0}
-  axeAngle: 45
-  axeSpin: {x: -20, y: 0, z: 0}
   axePrefab: {fileID: 2225807313667997308, guid: 1f64e06703e27f044a97bccb90b4b227, type: 3}
 --- !u!1 &8977977743496027507
 GameObject:
