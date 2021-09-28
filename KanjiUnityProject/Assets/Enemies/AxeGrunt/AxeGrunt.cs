@@ -10,7 +10,8 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     public float speed = 0.1f;
 
     public bool canMove = true;
-    public PromptConfiguration promptConfig;
+    public PromptConfiguration promptConfigPhase1;
+    public PromptConfiguration promptConfigPhase2;
     public float attackInterval = 3f;
     public float attackCounter;
     public Color color;
@@ -18,9 +19,6 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     [SerializeField]
     [Range(10f, 80f)]
     private float axeAngle = 45f;
-
-    [SerializeField]
-    private Vector3 axeSpin = Vector3.zero;
 
     // state
     private int health;
@@ -31,7 +29,6 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     private MainCharacter mainCharacter = null;
 
     private Effect deathEffect;
-    private Effect attackEffect;
 
     [SerializeField]
     private GameObject axePrefab;
@@ -43,7 +40,6 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         foreach (Effect effect in effects)
         {
             if (effect.effectName == "death effect") deathEffect = effect;
-            if (effect.effectName == "attack effect") attackEffect = effect;
         }
         // allows grunt to immedeatley attack when in range
         attackCounter = attackInterval;
@@ -113,7 +109,7 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 
     public bool isDestroyed => this == null;
 
-    public PromptConfiguration getPromptConfig => promptConfig;
+    public PromptConfiguration getPromptConfig => promptConfigPhase1;
 
     public System.Action onDestroy { get; set; }
 

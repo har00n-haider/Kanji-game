@@ -37,10 +37,6 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
         gameObject.transform.position += gameObject.transform.forward * speed * Time.deltaTime;
     }
 
-    private void FixedUpdate()
-    {
-    }
-
     public void Init(MainCharacter target)
     {
         this.target = target;
