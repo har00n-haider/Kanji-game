@@ -64,7 +64,7 @@ public class PromptHolder : MonoBehaviour
         // Always assume that there is at least one prompt
         UpdatePrompt(controlledGameObject.getPromptConfig);
 
-        UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
+        Utils.UpdateLabelScreenPos(labelRect, labelOffsetYPercentage, transform.position);
     }
 
     // Update is called once per frame
@@ -76,7 +76,7 @@ public class PromptHolder : MonoBehaviour
             ConfigureLabel(labelRect.gameObject);
             setColliderSize = true;
         }
-        UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
+        Utils.UpdateLabelScreenPos(labelRect, labelOffsetYPercentage, transform.position);
     }
 
     private void UpdatePrompt(PromptConfiguration promptConfiguration)
@@ -106,23 +106,6 @@ public class PromptHolder : MonoBehaviour
         labelImage.color = labelColor;
         var labelBoxCollider = label.GetComponent<BoxCollider2D>();
         labelBoxCollider.size = labelRect.rect.size;
-    }
-
-    private void UpdateLabelScreenPos(RectTransform lRect, float yOffsetPercentage)
-    {
-        if (lRect == null) return;
-        float labelRectW = lRect.rect.width;
-        float labelRectH = lRect.rect.height;
-        float sH = Camera.main.pixelHeight;
-        float sW = Camera.main.pixelWidth;
-        // update the location of the label on the screen
-        var screenpoint = Camera.main.WorldToScreenPoint(transform.position);
-        // smooth clamp rect to the screen dimensions
-        float labelY = GeometryUtils.ClampLengthToRegion(screenpoint.y, labelRectH, sH);
-        float labelX = GeometryUtils.ClampLengthToRegion(screenpoint.x, labelRectW, sW);
-        // apply vertical offset to label
-        float labelYOffset = yOffsetPercentage * sH;
-        lRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
 
     private void SetTextMesh()

@@ -110,5 +110,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 4943432243137260147, guid: 439a34c772133d04fa79511fd8a96c70, type: 3}
+  healthBarPrefab: {fileID: 1337089351516525162, guid: a03517d656c47c34baf4f654c005d358, type: 3}
   personalSpaceDist: 1.76
   health: 5

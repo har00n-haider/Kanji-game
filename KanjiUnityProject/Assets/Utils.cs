@@ -73,6 +73,24 @@ public static class Utils
 
     public static string ColorHexFromUnityColor(this Color unityColor) => $"#{ColorUtility.ToHtmlStringRGBA(unityColor)}";
 
+    // Aligns a transform on the canvas with an object in the scene
+    public static void UpdateLabelScreenPos(RectTransform lRect, float yOffsetPercentage, Vector3 targetWorldPos)
+    {
+        if (lRect == null) return;
+        float labelRectW = lRect.rect.width;
+        float labelRectH = lRect.rect.height;
+        float sH = Camera.main.pixelHeight;
+        float sW = Camera.main.pixelWidth;
+        // update the location of the label on the screen
+        var screenpoint = Camera.main.WorldToScreenPoint(targetWorldPos);
+        // smooth clamp rect to the screen dimensions
+        float labelY = GeometryUtils.ClampLengthToRegion(screenpoint.y, labelRectH, sH);
+        float labelX = GeometryUtils.ClampLengthToRegion(screenpoint.x, labelRectW, sW);
+        // apply vertical offset to label
+        float labelYOffset = yOffsetPercentage * sH;
+        lRect.position = new Vector2(labelX, labelY + labelYOffset);
+    }
+
     // cloner for simple objects
     public static T Clone<T>(this T source)
     {
