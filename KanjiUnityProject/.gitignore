@@ -76,8 +76,8 @@ crashlytics-build.properties
 /Assets/TextMesh\ Pro/*
 KanjiUnityProject/Assets/TextMesh Pro.meta
 
-# Libs 
-/Assets/com.unity.uiextensions/*
-/Assets/com.unity.uiextensions.meta
-/Assets/Weapons of Choice FREE - Komposite Sound/*
-/Assets/Weapons of Choice FREE - Komposite Sound.meta
+# External assets
+/Assets/ExternalAssets/*
+!/Assets/ExternalAssets/WanaKanaSharp
+!/Assets/ExternalAssets/WanaKanaSharp.meta
+ 
