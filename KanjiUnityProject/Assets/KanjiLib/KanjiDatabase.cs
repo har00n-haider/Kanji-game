@@ -43,10 +43,10 @@ public class KanjiDatabase
     // a prompt that matches the prompt type
     // TODO: Need to specify exactly what state a prompt is in
     // before returning it
-    public Prompt GetPrompt(PromptRequestType promptType)
+    public Prompt GetPrompt(PromptConfiguration promptConfig)
     {
         Prompt prompt = new Prompt();
-        switch (promptType)
+        switch (promptConfig.promptType)
         {
             case PromptRequestType.SingleKana:
                 // get a random kanji from the kanji list
@@ -70,7 +70,14 @@ public class KanjiDatabase
                 break;
 
             case PromptRequestType.SingleWord:
-                prompt = prompts.sentences.Where(p => p.words.Count == 1).ToList().PickRandom();
+                if (promptConfig.useSpecificWord)
+                {
+                    prompt = prompts.sentences.Where(p => p.words.Count == 1).First(w => w.words[0].hiragana == promptConfig.word);
+                }
+                else
+                {
+                    prompt = prompts.sentences.Where(p => p.words.Count == 1).ToList().PickRandom();
+                }
                 break;
 
             case PromptRequestType.Sentence:

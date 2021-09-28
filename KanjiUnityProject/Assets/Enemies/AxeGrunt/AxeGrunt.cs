@@ -12,13 +12,14 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     public bool canMove = true;
     public PromptConfiguration promptConfigPhase1;
     public PromptConfiguration promptConfigPhase2;
+    public bool phase2Configured = false; // required to use the same word as phase 1
+    private Queue<PromptConfiguration> promptConfigurations = new Queue<PromptConfiguration>();
     public float attackInterval = 3f;
-    public float attackCounter;
-    public Color color;
 
-    [SerializeField]
-    [Range(10f, 80f)]
-    private float axeAngle = 45f;
+    [HideInInspector]
+    public float attackCounter;
+
+    public Color color;
 
     // state
     private int health;
@@ -47,6 +48,9 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 
         // update color
         gameObject.GetComponentInChildren<Renderer>().material.color = color;
+
+        // setup the first prompt
+        promptConfigurations.Enqueue(promptConfigPhase1);
     }
 
     // Update is called once per frame
@@ -64,7 +68,7 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         }
         else
         {
-            // TODO choose something for this
+            // TODO: choose something for this
             //attackEffect.StartEffect(mainCharacter.transform);
             ThrowAxe(mainCharacter.transform.position);
             attackCounter = 0;
@@ -86,6 +90,18 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 
     #region IPromptHolderControllable implementation
 
+    public void OnCurrentPromptSet(Prompt prompt)
+    {
+        if (!phase2Configured)
+
+        {
+            promptConfigPhase2.useSpecificWord = true;
+            promptConfigPhase2.word = prompt.words[0].hiragana;
+            promptConfigurations.Enqueue(promptConfigPhase2);
+            phase2Configured = true;
+        }
+    }
+
     public void Destroy()
     {
         if (this == null) return;
@@ -94,9 +110,9 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         onDestroy?.Invoke();
     }
 
-    public void SetHealth(int health)
+    public void AddHealth(int health)
     {
-        this.health = health;
+        this.health += health;
     }
 
     public void TakeDamage(int damage)
@@ -109,7 +125,14 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 
     public bool isDestroyed => this == null;
 
-    public PromptConfiguration getPromptConfig => promptConfigPhase1;
+    public PromptConfiguration getPromptConfig
+    {
+        get
+        {
+            return promptConfigurations.Count > 0 ?
+                promptConfigurations.Dequeue() : null;
+        }
+    }
 
     public System.Action onDestroy { get; set; }
 

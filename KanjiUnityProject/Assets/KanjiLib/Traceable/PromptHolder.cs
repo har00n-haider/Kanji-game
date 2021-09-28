@@ -4,9 +4,13 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Exposes the game object it is attached to, to the prompt system
+/// </summary>
 public class PromptHolder : MonoBehaviour
 {
-    public bool selected { get; set; }
+    // state
+    public bool completed { get; private set; } = false;
 
     // label config
     public Color labelColor;
@@ -40,9 +44,7 @@ public class PromptHolder : MonoBehaviour
     private void Awake()
     {
         controlledGameObject = GetComponent<IPromptHolderControllable>();
-
-        controlledGameObject.onDestroy += Destroy;
-
+        controlledGameObject.onDestroy += HandleOnDestroy;
         kanjiMan = GameObject.FindGameObjectWithTag("KanjiManager").GetComponent<KanjiManager>();
 
         // always place the label on the main canvas
@@ -58,10 +60,10 @@ public class PromptHolder : MonoBehaviour
     private void Start()
     {
         kanjiMan.RegisterPromptHolder(this);
-        // Get a prompt that matches the form that the game object wants
-        prompt = kanjiMan.GetPrompt(controlledGameObject.getPromptConfig);
 
-        controlledGameObject.SetHealth(prompt.words.Count);
+        // Always assume that there is at least one prompt
+        UpdatePrompt(controlledGameObject.getPromptConfig);
+
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 
@@ -77,10 +79,23 @@ public class PromptHolder : MonoBehaviour
         UpdateLabelScreenPos(labelRect, labelOffsetYPercentage);
     }
 
+    private void UpdatePrompt(PromptConfiguration promptConfiguration)
+    {
+        // Get a prompt that matches the configuration that the game object wants
+        prompt = kanjiMan.GetPrompt(promptConfiguration);
+        // Inform the controlled object what prompt was chosen (there may be
+        // game design implications)
+        controlledGameObject.OnCurrentPromptSet(prompt);
+        controlledGameObject.AddHealth(prompt.words.Count);
+        ConfigureLabel(labelRect.gameObject);
+    }
+
     public bool IsDestroyed()
     {
         return gameObject == null;
     }
+
+    #region label management
 
     private void ConfigureLabel(GameObject label)
     {
@@ -177,19 +192,26 @@ public class PromptHolder : MonoBehaviour
         textMesh.SetText(textMeshText);
     }
 
+    #endregion label management
+
     public bool MoveNext()
     {
         prompt.MoveNext();
         SetTextMesh();
         if (prompt.Completed())
         {
-            Destroy();
+            // current prompt completed try to get another
+            PromptConfiguration config = controlledGameObject.getPromptConfig;
+            if (config != null)
+            {
+                UpdatePrompt(config);
+            }
+            else
+            {
+                completed = true;
+                kanjiMan.RemovePromptHolder(this);
+            }
         }
-        return prompt.Completed();
-    }
-
-    public bool Completed()
-    {
         return prompt.Completed();
     }
 
@@ -198,7 +220,8 @@ public class PromptHolder : MonoBehaviour
         return prompt.currWord;
     }
 
-    private void Destroy()
+    // Used to clean up the prompt holder (labels etc.)
+    private void HandleOnDestroy()
     {
         kanjiMan.RemovePromptHolder(this);
         if (labelRect != null) Destroy(labelRect.gameObject);

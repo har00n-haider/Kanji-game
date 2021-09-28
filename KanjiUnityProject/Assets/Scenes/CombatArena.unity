@@ -1260,6 +1260,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -2.8
       objectReference: {fileID: 0}
+    - target: {fileID: 8161020231173789321, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
+      propertyPath: promptConfigPhase1.promptType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8161020231173789321, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
+      propertyPath: promptConfigPhase2.promptType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8161020231173789321, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
+      propertyPath: promptConfigPhase2.responseType
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8737931418272700412, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
       propertyPath: m_RootOrder
       value: 5

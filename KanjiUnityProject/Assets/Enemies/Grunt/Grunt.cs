@@ -18,6 +18,7 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
     private int health;
 
     private bool canAttack = false;
+    private bool promptSet = false;
 
     // refs
     private MainCharacter mainCharacter = null;
@@ -91,9 +92,9 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
         onDestroy?.Invoke();
     }
 
-    public void SetHealth(int health)
+    public void AddHealth(int health)
     {
-        this.health = health;
+        this.health += health;
     }
 
     public void TakeDamage(int damage)
@@ -102,11 +103,16 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
         if (health <= 0) Destroy();
     }
 
+    public void OnCurrentPromptSet(Prompt prompt)
+    {
+        promptSet = true;
+    }
+
     public Transform getTransform => transform;
 
     public bool isDestroyed => this == null;
 
-    public PromptConfiguration getPromptConfig => promptConfig;
+    public PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
 
     public System.Action onDestroy { get; set; }
 

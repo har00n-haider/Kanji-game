@@ -65,7 +65,7 @@ public interface IPromptHolderControllable
 {
     void Destroy();
 
-    void SetHealth(int health);
+    void AddHealth(int health);
 
     void TakeDamage(int damage);
 
@@ -76,6 +76,8 @@ public interface IPromptHolderControllable
     PromptConfiguration getPromptConfig { get; }
 
     System.Action onDestroy { get; set; }
+
+    void OnCurrentPromptSet(Prompt prompt);
 }
 
 /// <summary>
@@ -313,9 +315,16 @@ public class PromptConfiguration
 {
     public PromptRequestType promptType;
 
+    [HideInInspector]
     public int wordCount;
 
     public PromptInputType responseType;
 
     public PromptDisplayType displayType;
+
+    [HideInInspector]
+    public string word;
+
+    [HideInInspector]
+    public bool useSpecificWord = false;
 }

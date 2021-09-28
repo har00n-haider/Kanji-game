@@ -62,7 +62,7 @@ public class KanjiManager : MonoBehaviour
         if (selectedPromptHolder == null) return;
         mainCharacter.FireBullet(selectedPromptHolder.controlledGameObject);
         selectedPromptHolder.MoveNext();
-        if (!selectedPromptHolder.Completed())
+        if (!selectedPromptHolder.completed)
         {
             keyboard.SetPromptWord(selectedPromptHolder.GetCurrentWord());
         }
@@ -146,7 +146,7 @@ public class KanjiManager : MonoBehaviour
 
     public Prompt GetPrompt(PromptConfiguration promptConfig)
     {
-        Prompt prompt = database.GetPrompt(promptConfig.promptType);
+        Prompt prompt = database.GetPrompt(promptConfig);
         foreach (var word in prompt.words)
         {
             word.responseType = promptConfig.responseType;
