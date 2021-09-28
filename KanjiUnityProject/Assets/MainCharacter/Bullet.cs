@@ -7,6 +7,8 @@ public class Bullet : MonoBehaviour
     public IPromptHolderControllable target = null;
     public float speed = 0f;
 
+    private Effect hitEffect;
+
     public void Init(IPromptHolderControllable target)
     {
         this.target = target;
@@ -15,6 +17,7 @@ public class Bullet : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        hitEffect = GetComponent<Effect>();
     }
 
     // Update is called once per frame
@@ -37,6 +40,7 @@ public class Bullet : MonoBehaviour
         if (collider.transform == target.getTransform)
         {
             target.TakeDamage(1);
+            hitEffect.StartEffect(collider.transform);
             Destroy(gameObject);
         }
     }
