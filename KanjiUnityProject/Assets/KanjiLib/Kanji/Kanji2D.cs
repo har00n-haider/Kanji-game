@@ -22,9 +22,13 @@ public class Kanji2D : Kanji
     [HideInInspector]
     private PromptChar currCharTarget = null;
 
+    // refs 
+    private Camera keyboardCamera;
+
     public override void Init(KanjiData kanjiData)
     {
         // setup references
+        keyboardCamera = GameObject.FindGameObjectWithTag("KeyboardCamera").GetComponent<Camera>();
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
         if (boxCollider == null) boxCollider = GetComponent<BoxCollider2D>();
         if (boxCollider != null && rectTransform != null) PositionCollider();
@@ -44,12 +48,13 @@ public class Kanji2D : Kanji
     {
         if (Input.GetMouseButton(0))
         {
-            // take input only if the mouse is clicked within the kanji space
-            if (Utils.RectTranfromToScreenRect(rectTransform).Contains(Input.mousePosition)) 
+            Vector2 worldPos = keyboardCamera.ScreenToWorldPoint(Input.mousePosition);
+            // take input only if the mouse is clicked within the box collider
+            if (boxCollider.OverlapPoint(worldPos)) 
             {
                 // screen to kanji rect transformation
-                Vector2 newPoint = transform.InverseTransformPoint(Input.mousePosition);
-                Vector2 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, newPoint);
+                Vector2 localPos = transform.InverseTransformPoint(worldPos);
+                Vector2 normLocPoint = GeometryUtils.NormalizePointToBoxPosOnly(boxCollider.size, localPos);
                 curStroke.inpStroke.AddPoint(normLocPoint);
             }
         }

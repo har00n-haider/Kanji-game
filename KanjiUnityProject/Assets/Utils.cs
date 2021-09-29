@@ -7,7 +7,12 @@ using UnityEngine;
 
 public static class Utils
 {
-    public static Rect RectTranfromToScreenRect(RectTransform transform)
+    /// <summary>
+    ///  Get the Rect that encapsulates the rect transform in world space
+    /// </summary>
+    /// <param name="transform"></param>
+    /// <returns></returns>
+    public static Rect RectTransformToWorldRect(RectTransform transform)
     {
         Vector3[] WorldCorners = new Vector3[4];
         transform.GetWorldCorners(WorldCorners);

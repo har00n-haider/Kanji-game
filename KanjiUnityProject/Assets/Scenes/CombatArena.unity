@@ -1342,7 +1342,7 @@ GameObject:
   - component: {fileID: 2133355132}
   m_Layer: 0
   m_Name: Keyboard Camera
-  m_TagString: Untagged
+  m_TagString: KeyboardCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1414,6 +1414,10 @@ PrefabInstance:
     - target: {fileID: 4717688954517404655, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
       propertyPath: m_Name
       value: AxeGrunt
+      objectReference: {fileID: 0}
+    - target: {fileID: 4717688954517404655, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6223000850735453304, guid: 893e8d70e8ebaf04ea1d3ead05474687, type: 3}
       propertyPath: m_RootOrder
