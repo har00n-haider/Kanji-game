@@ -56,7 +56,7 @@ public class Keyboard : MonoBehaviour
                     currWord.responseType == PromptInputType.KeyKatakanaWithRomaji;
                 string originalString = "<mspace=1em>" + currWord.GetDisplayString() + "</mspace>";
                 displayTextMesh.text = !displayRomaji ? originalString :
-                    WanaKanaSharp.WanaKana.ToRomaji(currWord.GetCompletedKanaString()) + "\n" + originalString;
+                    WanaKanaSharp.WanaKana.ToRomaji(currWord.GetFullKanaString()) + "\n" + originalString;
             }
         }
     }

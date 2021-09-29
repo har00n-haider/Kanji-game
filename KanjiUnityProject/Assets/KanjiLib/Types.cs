@@ -221,6 +221,16 @@ public class PromptWord
 
     #region Input tracking progress
 
+    public string GetFullKanaString()
+    {
+        string s = string.Empty;
+        for (int i = 0; i < katakana.Length; i++)
+        {
+            s += katakana[i].ToString();
+        }
+        return s;
+    }
+
     public string GetCompletedKanaString()
     {
         string s = string.Empty;
