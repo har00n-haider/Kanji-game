@@ -22,7 +22,7 @@ public class CombatArenaMode : MonoBehaviour
     {
         deathText.SetActive(false);
         startButton.SetActive(true);
-        enemySpawner.ClearEnemies();
+        enemySpawner.ResetState();
     }
 
     // TODO: hook this up properly with a event on the main character?

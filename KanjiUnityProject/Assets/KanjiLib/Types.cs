@@ -78,6 +78,8 @@ public interface IPromptHolderControllable
     System.Action onDestroy { get; set; }
 
     void OnCurrentPromptSet(Prompt prompt);
+
+    Bounds getBounds();
 }
 
 /// <summary>

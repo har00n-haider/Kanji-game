@@ -25,9 +25,11 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
 
     private Effect deathEffect;
     private Effect attackEffect;
+    private Collider collider;
 
     private void Awake()
     {
+        collider = GetComponent<Collider>();
         mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
         Effect[] effects = GetComponents<Effect>();
         foreach (Effect effect in effects)
@@ -115,6 +117,11 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
     public PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
 
     public System.Action onDestroy { get; set; }
+
+    public Bounds getBounds()
+    {
+        return collider.bounds;
+    }
 
     #endregion IPromptHolderControllable implementation
 }

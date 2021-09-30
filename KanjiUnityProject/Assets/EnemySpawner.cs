@@ -1,29 +1,145 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public void StartSpawning() 
+
+    [Serializable]
+    public class SpawnerConfig
     {
-    
+        // spawn timing
+        public float spawnPeriod = 4.3f;
+        public float spawnPeriodInc = 0.03f;
+        // speed
+        public float gruntSpeed = 2;
+        public float gruntSpeedRng = 0.5f;
+
+        public int noOfGrunts = 6;
+        public int noOfAxeGrunts = 1;
+
+        public float GruntSpawnChance = 0.90f;
+        public float AxeGruntSpawnChance = 0.10f;
     }
 
-    public void ClearEnemies() 
-    {
-    
-    
-    }
+
+    // unity references
+    private List<BoxCollider> boxColliders;
+    public Grunt gruntPrefab;
+    public AxeGrunt axeGruntPrefab;
+
+    // state
+    public SpawnerConfig config = new SpawnerConfig();
+    private float timeSinceLastSpawn = 0;
+    private List<IPromptHolderControllable> enemies = new List<IPromptHolderControllable>();
+    private bool canSpawn = false;
+
+    public int noOfGruntsSpawned;
+    public int noOfAxeGruntsSpawned;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        boxColliders = new List<BoxCollider>(GetComponentsInChildren<BoxCollider>());
+
+        // to start immediatley spawning
+        timeSinceLastSpawn = config.spawnPeriod;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if (!canSpawn) return;
+        if (timeSinceLastSpawn < config.spawnPeriod)
+        {
+            timeSinceLastSpawn += Time.deltaTime;
+        }
+        else
+        {
+            Spawn();
+            timeSinceLastSpawn = 0;
+        }
     }
+
+    public void StartSpawning() 
+    {
+        ResetState();
+        canSpawn = true;
+    }
+
+    public void ResetState()
+    {
+        noOfGruntsSpawned = 0;
+        noOfAxeGruntsSpawned = 0;
+        canSpawn = false;
+        ClearEnemies();
+    }
+
+    private void ClearEnemies() 
+    {
+        foreach (var enemy in enemies)
+        {
+            enemy.Destroy();
+        }
+        enemies.Clear();
+    }
+
+
+    void OnEnemyDestroyed()
+    {
+
+    }
+
+    void Spawn()
+    {
+        Vector3 spawnLoc = Vector3.zero;
+        bool isOkToSpawn = false;
+        while (!isOkToSpawn) 
+        {
+            // Choose a random collider
+            var boxCollider = boxColliders.PickRandom();
+            spawnLoc = new Vector3(
+                Random.Range(boxCollider.bounds.min.x, boxCollider.bounds.max.x),
+                Random.Range(boxCollider.bounds.min.y, boxCollider.bounds.max.y),
+                Random.Range(boxCollider.bounds.min.z, boxCollider.bounds.max.z)
+            );
+            isOkToSpawn = true;
+            foreach (IPromptHolderControllable enemy in enemies) 
+            {
+                if (enemy.getBounds().Contains(spawnLoc)) 
+                {
+                    isOkToSpawn = false;
+                    break;
+                }
+            }
+        }
+
+        if (config.noOfGrunts != noOfGruntsSpawned) SpawnGrunt(spawnLoc);
+        if (config.noOfAxeGrunts != noOfAxeGruntsSpawned) SpawnAxeGrunt(spawnLoc);
+    }
+
+    void SpawnGrunt(Vector3 location) 
+    {
+        Grunt enemy = Instantiate(
+            gruntPrefab,
+            location,
+            Quaternion.identity).GetComponent<Grunt>();
+        // Randomly set their speed
+        float speedMax = config.gruntSpeed + config.gruntSpeedRng;
+        float speedMin = config.gruntSpeed - config.gruntSpeedRng;
+        enemy.speed = Random.Range(speedMin, speedMax);
+        enemy.speed = Mathf.Clamp(enemy.speed, 0, speedMax);
+        enemies.Add(enemy);
+    }
+
+    void SpawnAxeGrunt(Vector3 location)
+    {
+        AxeGrunt enemy = Instantiate(
+            axeGruntPrefab,
+            location,
+            Quaternion.identity).GetComponent<AxeGrunt>();
+        enemies.Add(enemy);
+    }
+
 }

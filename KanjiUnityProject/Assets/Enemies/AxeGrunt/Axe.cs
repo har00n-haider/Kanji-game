@@ -18,10 +18,12 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
     private Effect hitEffect;
     private Effect deflectedEffect;
     private Transform axeMeshTransform;
+    private Collider collider;
 
     // Start is called before the first frame update
     private void Start()
     {
+        collider = GetComponent<Collider>();
         Effect[] effects = GetComponents<Effect>();
         foreach (Effect effect in effects)
         {
@@ -88,6 +90,11 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
     public PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
 
     public System.Action onDestroy { get; set; }
+
+    public Bounds getBounds()
+    {
+        return collider.bounds;
+    }
 
     #endregion IPromptHolderControllable
 }

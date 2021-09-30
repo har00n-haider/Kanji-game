@@ -7,8 +7,6 @@ using UnityEngine.UI;
 public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 {
     // configuration
-    public float speed = 0.1f;
-
     public bool canMove = true;
     public PromptConfiguration promptConfigPhase1;
     public PromptConfiguration promptConfigPhase2;
@@ -34,8 +32,11 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     [SerializeField]
     private GameObject axePrefab;
 
+    private Collider collider;
+
     private void Awake()
     {
+        collider = GetComponent<Collider>();
         mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
         Effect[] effects = GetComponents<Effect>();
         foreach (Effect effect in effects)
@@ -135,6 +136,11 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
     }
 
     public System.Action onDestroy { get; set; }
+
+    public Bounds getBounds() 
+    {
+        return collider.bounds;
+    }
 
     #endregion IPromptHolderControllable implementation
 }
