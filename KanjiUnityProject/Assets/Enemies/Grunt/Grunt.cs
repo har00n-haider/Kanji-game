@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Grunt : MonoBehaviour, IPromptHolderControllable
+public class Grunt : EnemyBase
 {
     // configuration
     public float speed = 0.1f;
@@ -86,7 +86,7 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
 
     #region IPromptHolderControllable implementation
 
-    public void Destroy()
+    public override void Destroy()
     {
         if (this == null) return;
         deathEffect.StartEffect(transform);
@@ -94,34 +94,30 @@ public class Grunt : MonoBehaviour, IPromptHolderControllable
         onDestroy?.Invoke();
     }
 
-    public void AddHealth(int health)
+    public override void AddHealth(int health)
     {
         this.health += health;
     }
 
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         if (health > 0) health -= damage;
         if (health <= 0) Destroy();
     }
 
-    public void OnCurrentPromptSet(Prompt prompt)
+    public override void OnCurrentPromptSet(Prompt prompt)
     {
         promptSet = true;
     }
 
-    public Transform getTransform => transform;
+    public override Transform getTransform => transform;
 
-    public bool isDestroyed => this == null;
+    public override bool isDestroyed => this == null;
 
-    public PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
+    public override PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
 
-    public System.Action onDestroy { get; set; }
+    public override System.Action onDestroy { get; set; }
 
-    public Bounds getBounds()
-    {
-        return collider.bounds;
-    }
 
     #endregion IPromptHolderControllable implementation
 }

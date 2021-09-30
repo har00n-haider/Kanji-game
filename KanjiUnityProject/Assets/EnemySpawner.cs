@@ -103,7 +103,7 @@ public class EnemySpawner : MonoBehaviour
             isOkToSpawn = true;
             foreach (IPromptHolderControllable enemy in enemies) 
             {
-                if (enemy.getBounds().Contains(spawnLoc)) 
+                if (enemy.getBounds().HasValue && enemy.getBounds().Value.Contains(spawnLoc)) 
                 {
                     isOkToSpawn = false;
                     break;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Axe : MonoBehaviour, IPromptHolderControllable
+public class Axe : EnemyBase
 {
     // configuration
     public float rotationSpeedDegPerSecond;
@@ -61,7 +61,7 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
     #region IPromptHolderControllable
 
     // when the axe is deflected
-    public void Destroy()
+    public override void Destroy()
     {
         if (this == null) return;
         deflectedEffect.StartEffect(transform);
@@ -69,32 +69,28 @@ public class Axe : MonoBehaviour, IPromptHolderControllable
         onDestroy?.Invoke();
     }
 
-    public void AddHealth(int health)
+    public override void AddHealth(int health)
     {
     }
 
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         Destroy();
     }
 
-    public void OnCurrentPromptSet(Prompt prompt)
+    public override void OnCurrentPromptSet(Prompt prompt)
     {
         promptSet = true;
     }
 
-    public Transform getTransform => transform;
+    public override Transform getTransform => transform;
 
-    public bool isDestroyed => this == null;
+    public override bool isDestroyed => this == null;
 
-    public PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
+    public override PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
 
-    public System.Action onDestroy { get; set; }
+    public override System.Action onDestroy { get; set; }
 
-    public Bounds getBounds()
-    {
-        return collider.bounds;
-    }
 
     #endregion IPromptHolderControllable
 }

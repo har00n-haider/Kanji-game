@@ -79,7 +79,7 @@ public interface IPromptHolderControllable
 
     void OnCurrentPromptSet(Prompt prompt);
 
-    Bounds getBounds();
+    Bounds? getBounds();
 }
 
 /// <summary>

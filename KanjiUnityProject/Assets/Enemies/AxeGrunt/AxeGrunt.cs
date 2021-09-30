@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
+public class AxeGrunt : EnemyBase
 {
     // configuration
     public bool canMove = true;
@@ -91,7 +91,7 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
 
     #region IPromptHolderControllable implementation
 
-    public void OnCurrentPromptSet(Prompt prompt)
+    public override void OnCurrentPromptSet(Prompt prompt)
     {
         if (!phase2Configured)
 
@@ -103,7 +103,7 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         }
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
         if (this == null) return;
         deathEffect.StartEffect(transform);
@@ -111,22 +111,22 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         onDestroy?.Invoke();
     }
 
-    public void AddHealth(int health)
+    public override void AddHealth(int health)
     {
         this.health += health;
     }
 
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         if (health > 0) health -= damage;
         if (health <= 0) Destroy();
     }
 
-    public Transform getTransform => transform;
+    public override Transform getTransform => transform;
 
-    public bool isDestroyed => this == null;
+    public override bool isDestroyed => this == null;
 
-    public PromptConfiguration getPromptConfig
+    public override  PromptConfiguration getPromptConfig
     {
         get
         {
@@ -135,12 +135,7 @@ public class AxeGrunt : MonoBehaviour, IPromptHolderControllable
         }
     }
 
-    public System.Action onDestroy { get; set; }
-
-    public Bounds getBounds() 
-    {
-        return collider.bounds;
-    }
+    public override  System.Action onDestroy { get; set; }
 
     #endregion IPromptHolderControllable implementation
 }
