@@ -79,13 +79,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5cd309e9fd313242b613cc795dee370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
+  speed: 3
   canMove: 1
   promptConfig:
     promptType: 1
     wordCount: 0
     responseType: 6
     displayType: 0
+    word: 
+    useSpecificWord: 0
   attackInterval: 2
   attackCounter: 0
 --- !u!114 &1453317783688055489

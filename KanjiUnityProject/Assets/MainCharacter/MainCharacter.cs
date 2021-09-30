@@ -41,7 +41,6 @@ public class MainCharacter : MonoBehaviour
 
     public void Destroy()
     {
-        Debug.Log("Dead");
     }
 
     public void TakeDamage(int damage)
@@ -53,5 +52,10 @@ public class MainCharacter : MonoBehaviour
         }
 
         if (health <= 0) Destroy();
+    }
+
+    public bool IsDead() 
+    {
+        return health <= 0 ? true : false;
     }
 }
