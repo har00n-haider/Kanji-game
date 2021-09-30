@@ -11,19 +11,14 @@ public class EnemySpawner : MonoBehaviour
     public class SpawnerConfig
     {
         // spawn timing
-        public float spawnPeriod = 4.3f;
-        public float spawnPeriodInc = 0.03f;
+        public float spawnPeriod = 3f;
         // speed
-        public float gruntSpeed = 2;
-        public float gruntSpeedRng = 0.5f;
-
+        public float gruntSpeed = 5;
+        public float gruntSpeedRng = 3f;
+        // enemy count
         public int noOfGrunts = 6;
         public int noOfAxeGrunts = 1;
-
-        public float GruntSpawnChance = 0.90f;
-        public float AxeGruntSpawnChance = 0.10f;
     }
-
 
     // unity references
     private List<BoxCollider> boxColliders;
@@ -36,14 +31,15 @@ public class EnemySpawner : MonoBehaviour
     private List<IPromptHolderControllable> enemies = new List<IPromptHolderControllable>();
     private bool canSpawn = false;
 
+    [HideInInspector]
     public int noOfGruntsSpawned;
+    [HideInInspector]
     public int noOfAxeGruntsSpawned;
 
     // Start is called before the first frame update
     void Start()
     {
         boxColliders = new List<BoxCollider>(GetComponentsInChildren<BoxCollider>());
-
         // to start immediatley spawning
         timeSinceLastSpawn = config.spawnPeriod;
     }
@@ -115,8 +111,10 @@ public class EnemySpawner : MonoBehaviour
             }
         }
 
+        // spawn the enemies
         if (config.noOfGrunts != noOfGruntsSpawned) SpawnGrunt(spawnLoc);
         if (config.noOfAxeGrunts != noOfAxeGruntsSpawned) SpawnAxeGrunt(spawnLoc);
+
     }
 
     void SpawnGrunt(Vector3 location) 
@@ -131,6 +129,7 @@ public class EnemySpawner : MonoBehaviour
         enemy.speed = Random.Range(speedMin, speedMax);
         enemy.speed = Mathf.Clamp(enemy.speed, 0, speedMax);
         enemies.Add(enemy);
+        noOfGruntsSpawned++;
     }
 
     void SpawnAxeGrunt(Vector3 location)
@@ -140,6 +139,7 @@ public class EnemySpawner : MonoBehaviour
             location,
             Quaternion.identity).GetComponent<AxeGrunt>();
         enemies.Add(enemy);
+        noOfAxeGruntsSpawned++;
     }
 
 }
