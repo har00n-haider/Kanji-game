@@ -754,8 +754,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCharacter: {fileID: 1171234484}
-  distanceToCharacter: 33
-  pitch: 33
+  distanceToCharacter: 19
+  pitch: 30
   yaw: -45
 --- !u!4 &1295470420 stripped
 Transform:
