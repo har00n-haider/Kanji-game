@@ -30,7 +30,8 @@ public class CombatArenaMode : MonoBehaviour
 
     public void ResetState()
     {
-        mainCharacter.health = initialHealth;
+        mainCharacter.SetHealth(initialHealth);
+        mainCharacter.SetMaxHealth(initialHealth);
         deathText.SetActive(false);
         startButton.SetActive(true);
         enemySpawner.ResetState();

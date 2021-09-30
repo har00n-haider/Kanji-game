@@ -14,7 +14,8 @@ public class MainCharacter : MonoBehaviour
     // config
     public float personalSpaceDist;
 
-    public int health;
+    public int health { get; private set; }
+
     public float healthBarOffsetScreenPercentage = -0.03f;
 
     // Start is called before the first frame update
@@ -23,8 +24,6 @@ public class MainCharacter : MonoBehaviour
         GameObject mainCanvas = GameObject.FindGameObjectWithTag("MainCanvas");
         healthBar = Instantiate(healthBarPrefab, mainCanvas.transform).GetComponent<HealthBar>();
         healthBarRect = healthBar.GetComponent<RectTransform>();
-
-        healthBar.SetMaxHealth(health);
     }
 
     // Update is called once per frame
@@ -41,6 +40,19 @@ public class MainCharacter : MonoBehaviour
 
     public void Destroy()
     {
+
+    }
+
+
+    public void SetMaxHealth(int health)
+    {
+        healthBar.SetMaxHealth(health);
+    }
+
+    public void SetHealth(int health) 
+    {
+        this.health = health;
+        healthBar.SetHealth(health);
     }
 
     public void TakeDamage(int damage)
