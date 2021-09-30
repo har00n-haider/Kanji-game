@@ -1096,6 +1096,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58be3c8b4912008498868ab40cf4362a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialHealth: 5
   deathText: {fileID: 1338665902}
   startButton: {fileID: 587517730}
   mainCharacter: {fileID: 1171234485}

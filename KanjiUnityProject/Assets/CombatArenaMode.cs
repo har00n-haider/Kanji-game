@@ -4,22 +4,33 @@ using UnityEngine;
 
 public class CombatArenaMode : MonoBehaviour
 {
+    // config
+    public int initialHealth;
+
     // refs
     public GameObject deathText;
     public GameObject startButton;
     public MainCharacter mainCharacter;
     public EnemySpawner enemySpawner;
 
+    public void Start()
+    {
+        ResetState();
+    }
+
     // When start button is clicked
     public void OnStart()
     {
+        ResetState();
+
         startButton.SetActive(false);
         enemySpawner.StartSpawning();
     }
 
 
-    public void Reset()
+    public void ResetState()
     {
+        mainCharacter.health = initialHealth;
         deathText.SetActive(false);
         startButton.SetActive(true);
         enemySpawner.ResetState();
@@ -35,7 +46,7 @@ public class CombatArenaMode : MonoBehaviour
 
         if(mainCharacter.IsDead() && Input.GetMouseButtonDown(0)) 
         {
-            Reset();
+            ResetState();
         }
     }
 }
