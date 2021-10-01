@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+//TODO: mark this class as abstract
 public class Kanji : MonoBehaviour
 {
     #region classes
