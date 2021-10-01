@@ -9,21 +9,17 @@ public class Axe : EnemyBase
 
     public float speed;
 
-    public PromptConfiguration promptConfig;
-    private bool promptSet = false;
-
     // refs
     private MainCharacter target;
 
     private Effect hitEffect;
     private Effect deflectedEffect;
     private Transform axeMeshTransform;
-    private Collider collider;
 
     // Start is called before the first frame update
     private void Start()
     {
-        collider = GetComponent<Collider>();
+        base.Awake();
         Effect[] effects = GetComponents<Effect>();
         foreach (Effect effect in effects)
         {
@@ -58,8 +54,6 @@ public class Axe : EnemyBase
         }
     }
 
-    #region IPromptHolderControllable
-
     // when the axe is deflected
     public override void Destroy()
     {
@@ -69,28 +63,10 @@ public class Axe : EnemyBase
         onDestroy?.Invoke();
     }
 
-    public override void AddHealth(int health)
-    {
-    }
 
     public override void TakeDamage(int damage)
     {
         Destroy();
     }
 
-    public override void OnCurrentPromptSet(Prompt prompt)
-    {
-        promptSet = true;
-    }
-
-    public override Transform getTransform => transform;
-
-    public override bool isDestroyed => this == null;
-
-    public override PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
-
-    public override System.Action onDestroy { get; set; }
-
-
-    #endregion IPromptHolderControllable
 }

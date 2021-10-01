@@ -20,8 +20,6 @@ public class AxeGrunt : EnemyBase
     public Color color;
 
     // state
-    private int health;
-
     private bool canAttack = false;
 
     // refs
@@ -32,11 +30,9 @@ public class AxeGrunt : EnemyBase
     [SerializeField]
     private GameObject axePrefab;
 
-    private Collider collider;
-
     private void Awake()
     {
-        collider = GetComponent<Collider>();
+        base.Awake();
         mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
         Effect[] effects = GetComponents<Effect>();
         foreach (Effect effect in effects)
@@ -89,8 +85,6 @@ public class AxeGrunt : EnemyBase
         canMove = false;
     }
 
-    #region IPromptHolderControllable implementation
-
     public override void OnCurrentPromptSet(Prompt prompt)
     {
         if (!phase2Configured)
@@ -111,21 +105,6 @@ public class AxeGrunt : EnemyBase
         onDestroy?.Invoke();
     }
 
-    public override void AddHealth(int health)
-    {
-        this.health += health;
-    }
-
-    public override void TakeDamage(int damage)
-    {
-        if (health > 0) health -= damage;
-        if (health <= 0) Destroy();
-    }
-
-    public override Transform getTransform => transform;
-
-    public override bool isDestroyed => this == null;
-
     public override  PromptConfiguration getPromptConfig
     {
         get
@@ -135,7 +114,4 @@ public class AxeGrunt : EnemyBase
         }
     }
 
-    public override  System.Action onDestroy { get; set; }
-
-    #endregion IPromptHolderControllable implementation
 }

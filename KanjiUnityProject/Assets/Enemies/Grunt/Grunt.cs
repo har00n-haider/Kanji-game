@@ -10,26 +10,22 @@ public class Grunt : EnemyBase
     public float speed = 0.1f;
 
     public bool canMove = true;
-    public PromptConfiguration promptConfig;
     public float attackInterval = 2f;
     public float attackCounter;
 
     // state
-    private int health;
 
     private bool canAttack = false;
-    private bool promptSet = false;
 
     // refs
     private MainCharacter mainCharacter = null;
 
     private Effect deathEffect;
     private Effect attackEffect;
-    private Collider collider;
 
-    private void Awake()
+    public override void Awake()
     {
-        collider = GetComponent<Collider>();
+        base.Awake();
         mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
         Effect[] effects = GetComponents<Effect>();
         foreach (Effect effect in effects)
@@ -84,8 +80,6 @@ public class Grunt : EnemyBase
         canMove = false;
     }
 
-    #region IPromptHolderControllable implementation
-
     public override void Destroy()
     {
         if (this == null) return;
@@ -94,30 +88,4 @@ public class Grunt : EnemyBase
         onDestroy?.Invoke();
     }
 
-    public override void AddHealth(int health)
-    {
-        this.health += health;
-    }
-
-    public override void TakeDamage(int damage)
-    {
-        if (health > 0) health -= damage;
-        if (health <= 0) Destroy();
-    }
-
-    public override void OnCurrentPromptSet(Prompt prompt)
-    {
-        promptSet = true;
-    }
-
-    public override Transform getTransform => transform;
-
-    public override bool isDestroyed => this == null;
-
-    public override PromptConfiguration getPromptConfig => promptSet ? null : promptConfig;
-
-    public override System.Action onDestroy { get; set; }
-
-
-    #endregion IPromptHolderControllable implementation
 }
