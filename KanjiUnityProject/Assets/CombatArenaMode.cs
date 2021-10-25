@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CombatArenaMode : MonoBehaviour
@@ -8,7 +9,7 @@ public class CombatArenaMode : MonoBehaviour
     public int initialHealth;
 
     // refs
-    public GameObject deathText;
+    public TextMeshProUGUI uiText;
     public GameObject startButton;
     public MainCharacter mainCharacter;
     public EnemySpawner enemySpawner;
@@ -16,6 +17,10 @@ public class CombatArenaMode : MonoBehaviour
     public void Start()
     {
         ResetState();
+
+        // Initial text
+        startButton.GetComponentInChildren<TextMeshProUGUI>().text = Strings.start;
+        uiText.text = Strings.deathText;
     }
 
     // When start button is clicked
@@ -32,7 +37,7 @@ public class CombatArenaMode : MonoBehaviour
     {
         mainCharacter.SetHealth(initialHealth);
         mainCharacter.SetMaxHealth(initialHealth);
-        deathText.SetActive(false);
+        uiText.gameObject.SetActive(false);
         startButton.SetActive(true);
         enemySpawner.ResetState();
     }
@@ -42,7 +47,7 @@ public class CombatArenaMode : MonoBehaviour
     {
         if (mainCharacter.IsDead()) 
         {
-            deathText.SetActive(true);
+            uiText.gameObject.SetActive(true);
         }
 
         if(mainCharacter.IsDead() && Input.GetMouseButtonDown(0)) 

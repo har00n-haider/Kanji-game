@@ -20,12 +20,12 @@ public class MainCamera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        transform.rotation = Quaternion.Euler(pitch, yaw, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
+        transform.rotation = Quaternion.Euler(pitch, yaw, 0);
         transform.position = 
             mainCharacter.transform.position + -transform.forward * distanceToCharacter;
     }

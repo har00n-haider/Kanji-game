@@ -403,7 +403,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Start
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -927,9 +927,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCharacter: {fileID: 1171234484}
-  distanceToCharacter: 21
-  pitch: 20
-  yaw: -45
+  distanceToCharacter: 57
+  pitch: 44.1
+  yaw: -44.7
 --- !u!1 &1338665902
 GameObject:
   m_ObjectHideFlags: 0
@@ -942,7 +942,7 @@ GameObject:
   - component: {fileID: 1338665905}
   - component: {fileID: 1338665904}
   m_Layer: 5
-  m_Name: 'Death text '
+  m_Name: UI text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -987,7 +987,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You dead
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1093,8 +1093,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58be3c8b4912008498868ab40cf4362a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialHealth: 5
-  deathText: {fileID: 1338665902}
+  initialHealth: 1
+  uiText: {fileID: 1338665904}
   startButton: {fileID: 587517730}
   mainCharacter: {fileID: 1171234485}
   enemySpawner: {fileID: 133010811}
