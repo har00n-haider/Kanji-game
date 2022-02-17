@@ -81,7 +81,6 @@ public class EnemySpawner : MonoBehaviour
         enemies.Clear();
     }
 
-
     void OnEnemyDestroyed()
     {
 

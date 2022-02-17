@@ -1094,6 +1094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialHealth: 1
+  uimessageTimeMax: 1.5
   uiText: {fileID: 1338665904}
   startButton: {fileID: 587517730}
   mainCharacter: {fileID: 1171234485}

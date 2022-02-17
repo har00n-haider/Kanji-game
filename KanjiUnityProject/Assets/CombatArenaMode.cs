@@ -8,7 +8,12 @@ public class CombatArenaMode : MonoBehaviour
     // config
     public int initialHealth;
 
-    // refs
+    // state 
+
+    private float uimessageTime;
+    public float uimessageTimeMax = 3;
+
+    // unity refs
     public TextMeshProUGUI uiText;
     public GameObject startButton;
     public MainCharacter mainCharacter;
@@ -17,10 +22,7 @@ public class CombatArenaMode : MonoBehaviour
     public void Start()
     {
         ResetState();
-
-        // Initial text
         startButton.GetComponentInChildren<TextMeshProUGUI>().text = Strings.start;
-        uiText.text = Strings.deathText;
     }
 
     // When start button is clicked
@@ -29,6 +31,7 @@ public class CombatArenaMode : MonoBehaviour
         ResetState();
 
         startButton.SetActive(false);
+        DisplayUIText(Strings.waveStart);
         enemySpawner.StartSpawning();
     }
 
@@ -42,7 +45,7 @@ public class CombatArenaMode : MonoBehaviour
         enemySpawner.ResetState();
     }
 
-    // TODO: hook this up properly with a event on the main character?
+    // TODO: hook this up properly with an event on the main character?
     private void Update()
     {
         if (mainCharacter.IsDead()) 
@@ -54,5 +57,21 @@ public class CombatArenaMode : MonoBehaviour
         {
             ResetState();
         }
+
+        uimessageTime += Time.deltaTime;
+        if (uimessageTime >= uimessageTimeMax) 
+        {
+            uiText.gameObject.SetActive(false);
+        }
+
     }
+
+    void DisplayUIText(string message, Color? color = null)
+    {
+        uimessageTime = 0;
+        uiText.text = message;
+        uiText.color = color.HasValue ? color.Value : Color.green ;
+        uiText.gameObject.SetActive(true);
+    }
+
 }
