@@ -78,3 +78,7 @@ crashlytics-build.properties
 /Assets/TextMesh\ Pro/*
 KanjiUnityProject/Assets/TextMesh Pro.meta
 
+#
+
+/Assets/Koreographer
+/Assets/Koreographer.meta

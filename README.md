@@ -14,4 +14,8 @@ See the README [here](KanjiDatabase\README.md)
 *Unity game*:
 
 - https://github.com/caguiclajmg/WanaKanaSharp for romaji conversion
-  
+
+
+# Requirements to build
+
+- Put the UnityUIExtensions folder under thirdy party (Screen line renderer)
