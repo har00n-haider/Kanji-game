@@ -15,11 +15,17 @@ public class Effect : MonoBehaviour
 
     public void StartEffect(Transform transform)
     {
-        AudioSource.PlayClipAtPoint(audioEffectPrefab, transform.position);
-        ParticleSystem explosion = Instantiate(
-            particleEffectPrefab,
-            transform.position,
-            transform.rotation);
-        Destroy(explosion.gameObject, particleSystemTime);
+        if(audioEffectPrefab != null)
+        {
+            AudioSource.PlayClipAtPoint(audioEffectPrefab, transform.position);
+        }
+        if(particleEffectPrefab !=  null)
+        {
+            ParticleSystem explosion = Instantiate(
+                particleEffectPrefab,
+                transform.position,
+                transform.rotation);
+            Destroy(explosion.gameObject, particleSystemTime);
+        }
     }
 }
