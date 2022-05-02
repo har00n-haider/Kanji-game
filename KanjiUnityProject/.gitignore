@@ -76,8 +76,3 @@ crashlytics-build.properties
 /Assets/TextMesh\ Pro/*
 KanjiUnityProject/Assets/TextMesh Pro.meta
 
-# External assets
-/Assets/ExternalAssets/*
-!/Assets/ExternalAssets/WanaKanaSharp
-!/Assets/ExternalAssets/WanaKanaSharp.meta
- 
