@@ -73,6 +73,8 @@ crashlytics-build.properties
 # Kanji game stuff
 /Assets/EffectExamples/*
 /Assets/EffectExamples.meta
+
+# Third party / packages
 /Assets/TextMesh\ Pro/*
 KanjiUnityProject/Assets/TextMesh Pro.meta
 
