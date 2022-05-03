@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using KanjiLib.Core;
+
+namespace KanjiLib.Draw
+{
 
 public class Kanji2D : Kanji
 {
@@ -93,5 +97,7 @@ public class Kanji2D : Kanji
             Init(currCharTarget.data);
         }
     }
+
+}
 
 }

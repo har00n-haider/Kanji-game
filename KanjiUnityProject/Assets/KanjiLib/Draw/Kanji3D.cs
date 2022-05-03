@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using KanjiLib.Core;
+
+
+namespace KanjiLib.Draw
+{
 
 [RequireComponent(typeof(BoxCollider))]
 public class Kanji3D : Kanji
@@ -167,4 +172,6 @@ public class Kanji3D : Kanji
     }
 
 #endif
+}
+
 }

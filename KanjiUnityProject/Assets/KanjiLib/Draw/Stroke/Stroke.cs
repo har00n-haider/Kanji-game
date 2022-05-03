@@ -1,6 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using KanjiLib.Utils;
+
+namespace KanjiLib.Draw
+{
+
 
 /// <summary>
 /// Holds the data relevant to a kanji stroke. Uses 2D coordinates.
@@ -59,5 +64,7 @@ public class Stroke : MonoBehaviour
         strokeRenderer.UpdateLinePoints(points);
         completed = false;
     }
+
+}
 
 }

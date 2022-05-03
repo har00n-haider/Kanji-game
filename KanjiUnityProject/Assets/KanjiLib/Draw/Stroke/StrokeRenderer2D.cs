@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
+
+namespace KanjiLib.Draw
+{
+
 [RequireComponent(typeof(UILineRenderer))]
 class StrokeRenderer2D : StrokeRenderer
 {
@@ -19,7 +23,7 @@ class StrokeRenderer2D : StrokeRenderer
         //TODO: maybe pass these in as arguments to the stroke/stroke renderer?
         kanjiRectT = GetComponentInParent<RectTransform>();
         strokeRectT = GetComponent<RectTransform>();
-        Utils.StretchToParentSize(strokeRectT, kanjiRectT, Vector2.zero);
+        UIUtils.StretchToParentSize(strokeRectT, kanjiRectT, Vector2.zero);
 
         boxCollider = GetComponentInParent<BoxCollider2D>();
         line = GetComponent<UILineRenderer>();
@@ -63,4 +67,6 @@ class StrokeRenderer2D : StrokeRenderer
     {
         line.LineThickness = width;
     }
+}
+
 }

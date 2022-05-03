@@ -4,6 +4,10 @@ using UnityEngine;
 using System.IO;
 using System.Xml;
 using System.Linq;
+using KanjiLib.Utils;
+
+namespace KanjiLib.Core
+{     
 
 // Point of access to all the kanji that will be used
 // in the game. Should be the only thing that deals with
@@ -210,4 +214,6 @@ public class KanjiDatabase
         }
         return fillerMeanings.ToList();
     }
+}
+
 }

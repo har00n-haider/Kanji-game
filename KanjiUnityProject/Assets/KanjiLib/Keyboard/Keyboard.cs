@@ -5,6 +5,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using KanjiLib.Core;
 
 public class Keyboard : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class Keyboard : MonoBehaviour
     private FlickLayout flickInput;
 
     [SerializeField]
-    private Kanji2D drawInput;
+    private KanjiLib.Draw.Kanji2D drawInput;
 
     [SerializeField]
     private TextMeshProUGUI displayTextMesh;

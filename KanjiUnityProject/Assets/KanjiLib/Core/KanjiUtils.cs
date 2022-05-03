@@ -5,6 +5,10 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+
+namespace KanjiLib.Utils
+{
+
 public class CubicBezier
 {
     public Vector2 p1 = new Vector2();
@@ -264,4 +268,6 @@ public static class KanjiUtils
         'を',
         'ん',
     };
+}
+
 }

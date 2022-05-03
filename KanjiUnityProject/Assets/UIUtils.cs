@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public static class Utils
+public static class UIUtils
 {
     /// <summary>
     ///  Get the Rect that encapsulates the rect transform in world space

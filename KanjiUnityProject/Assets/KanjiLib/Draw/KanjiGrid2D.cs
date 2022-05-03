@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
+using KanjiLib.Core;
+
+namespace KanjiLib.Draw
+{
 
 public class KanjiGrid2D : MonoBehaviour
 {
@@ -26,7 +30,7 @@ public class KanjiGrid2D : MonoBehaviour
         kanjiRectT = GetComponentInParent<RectTransform>();
         gridRectT = GetComponent<RectTransform>();
 
-        Utils.StretchToParentSize(gridRectT, kanjiRectT);
+        UIUtils.StretchToParentSize(gridRectT, kanjiRectT);
         this.thickness = thickness;
         GenerateGrid(parsedKanji, box.size);
     }
@@ -65,8 +69,10 @@ public class KanjiGrid2D : MonoBehaviour
 
     void SetupLineRenderer(UILineRenderer line, Vector2[] pnts, int sIdx, int eIdx) 
     {
-        Utils.StretchToParentSize(line.rectTransform, gridRectT, Vector2.zero);
+        UIUtils.StretchToParentSize(line.rectTransform, gridRectT, Vector2.zero);
         line.Points = new Vector2[] { pnts[sIdx], pnts[eIdx] };
         line.LineThickness = thickness;
     }
+}
+
 }

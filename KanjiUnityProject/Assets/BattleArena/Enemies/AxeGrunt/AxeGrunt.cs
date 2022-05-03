@@ -30,7 +30,7 @@ public class AxeGrunt : EnemyBase
     [SerializeField]
     private GameObject axePrefab;
 
-    private void Awake()
+    public override void Awake()
     {
         base.Awake();
         mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();

@@ -5,116 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ParsedKanjiData
-{
-    public float width;
-    public float height;
-    public float scale;
-    public float centerXOffset;
-    public float centerYOffset;
-    public float scaledWidth;
-    public float scaledHeight;
-    public List<RawStroke> strokes = new List<RawStroke>();
-
-    public ParsedKanjiData(float width, float height, float scale, List<RawStroke> strokes = null)
-    {
-        this.width = width;
-        this.height = height;
-        this.scale = scale;
-        centerXOffset = width / 2;
-        centerYOffset = height / 2;
-        scaledWidth = width * scale;
-        scaledHeight = height * scale;
-        this.strokes = strokes;
-    }
-}
-
-public class RawStroke
-{
-    public int orderNo;
-    public List<Vector2> points = new List<Vector2>();
-}
-
-/// <summary>
-/// Holds all data relevant to a given kanji
-/// Required by the kanji draw classes
-/// </summary>
-public class KanjiData
-{
-    public string literal = string.Empty;
-    public string code = string.Empty;
-    public List<string> meanings = new List<string>();
-    public List<string> readingsOn = new List<string>();
-    public List<string> readingsKun = new List<string>();
-    public string svgContent = string.Empty;
-    public string categoryType = string.Empty;
-    public string category = string.Empty;
-    public KanjiProgress progress = new KanjiProgress();
-}
-
-public class KanjiProgress
-{
-    public int clears = 0;
-    public int flawlessClears = 0;
-}
-
-// Interface throught which the Prompt holder can control the main script
-// of a given game object that interacts with the prompt system
-
-public interface IPromptHolderControllable
-{
-    void Destroy();
-
-    void AddHealth(int health);
-
-    void TakeDamage(int damage);
-
-    Transform getTransform { get; }
-
-    bool isDestroyed { get; }
-
-    PromptConfiguration getPromptConfig { get; }
-
-    System.Action onDestroy { get; set; }
-
-    void OnCurrentPromptSet(Prompt prompt);
-
-    Bounds? getBounds();
-}
-
-/// <summary>
-/// What is displayed in the prompt.
-/// Limited by word type
-/// </summary>
-public enum PromptDisplayType
-{
-    Kanji,
-    Romaji,
-    Hiragana,
-    Katana,
-    Meaning,
-}
-
-/// <summary>
-/// What the input needs to supply (Call/Response type).
-/// Limited by word type
-/// </summary>
-public enum PromptInputType
-{
-    KeyHiragana,
-    KeyKatakana,
-    KeyHiraganaWithRomaji,
-    KeyKatakanaWithRomaji,
-    WritingHiragana,
-    WritingKatakana,
-    WritingKanji,
-    Meaning,
-}
 
 public class PromptChar
 {
     public char character = ' ';
-    public KanjiData data = null;
+    public KanjiLib.Core.KanjiData data = null;
 }
 
 [System.Serializable]
@@ -273,6 +168,64 @@ public class PromptWord
 
     #endregion Input tracking progress
 }
+
+
+
+
+/// <summary>
+/// What is displayed in the prompt.
+/// Limited by word type
+/// </summary>
+public enum PromptDisplayType
+{
+    Kanji,
+    Romaji,
+    Hiragana,
+    Katana,
+    Meaning,
+}
+
+/// <summary>
+/// What the input needs to supply (Call/Response type).
+/// Limited by word type
+/// </summary>
+public enum PromptInputType
+{
+    KeyHiragana,
+    KeyKatakana,
+    KeyHiraganaWithRomaji,
+    KeyKatakanaWithRomaji,
+    WritingHiragana,
+    WritingKatakana,
+    WritingKanji,
+    Meaning,
+}
+
+
+// Interface throught which the Prompt holder can control the main script
+// of a given game object that interacts with the prompt system
+
+public interface IPromptHolderControllable
+{
+    void Destroy();
+
+    void AddHealth(int health);
+
+    void TakeDamage(int damage);
+
+    Transform getTransform { get; }
+
+    bool isDestroyed { get; }
+
+    PromptConfiguration getPromptConfig { get; }
+
+    System.Action onDestroy { get; set; }
+
+    void OnCurrentPromptSet(Prompt prompt);
+
+    Bounds? getBounds();
+}
+
 
 [System.Serializable]
 public class Prompt

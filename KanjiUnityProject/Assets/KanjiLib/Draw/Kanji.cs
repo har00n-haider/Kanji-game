@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using KanjiLib.Core;
+
+namespace KanjiLib.Draw
+{
 
 //TODO: mark this class as abstract
 public class Kanji : MonoBehaviour
@@ -244,4 +248,6 @@ public class Kanji : MonoBehaviour
     protected virtual void Completed()
     {
     }
+}
+
 }

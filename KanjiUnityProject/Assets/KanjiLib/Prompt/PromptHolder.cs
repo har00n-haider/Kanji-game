@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
+using KanjiLib.Core;
 
 /// <summary>
 /// Exposes the game object it is attached to, to the prompt system
@@ -64,7 +65,7 @@ public class PromptHolder : MonoBehaviour
         // Always assume that there is at least one prompt
         UpdatePrompt(controlledGameObject.getPromptConfig);
 
-        Utils.UpdateLabelScreenPos(labelRect, labelOffsetYPercentage, transform.position);
+        UIUtils.UpdateLabelScreenPos(labelRect, labelOffsetYPercentage, transform.position);
     }
 
     // Update is called once per frame
@@ -76,7 +77,7 @@ public class PromptHolder : MonoBehaviour
             ConfigureLabel(labelRect.gameObject);
             setColliderSize = true;
         }
-        Utils.UpdateLabelScreenPos(labelRect, labelOffsetYPercentage, transform.position);
+        UIUtils.UpdateLabelScreenPos(labelRect, labelOffsetYPercentage, transform.position);
     }
 
     private void UpdatePrompt(PromptConfiguration promptConfiguration)

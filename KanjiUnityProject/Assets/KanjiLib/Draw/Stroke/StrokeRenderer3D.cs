@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+namespace KanjiLib.Draw
+{
+
 [RequireComponent(typeof(LineRenderer))]
 class StrokeRenderer3D : StrokeRenderer
 {
@@ -73,3 +76,4 @@ class StrokeRenderer3D : StrokeRenderer
 
 }
 
+}

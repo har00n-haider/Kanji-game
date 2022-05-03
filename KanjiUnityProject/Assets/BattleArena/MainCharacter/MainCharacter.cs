@@ -29,7 +29,7 @@ public class MainCharacter : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        Utils.UpdateLabelScreenPos(healthBarRect, healthBarOffsetScreenPercentage, transform.position);
+        UIUtils.UpdateLabelScreenPos(healthBarRect, healthBarOffsetScreenPercentage, transform.position);
     }
 
     public void FireBullet(IPromptHolderControllable target)

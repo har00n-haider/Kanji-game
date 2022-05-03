@@ -1,10 +1,14 @@
-﻿    using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+
+
+namespace KanjiLib.Draw
+{
 
 /// <summary>
 /// Deals with how the stroke data is visualised,
@@ -76,5 +80,7 @@ public abstract class StrokeRenderer : MonoBehaviour
     }
 
     #endregion
+
+}
 
 }

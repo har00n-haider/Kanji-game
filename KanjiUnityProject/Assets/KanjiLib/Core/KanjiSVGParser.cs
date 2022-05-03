@@ -6,6 +6,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text.RegularExpressions;
+using KanjiLib.Utils;
+
+namespace KanjiLib.Core
+{
+
 
 public class KanjiSVGParser
 {
@@ -191,5 +196,7 @@ public class KanjiSVGParser
 
 
 
+
+}
 
 }

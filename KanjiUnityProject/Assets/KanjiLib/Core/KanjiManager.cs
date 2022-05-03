@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using KanjiLib.Utils;
+
+
+namespace KanjiLib.Core
+{
 
 /// <summary>
 /// Manages objects in the scene that hold kanji prompts
@@ -330,4 +335,6 @@ public class KanjiManager : MonoBehaviour
     }
 
     #endregion selection
+}
+
 }

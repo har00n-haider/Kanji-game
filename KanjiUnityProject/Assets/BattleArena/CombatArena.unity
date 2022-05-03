@@ -1135,11 +1135,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1500569121}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58be3c8b4912008498868ab40cf4362a, type: 3}
+  m_Script: {fileID: 11500000, guid: dd85ead1ab9a94c62820d281054da9b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialHealth: 1
-  uimessageTimeMax: 1.5
+  initialHealth: 4
+  uimessageTimeMax: 3
   uiText: {fileID: 1338665904}
   startButton: {fileID: 587517730}
   mainCharacter: {fileID: 1171234485}

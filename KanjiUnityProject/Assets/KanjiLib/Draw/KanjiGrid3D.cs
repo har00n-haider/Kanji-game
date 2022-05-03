@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using KanjiLib.Core;
 
+namespace KanjiLib.Draw
+{
 
 public class KanjiGrid3D : MonoBehaviour
 {
@@ -64,4 +67,6 @@ public class KanjiGrid3D : MonoBehaviour
         line.startWidth = gridThickness;
         line.endWidth = gridThickness;
     }
+}
+
 }
