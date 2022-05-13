@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using KanjiLib.Core;
 
+
+namespace KanjiLib.Prompts
+{
+
 public class PromptLabel : MonoBehaviour
 {
     // refs
@@ -25,4 +29,6 @@ public class PromptLabel : MonoBehaviour
     {
         kanjiManager.UpdateSelectedPromptHolderFromLabel(promptHolder);
     }
+}
+
 }

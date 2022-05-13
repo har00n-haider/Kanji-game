@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
+namespace KanjiLib.Prompts
+{
+
+
 public class PromptChar
 {
     public char character = ' ';
@@ -292,4 +296,6 @@ public class PromptConfiguration
 
     [HideInInspector]
     public bool useSpecificWord = false;
+}
+
 }

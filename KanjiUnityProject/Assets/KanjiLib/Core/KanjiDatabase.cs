@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml;
 using System.Linq;
 using KanjiLib.Utils;
+using KanjiLib.Prompts;
 
 namespace KanjiLib.Core
 {     

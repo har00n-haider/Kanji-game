@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using KanjiLib.Utils;
+using KanjiLib.Prompts;
 
 
 namespace KanjiLib.Core
@@ -40,18 +41,12 @@ public class KanjiManager : MonoBehaviour
     private RectTransform reticuleTransform;
     public float reticuleRotationrate = 0.12f;
 
-    // refs
-    private Keyboard keyboard;
-
-    private MainCharacter mainCharacter;
 
     private void Awake()
     {
         database = new KanjiDatabase();
         database.Load(kanjiDataBaseFile, sentenceDataBaseFile);
         reticuleTransform = reticule.GetComponent<RectTransform>();
-        keyboard = GameObject.FindGameObjectWithTag("Keyboard").GetComponent<Keyboard>();
-        mainCharacter = GameObject.FindGameObjectWithTag("MainCharacter").GetComponent<MainCharacter>();
     }
 
     private void Update()
@@ -65,11 +60,10 @@ public class KanjiManager : MonoBehaviour
     public void UpdateCurrentPromptHolder()
     {
         if (selectedPromptHolder == null) return;
-        mainCharacter.FireBullet(selectedPromptHolder.controlledGameObject);
         selectedPromptHolder.MoveNext();
         if (!selectedPromptHolder.completed)
         {
-            keyboard.SetPromptWord(selectedPromptHolder.GetCurrentWord());
+            //keyboard.SetPromptWord(selectedPromptHolder.GetCurrentWord());
         }
         else
         {
@@ -188,18 +182,18 @@ public class KanjiManager : MonoBehaviour
         switch (promptType)
         {
             case PromptWord.WordType.kanji:
-                displayType = KanjiUtils.kanjiPrompts.GetRandomPrompt();
-                responseType = KanjiUtils.kanjiInputs.GetRandomInput();
+                displayType = Prompts.Utils.kanjiPrompts.GetRandomPrompt();
+                responseType = Prompts.Utils.kanjiInputs.GetRandomInput();
                 break;
 
             case PromptWord.WordType.hiragana:
-                displayType = KanjiUtils.hiraganaPrompts.GetRandomPrompt();
-                responseType = KanjiUtils.hiraganaInputs.GetRandomInput();
+                displayType =  Prompts.Utils.hiraganaPrompts.GetRandomPrompt();
+                responseType = Prompts.Utils.hiraganaInputs.GetRandomInput();
                 break;
 
             case PromptWord.WordType.katakana:
-                displayType = KanjiUtils.katakanaPrompts.GetRandomPrompt();
-                responseType = KanjiUtils.katakanaInputs.GetRandomInput();
+                displayType =  Prompts.Utils.katakanaPrompts.GetRandomPrompt();
+                responseType = Prompts.Utils.katakanaInputs.GetRandomInput();
                 break;
 
             default:
@@ -277,7 +271,7 @@ public class KanjiManager : MonoBehaviour
         {
             distToPromptHolder[i] = new Tuple<float, PromptHolder>
             (
-                (mainCharacter.transform.position - promptHolders[i].transform.position).magnitude,
+                2.0f, //(mainCharacter.transform.position - promptHolders[i].transform.position).magnitude,
                 promptHolders[i]
             );
         }
@@ -290,7 +284,6 @@ public class KanjiManager : MonoBehaviour
     private void UpdateSelection(PromptHolder selectedKanji)
     {
         selectedPromptHolder = selectedKanji;
-        keyboard.SetPromptWord(selectedKanji.GetCurrentWord());
     }
 
     // unity event method

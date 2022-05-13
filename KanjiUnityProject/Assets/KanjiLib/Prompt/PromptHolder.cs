@@ -5,6 +5,10 @@ using UnityEngine.UI;
 using TMPro;
 using KanjiLib.Core;
 
+
+namespace KanjiLib.Prompts
+{
+
 /// <summary>
 /// Exposes the game object it is attached to, to the prompt system
 /// </summary>
@@ -210,4 +214,6 @@ public class PromptHolder : MonoBehaviour
         kanjiMan.RemovePromptHolder(this);
         if (labelRect != null) Destroy(labelRect.gameObject);
     }
+}
+
 }

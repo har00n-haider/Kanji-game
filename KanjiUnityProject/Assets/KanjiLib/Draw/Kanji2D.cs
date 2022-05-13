@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using KanjiLib.Core;
+using KanjiLib.Prompts;
 
 namespace KanjiLib.Draw
 {
@@ -21,8 +22,7 @@ public class Kanji2D : Kanji
     [SerializeField]
     private float gridThickness;
 
-    [HideInInspector]
-    public Keyboard keyboard;
+
     [HideInInspector]
     private PromptChar currCharTarget = null;
 
@@ -89,7 +89,7 @@ public class Kanji2D : Kanji
     {
         if (pass) 
         {
-            keyboard.CharUpdated(currCharTarget.character);
+            //keyboard.CharUpdated(currCharTarget.character);
         }
         else
         {
