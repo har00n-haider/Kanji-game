@@ -35,25 +35,16 @@ public class KanjiManager : MonoBehaviour
     public TextAsset kanjiDataBaseFile;
     public TextAsset sentenceDataBaseFile;
 
-    // ui
-    public GameObject reticule;
-
-    private RectTransform reticuleTransform;
-    public float reticuleRotationrate = 0.12f;
-
 
     private void Awake()
     {
         database = new KanjiDatabase();
         database.Load(kanjiDataBaseFile, sentenceDataBaseFile);
-        reticuleTransform = reticule.GetComponent<RectTransform>();
     }
 
     private void Update()
     {
         UpdateSelectedPromptHolderFromScene();
-        UpdateReticule();
-        //if (selectedPromptHolder == null) AutoTarget();
     }
 
     // called by the keyboard
@@ -309,21 +300,6 @@ public class KanjiManager : MonoBehaviour
                     UpdateSelection(selectedKanji);
                 }
             }
-        }
-    }
-
-    private void UpdateReticule()
-    {
-        if (selectedPromptHolder != null && !selectedPromptHolder.IsDestroyed())
-        {
-            reticule.SetActive(true);
-            reticuleTransform.position =
-                Camera.main.WorldToScreenPoint(selectedPromptHolder.transform.position);
-            reticuleTransform.Rotate(Vector3.forward, reticuleRotationrate * Time.deltaTime);
-        }
-        else
-        {
-            reticule.SetActive(false);
         }
     }
 
