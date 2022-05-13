@@ -2,15 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+
+
 public class GameManager : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _explosionPrefab;
-
-    [SerializeField]
-    private GameObject _fizzlePrefab;
+    public static GameManager instance; 
 
     public GameAudio gameAudio;
+
+    public UnityEngine.UI.Extensions.UICircle circle;
+    public UnityEngine.UI.Extensions.UICircle circle1;
+
+    [SerializeField]
+    private Color beatFlickercColor;
+    private bool colorToggle = false;
 
     // Awake() is called before Start.
     void Awake()
@@ -22,6 +29,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         AppEvents.OnStartLevel?.Invoke();
+
+        if (instance == null) instance = this;
+   
     }
 
     /// <summary>
@@ -51,46 +61,92 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape)) Application.Quit();
 
-        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+        UpdateColor();
+    }
+
+
+    public void ToggleColor()
+    {
+        colorToggle = !colorToggle;
+
+        if (colorToggle)
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                Transform objectHit = hit.transform;
-                // Debug.Log($"GameManager.Update(): objectHit = {objectHit.name}, tag = {objectHit.tag}");
-
-                // Check the hit detect is a Firework - just use Unity tags for this, simple.
-                bool isFirework = objectHit.CompareTag("Firework");
-                bool onBeat = gameAudio.CheckIfOnBeat();
-                if (isFirework && onBeat)
-                {
-                    GameObject firework = objectHit.gameObject;
-                    // Instantiate an Explosion at current position of the firework and zero rotation.
-                    GameObject spawnedExplosion = Instantiate(_explosionPrefab, firework.transform.position, Quaternion.identity);
-                    AppEvents.OnSpawnExplosion?.Invoke(spawnedExplosion);
-                    AppEvents.OnFireworkClickHit?.Invoke(firework);
-
-                    // Kill the firework.
-                    Destroy(firework);           // <---- Destroy()-ing the GameObject causes trouble, see workaround above.
-                    Destroy(spawnedExplosion, 3.0f); // HACK: destroy after effect plays out
-                }
-                else if (isFirework && !onBeat) 
-                {
-                    GameObject firework = objectHit.gameObject;
-                    AppEvents.OnFireworkMissed?.Invoke(firework);
-                    // Instantiate an Explosion at current position of the firework and zero rotation.
-                    GameObject spawnedFizzle = Instantiate(_fizzlePrefab, firework.transform.position, Quaternion.identity);
-                    Destroy(firework);
-                    Destroy(spawnedFizzle, 3.0f); // HACK: destroy after effect plays out
-                }
-                else 
-                {
-                    Debug.Log("Hitting: " + objectHit.name);
-                }
-            }
+            circle.color = Color.red;
         }
+        else 
+        {
+            circle.color = Color.black;
+        }
+    }
+
+    public void UpdateColor()
+    {
+        if (gameAudio.SongManager.CheckIfOnBeat())
+        {
+            circle1.color = Color.red;
+        }
+        else
+        {
+            circle1.color = Color.black;
+        }
+    }
+
+
+
+    public void BeatHit() 
+    {
+        if (gameAudio.SongManager.CheckIfOnBeat()) 
+        {
+            Debug.Log("hit");
+        }
+        else
+        {
+            Debug.Log("miss");
+        }
+    }
+
+    void UpdateClick() 
+    {
+        //if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    RaycastHit hit;
+        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //    if (Physics.Raycast(ray, out hit))
+        //    {
+        //        Transform objectHit = hit.transform;
+        //        // Debug.Log($"GameManager.Update(): objectHit = {objectHit.name}, tag = {objectHit.tag}");
+
+        //        // Check the hit detect is a Firework - just use Unity tags for this, simple.
+        //        bool isFirework = objectHit.CompareTag("Firework");
+        //        bool onBeat = false; // TODO: fixme
+        //        if (isFirework && onBeat)
+        //        {
+        //            GameObject firework = objectHit.gameObject;
+        //            // Instantiate an Explosion at current position of the firework and zero rotation.
+        //            GameObject spawnedExplosion = Instantiate(_explosionPrefab, firework.transform.position, Quaternion.identity);
+        //            AppEvents.OnSpawnExplosion?.Invoke(spawnedExplosion);
+        //            AppEvents.OnBeatClick?.Invoke(firework);
+
+        //            // Kill the firework.
+        //            Destroy(firework);           // <---- Destroy()-ing the GameObject causes trouble, see workaround above.
+        //            Destroy(spawnedExplosion, 3.0f); // HACK: destroy after effect plays out
+        //        }
+        //        else if (isFirework && !onBeat)
+        //        {
+        //            GameObject firework = objectHit.gameObject;
+        //            AppEvents.OnFireworkMissed?.Invoke(firework);
+        //            // Instantiate an Explosion at current position of the firework and zero rotation.
+        //            GameObject spawnedFizzle = Instantiate(_fizzlePrefab, firework.transform.position, Quaternion.identity);
+        //            Destroy(firework);
+        //            Destroy(spawnedFizzle, 3.0f); // HACK: destroy after effect plays out
+        //        }
+        //        else
+        //        {
+        //            Debug.Log("Hitting: " + objectHit.name);
+        //        }
+        //    }
+        //}
 
     }
 }

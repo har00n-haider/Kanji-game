@@ -9,10 +9,10 @@ using System.Collections;
 [RequireComponent(typeof(AudioSource))]
 public class UnityMetronome : MonoBehaviour
 {
-    public double bpm = 140.0F;
+    public double bpm = 65.0F;
     public float gain = 0.5F;
-    public int signatureHi = 4;
-    public int signatureLo = 4;
+    public int timeSignatureHi = 4;
+    public int timeSignatureLo = 4;
     private double nextTick = 0.0F;
     private float amp = 0.0F;
     private float phase = 0.0F;
@@ -20,48 +20,58 @@ public class UnityMetronome : MonoBehaviour
     private int accent;
     private bool running = false;
 
-
     void Start()
     {
-        accent = signatureHi;
-        double startTick = AudioSettings.dspTime;
-        sampleRate = AudioSettings.outputSampleRate;
-        nextTick = startTick * sampleRate;
+        accent = timeSignatureHi;
+        double startTick = AudioSettings.dspTime; // seconds
+        sampleRate = AudioSettings.outputSampleRate; // Hz
+        nextTick = startTick * sampleRate; // 
         running = true;
     }
 
+
+    private void Update()
+    {
+    }
+
+
+    // precudurally generating audio on a periodic basis
     void OnAudioFilterRead(float[] data, int channels)
     {
         if (!running)
             return;
 
-        double samplesPerTick = sampleRate * 60.0F / bpm * 4.0F / signatureLo;
+        double samplesPerTick = sampleRate * 60.0F / bpm * 4.0F / timeSignatureLo;
         double sample = AudioSettings.dspTime * sampleRate;
-        int dataLen = data.Length / channels;
-        int n = 0;
-        while (n < dataLen)
+        int dataLen = data.Length / channels; // e.g. 2 channel [c1][c2][c1][c2] ... 
+
+        for (int n = 0; n < dataLen; n++)
         {
-            float x = gain * amp * Mathf.Sin(phase);
+            // generate volume data based on a sin wave
+            float audioSample = gain * amp * Mathf.Sin(phase);
+            // put the same data in all channels
             int i = 0;
             while (i < channels)
             {
-                data[n * channels + i] += x;
+                data[n * channels + i] += audioSample; 
                 i++;
             }
+            // prep internal values for the next sample
             while (sample + n >= nextTick)
             {
                 nextTick += samplesPerTick;
                 amp = 1.0F;
-                if (++accent > signatureHi)
+                // if its the high beat, then amplify it
+                if (++accent > timeSignatureHi)
                 {
                     accent = 1;
                     amp *= 2.0F;
                 }
-                Debug.Log("Tick: " + accent + "/" + signatureHi);
+                Debug.Log("Tick: " + accent + "/" + timeSignatureHi);
             }
-            phase += amp * 0.3F;
-            amp *= 0.993F;
-            n++;
+            phase += amp * 0.3F; //??
+            amp *= 0.993F; // ??
+
         }
     }
 }

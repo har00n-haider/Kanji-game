@@ -163,7 +163,7 @@ public class ScoreService : MonoBehaviour
     private void SubscribeToAppEvents()
     {
         AppEvents.OnStartLevel += HandleStartLevel;
-        AppEvents.OnFireworkClickHit += HandleFireworkClickHit;
+        AppEvents.OnBeatClick += HandleFireworkClickHit;
         AppEvents.OnFireworkMissed += HandleFireworkClickMissed;
     }
 
@@ -173,7 +173,7 @@ public class ScoreService : MonoBehaviour
     private void UnsubscribeToAppEvents()
     {
         AppEvents.OnStartLevel -= HandleStartLevel;
-        AppEvents.OnFireworkClickHit += HandleFireworkClickHit;
+        AppEvents.OnBeatClick += HandleFireworkClickHit;
         AppEvents.OnFireworkMissed += HandleFireworkClickMissed;
     }
 
@@ -191,16 +191,16 @@ public class ScoreService : MonoBehaviour
     }
     private void HandleFireworkClickHit(GameObject fireworkInstance)
     {
-        // Get the AudioSource from the instance of the GameObject
-        float eTime = fireworkInstance.GetComponent<Firework>().elapsedTime;
-        float cTime = fireworkInstance.GetComponent<Firework>().clickTime;
-        //Debug.Log("HandleFireworkClickHit");
-        if(eTime < cTime){
-            float increment = eTime/cTime;
-            //Debug.Log($"HandleFireworkClickHit.increment: {increment}");
-            incrementScore(increment);
-            totalClicked +=1;
-        }
+        //// Get the AudioSource from the instance of the GameObject
+        //float eTime = fireworkInstance.GetComponent<HitTarget>().elapsedTime;
+        //float cTime = fireworkInstance.GetComponent<HitTarget>().clickTime;
+        ////Debug.Log("HandleFireworkClickHit");
+        //if(eTime < cTime){
+        //    float increment = eTime/cTime;
+        //    //Debug.Log($"HandleFireworkClickHit.increment: {increment}");
+        //    incrementScore(increment);
+        //    totalClicked +=1;
+        //}
         
     }
     private void HandleFireworkClickMissed(GameObject fireworkInstance)

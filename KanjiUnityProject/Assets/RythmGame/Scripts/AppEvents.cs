@@ -47,7 +47,7 @@ public class AppEvents
     /// Event for when an Explosion is spawned.
     /// Arg1 = GameObject = GameObject being spawned.
     /// </summary>
-    public static Action<GameObject> OnFireworkClickHit;
+    public static Action<GameObject> OnBeatClick;
 
     /// <summary>
     /// Event for when a firework is clicked on by the player.
