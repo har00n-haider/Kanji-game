@@ -4,9 +4,20 @@ using UnityEngine.VFX;
 
 public class HitTarget : MonoBehaviour
 {
+    public double BeatTimeStamp { get; set; } = 0;
+    public double StartTimeStamp { get; set; } = 0;
 
+    // beat circle
     [SerializeField]
-    private UnityEngine.UI.Button button;
+    private LineRenderer beatCircleLine;
+    private Vector3[] beatCirclePoints = new Vector3[40];
+    [SerializeField]
+    private float radiusBegin;
+    private float radiusEnd;
+    private float beatCircleLineWidth = 0.1f;
+    [SerializeField]
+    private CapsuleCollider modelCollider;
+
 
     // This sound asset is played on collision.
     private AudioSource _audioSourceFirework;
@@ -30,18 +41,52 @@ public class HitTarget : MonoBehaviour
         //_audioSourceFirework = GetComponent<AudioSource>();
         //Assert.IsNotNull(_audioSourceFirework);
 
-        originalColor = button.colors.normalColor;
+    }
+
+    public void Init(double beatTimeStamp) 
+    {
+        StartTimeStamp = AudioSettings.dspTime;
+        BeatTimeStamp = beatTimeStamp;
+        beatCircleLine.positionCount = beatCirclePoints.Length;
+        beatCircleLine.useWorldSpace = true;
+        beatCircleLine.numCapVertices = 10; // p
+        beatCircleLine.endWidth = beatCircleLineWidth;  
+        beatCircleLine.startWidth = beatCircleLineWidth;
+        radiusEnd = modelCollider.radius;
     }
 
     void Awake()
     {
         //HACK: yes this is disgusting, but no time...
         gameAudio = GameObject.FindWithTag("GameAudio").GetComponent<GameAudio>();
-        button = GetComponent<UnityEngine.UI.Button>();
 
-        Assert.IsNotNull(button);
     }
 
+    
+    void Update()
+    {
+        UpdateBeatCircle();
+    }
+
+    private void UpdateBeatCircle() 
+    {
+        float t = (float) MathUtils.InverseLerp(BeatTimeStamp, StartTimeStamp, AudioSettings.dspTime) ;
+        float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
+        GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
+        for (int i = 0; i < beatCirclePoints.Length; i++)
+        {
+            beatCircleLine.SetPosition(i, beatCirclePoints[i]);
+        }
+    }
+
+    public void Explode() 
+    {
+        if (isExploded) return;
+
+        //TODO: fixme
+        //trailEffect.SetInt(SPAWN_RATE_NAME, 0); // turns off trail
+        isExploded = true;
+    }
 
     /// <summary>
     /// On scene closing.
@@ -66,20 +111,5 @@ public class HitTarget : MonoBehaviour
     {
 
     }
-
-    void Update()
-    {
-
-    }
-
-    public void Explode() 
-    {
-        if (isExploded) return;
-
-        //TODO: fixme
-        //trailEffect.SetInt(SPAWN_RATE_NAME, 0); // turns off trail
-        isExploded = true;
-    }
-
 
 }

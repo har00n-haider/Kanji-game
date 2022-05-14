@@ -9,6 +9,8 @@ TagManager:
   - Keyboard
   - MainCharacter
   - KeyboardCamera
+  - GameAudio
+  - HitTarget
   layers:
   - Default
   - TransparentFX

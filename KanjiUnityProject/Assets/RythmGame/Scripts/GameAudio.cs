@@ -29,13 +29,13 @@ public class GameAudio : MonoBehaviour
     [SerializeField]
     private AudioClip _audioClipMetronome;
 
-    public UnityAudioSwapper SongManager;
+    public BeatManager BeatManager;
 
     void Awake()
     {
         Assert.IsNotNull(_audioSourceGameEffects);
         SubscribeToAppEvents();
-        SongManager = GetComponentInChildren<UnityAudioSwapper>();
+        BeatManager = GetComponentInChildren<BeatManager>();
     }
 
     void Start()

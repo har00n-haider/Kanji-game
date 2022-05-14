@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using Random = UnityEngine.Random;
+
 public class GeometryUtils
 {
     // Clamps a 1d length smoothly inside a 1d region
@@ -44,6 +46,32 @@ public class GeometryUtils
         return new Vector2(
             Mathf.Clamp01(point.x / boxSize.x),
             Mathf.Clamp01(point.y / boxSize.y));
+    }
+
+    /// <summary>
+    /// Random position in axis aligned box
+    /// </summary>
+    /// <param name="bounds"></param>
+    /// <returns></returns>
+    public static Vector3 GetRandomPositionInBounds(Bounds bounds) 
+    {
+        return new Vector3(
+            Random.Range(bounds.min.x, bounds.max.x),
+            Random.Range(bounds.min.y, bounds.max.y),
+            Random.Range(bounds.min.z, bounds.max.z)
+        );
+    }
+
+    public static void PopulateCirclePoints3DXY(ref Vector3[] points, float radius, Vector3 center) 
+    {
+        int lastPntIdx = points.Length - 1;
+        for (int i = 0; i <= lastPntIdx; i++)
+        {
+            float angle = ((float)i/lastPntIdx) * MathF.PI * 2;
+            points[i].x = radius * Mathf.Cos(angle) + center.x;
+            points[i].y = radius * Mathf.Sin(angle) + center.y;
+            points[i].z = center.z;
+        }
     }
 
 }
