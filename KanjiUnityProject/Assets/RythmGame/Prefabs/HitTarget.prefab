@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0813b7c989d24ed468f6dc4d49c65c4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hangAboutTime: 1
+  succesEffect: {fileID: 8667159329183705162, guid: 76d87632781e17e4ca031aa472a5610f, type: 3}
+  failEffect: {fileID: 8667159329183705162, guid: f4adce8bf0c8a334a8c4809b9bff5e0e, type: 3}
   beatCircleLine: {fileID: 2814991159223869109}
   radiusBegin: 5
   modelCollider: {fileID: 6882461310028346358}

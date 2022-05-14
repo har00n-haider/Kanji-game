@@ -4,8 +4,24 @@ using UnityEngine.VFX;
 
 public class HitTarget : MonoBehaviour
 {
+
+    public enum Result 
+    {
+        Miss,
+        Hit
+    }
+
+    // timing
     public double BeatTimeStamp { get; set; } = 0;
     public double StartTimeStamp { get; set; } = 0;
+    [SerializeField]
+    public double hangAboutTime;
+
+    // Effects
+    [SerializeField]
+    private GameObject succesEffect;
+    [SerializeField]
+    private GameObject failEffect;
 
     // beat circle
     [SerializeField]
@@ -18,29 +34,10 @@ public class HitTarget : MonoBehaviour
     [SerializeField]
     private CapsuleCollider modelCollider;
 
-
-    // This sound asset is played on collision.
-    private AudioSource _audioSourceFirework;
-
-    // effect stuff
-    private VisualEffect trailEffect;
-    private static readonly string SPAWN_RATE_NAME = "trail spawn rate";
-    private bool isExploded = false;
-    private Color originalColor;
-
-    private GameAudio gameAudio;
-
     // Start is called before the first frame update
     void Start()
     {
         SubscribeToAppEvents();
-
-        // TODO: FIX Me 
-        //trailEffect.SendEvent("OnPlay");
-
-        //_audioSourceFirework = GetComponent<AudioSource>();
-        //Assert.IsNotNull(_audioSourceFirework);
-
     }
 
     public void Init(double beatTimeStamp) 
@@ -57,19 +54,28 @@ public class HitTarget : MonoBehaviour
 
     void Awake()
     {
-        //HACK: yes this is disgusting, but no time...
-        gameAudio = GameObject.FindWithTag("GameAudio").GetComponent<GameAudio>();
 
     }
 
-    
     void Update()
     {
+        bool needsCleanUp = AudioSettings.dspTime >
+            BeatTimeStamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
+        if (needsCleanUp) HandleResult(Result.Miss);
+
         UpdateBeatCircle();
+    }
+
+    public void HandleResult(Result result)
+    {
+        if (result == Result.Hit) Instantiate(succesEffect, transform.position, Quaternion.identity);
+        else if (result == Result.Miss) Instantiate(failEffect, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     private void UpdateBeatCircle() 
     {
+        // decrease size of the beat circle based on time elapsed
         float t = (float) MathUtils.InverseLerp(BeatTimeStamp, StartTimeStamp, AudioSettings.dspTime) ;
         float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
         GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
@@ -79,14 +85,8 @@ public class HitTarget : MonoBehaviour
         }
     }
 
-    public void Explode() 
-    {
-        if (isExploded) return;
 
-        //TODO: fixme
-        //trailEffect.SetInt(SPAWN_RATE_NAME, 0); // turns off trail
-        isExploded = true;
-    }
+
 
     /// <summary>
     /// On scene closing.

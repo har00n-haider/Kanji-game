@@ -15,6 +15,7 @@ public class BeatManager : MonoBehaviour
     private float beatHitAllowance;
 
 
+    public float BeatHitAllowance { get { return beatHitAllowance; } }
     public float BeatPeriod { get { return 60.0f / bpm; } }
     public bool IsSongPlaying { get { return running; } }
 

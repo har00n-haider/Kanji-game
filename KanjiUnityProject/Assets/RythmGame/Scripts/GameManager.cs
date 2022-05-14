@@ -90,15 +90,14 @@ public class GameManager : MonoBehaviour
                 if (ht != null)
                 {
                     bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp, false);
-                    //if (onBeat)
-                    //{
-                    //    Debug.Log("hit");
-                    //}
-                    //else
-                    //{
-                    //    Debug.Log("miss");
-                    //}
-                    Destroy(ht.gameObject);
+                    if (onBeat)
+                    {
+                        ht.HandleResult(HitTarget.Result.Hit);
+                    }
+                    else
+                    {
+                        ht.HandleResult(HitTarget.Result.Miss);
+                    }
                     return;
                 }
             }
