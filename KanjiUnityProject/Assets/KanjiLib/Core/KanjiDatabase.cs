@@ -29,6 +29,15 @@ public class KanjiDatabase
         return kanjiList[idx];
     }
 
+    public char GetRandomHiragana(char? except = null) 
+    {
+        System.Random r = new System.Random();
+        List<char> list = new List<char>(unmodifiedHiragana);
+        if (except.HasValue) list.Remove(except.Value);
+        int randomIdx =  r.Next(0, list.Count);
+        return list[randomIdx];
+    }
+
     #region prompt methods
 
     public Prompt GetRandomPrompt()
@@ -55,7 +64,7 @@ public class KanjiDatabase
         {
             case PromptRequestType.SingleKana:
                 // get a random kanji from the kanji list
-                char selectedKana = KanjiUtils.unmodifiedHiragana.ToList().PickRandom();
+                char selectedKana = unmodifiedHiragana.ToList().PickRandom();
                 prompt.words.Add(new PromptWord()
                 {
                     type = PromptWord.WordType.hiragana,
@@ -141,11 +150,14 @@ public class KanjiDatabase
         return result;
     }
 
-    public void Load(TextAsset kanjiDataBaseFile, TextAsset sentenceDataBaseFile)
+    public void Load(TextAsset kanjiDataBaseFile, TextAsset sentenceDataBaseFile = null)
     {
         kanjis = LoadKanjiDatabase(kanjiDataBaseFile).ToDictionary(x => x.code, c => c);
-        prompts = LoadSentenceDatabase(sentenceDataBaseFile);
-        meaningsFillerList = LoadMeaningsFillerList();
+        if(sentenceDataBaseFile != null) 
+        {
+            prompts = LoadSentenceDatabase(sentenceDataBaseFile);
+            meaningsFillerList = LoadMeaningsFillerList();
+        }
     }
 
     private List<KanjiData> LoadKanjiDatabase(TextAsset dataBaseFile)
@@ -215,6 +227,58 @@ public class KanjiDatabase
         }
         return fillerMeanings.ToList();
     }
+
+    public static char[] unmodifiedHiragana = new char[]
+    {
+        'あ',
+        'い',
+        'う',
+        'え',
+        'お',
+        'か',
+        'き',
+        'く',
+        'け',
+        'こ',
+        'さ',
+        'し',
+        'す',
+        'せ',
+        'そ',
+        'た',
+        'ち',
+        'つ',
+        'て',
+        'と',
+        'な',
+        'に',
+        'ぬ',
+        'ね',
+        'の',
+        'は',
+        'ひ',
+        'ふ',
+        'へ',
+        'ほ',
+        'ま',
+        'み',
+        'む',
+        'め',
+        'も',
+        'や',
+        'ゆ',
+        'よ',
+        'ら',
+        'り',
+        'る',
+        'れ',
+        'ろ',
+        'わ',
+        'を',
+        'ん',
+    };
+
+
 }
 
 }

@@ -45,7 +45,7 @@ public class HitTargetSpawner : MonoBehaviour
             GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
             Quaternion.identity,
             transform).GetComponent<HitTarget>();
-        ht.Init(nextBeatTimeStamp);
+        ht.Init(nextBeatTimeStamp, GameManager.Instance.KanjiDatabase.GetRandomHiragana().ToString());
         noOfTargetsSpawned++;
     }
 }

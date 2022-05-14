@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.VFX;
+using TMPro;
 
 public class HitTarget : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class HitTarget : MonoBehaviour
         Miss,
         Hit
     }
+
+    // text
+    [SerializeField]
+    private TextMeshPro textMesh;
 
     // timing
     public double BeatTimeStamp { get; set; } = 0;
@@ -40,7 +45,7 @@ public class HitTarget : MonoBehaviour
         SubscribeToAppEvents();
     }
 
-    public void Init(double beatTimeStamp) 
+    public void Init(double beatTimeStamp, string content = null) 
     {
         StartTimeStamp = AudioSettings.dspTime;
         BeatTimeStamp = beatTimeStamp;
@@ -50,6 +55,8 @@ public class HitTarget : MonoBehaviour
         beatCircleLine.endWidth = beatCircleLineWidth;  
         beatCircleLine.startWidth = beatCircleLineWidth;
         radiusEnd = modelCollider.radius;
+
+        if (content != null) textMesh.text = content;
     }
 
     void Awake()
