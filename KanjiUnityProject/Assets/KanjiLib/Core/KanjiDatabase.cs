@@ -1,11 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
 using System.Xml;
 using System.Linq;
 using KanjiLib.Utils;
 using KanjiLib.Prompts;
+using System;
+
+using UnityEngine; // only for json loading
+
+
+using Random = UnityEngine.Random;
+
 
 namespace KanjiLib.Core
 {     
@@ -21,6 +27,8 @@ public class KanjiDatabase
     public bool kanjiDataBaseLoaded = false;
     private List<string> meaningsFillerList = new List<string>();
 
+    #region prompt methods
+    
     public KanjiData GetRandomKanji()
     {
         if (!kanjiDataBaseLoaded) return null;
@@ -29,27 +37,123 @@ public class KanjiDatabase
         return kanjiList[idx];
     }
 
-    public char GetRandomHiragana(char? except = null) 
+    // Only hiragana for now...
+    public PromptChar GetRandomPromptChar(PromptChar except = null, SymbolType type = SymbolType.hiragana) 
     {
+        PromptChar prompt = new PromptChar();
         System.Random r = new System.Random();
         List<char> list = new List<char>(unmodifiedHiragana);
-        if (except.HasValue) list.Remove(except.Value);
+        if (except != null) list.Remove(except.character);
         int randomIdx =  r.Next(0, list.Count);
-        return list[randomIdx];
+        prompt.Type = SymbolType.hiragana;
+        prompt.character = list[randomIdx];
+        prompt.romaji = WanaKanaSharp.WanaKana.ToRomaji(prompt.character.ToString());
+        return prompt;
     }
 
-    #region prompt methods
-
-    public Prompt GetRandomPrompt()
+    private PromptSentence GetRandomPromptSentence()
     {
-        var idx = Random.Range(0, prompts.sentences.Count - 1);
-        return GetPromptById(idx);
+        PromptSentence prompt = GetRandomPromptSentence();
+        foreach (var word in prompt.words)
+        {
+            GetRandomTestSetForWordType(
+                word.type,
+                out PromptDisplayType displayType,
+                out PromptInputType responseType);
+            word.responseType = responseType;
+            word.displayType = displayType;
+        }
+        SetCharsForPrompt(ref prompt);
+        return prompt;
     }
 
-    public Prompt GetPromptById(int id)
+    private void GetRandomTestSetForWordType(
+        SymbolType promptType,
+        out PromptDisplayType displayType,
+        out PromptInputType responseType)
+    {
+        displayType = PromptDisplayType.Kanji;
+        responseType = PromptInputType.KeyHiragana;
+
+        switch (promptType)
+        {
+            case SymbolType.kanji:
+                displayType = Prompts.Utils.kanjiPrompts.GetRandomPrompt();
+                responseType = Prompts.Utils.kanjiInputs.GetRandomInput();
+                break;
+
+            case SymbolType.hiragana:
+                displayType =  Prompts.Utils.hiraganaPrompts.GetRandomPrompt();
+                responseType = Prompts.Utils.hiraganaInputs.GetRandomInput();
+                break;
+
+            case SymbolType.katakana:
+                displayType =  Prompts.Utils.katakanaPrompts.GetRandomPrompt();
+                responseType = Prompts.Utils.katakanaInputs.GetRandomInput();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /// <param name="prompt">Prompt that has been configured for a test</param>
+    private void SetCharsForPrompt(ref PromptSentence prompt)
+    {
+        Action<List<PromptChar>, string> populateCharList =
+        (List<PromptChar> cl, string s) =>
+        {
+            foreach (char c in s)
+            {
+                cl.Add(new PromptChar()
+                {
+                    character = c,
+                    data = GetKanji(c)
+                });
+            }
+        };
+
+        // Set the chars to iterate through depending
+        // on the type of the word and the input type
+        foreach (PromptWord word in prompt.words)
+        {
+            List<PromptChar> chars = new List<PromptChar>();
+            switch (word.type)
+            {
+                case SymbolType.kanji:
+                    // take the input type into consideration
+                    // for kanji as it could go multpile ways
+                    switch (word.responseType)
+                    {
+                        case PromptInputType.KeyHiraganaWithRomaji:
+                        case PromptInputType.KeyHiragana:
+                        case PromptInputType.WritingHiragana:
+                            populateCharList(chars, word.hiragana);
+                            break;
+
+                        case PromptInputType.WritingKanji:
+                        case PromptInputType.Meaning:
+                            populateCharList(chars, word.kanji);
+                            break;
+                    }
+                    break;
+                // hiragana/katana will always only have their own char type
+                case SymbolType.hiragana:
+                    populateCharList(chars, word.hiragana);
+                    break;
+
+                case SymbolType.katakana:
+                    populateCharList(chars, word.katakana);
+                    break;
+            }
+            word.chars = chars.ToArray();
+        }
+    }
+
+    public PromptSentence GetPromptById(int id)
     {
         if (prompts == null || prompts.sentences.Count == 0) return null;
-        Prompt prompt = prompts.sentences[id];
+        PromptSentence prompt = prompts.sentences[id];
         return prompt;
     }
 
@@ -57,9 +161,9 @@ public class KanjiDatabase
     // a prompt that matches the prompt type
     // TODO: Need to specify exactly what state a prompt is in
     // before returning it
-    public Prompt GetPrompt(PromptConfiguration promptConfig)
+    public PromptSentence GetPrompt(PromptConfiguration promptConfig)
     {
-        Prompt prompt = new Prompt();
+        PromptSentence prompt = new PromptSentence();
         switch (promptConfig.promptType)
         {
             case PromptRequestType.SingleKana:
@@ -67,7 +171,7 @@ public class KanjiDatabase
                 char selectedKana = unmodifiedHiragana.ToList().PickRandom();
                 prompt.words.Add(new PromptWord()
                 {
-                    type = PromptWord.WordType.hiragana,
+                    type = SymbolType.hiragana,
                     hiragana = selectedKana.ToString(),
                 });
                 break;
@@ -77,7 +181,7 @@ public class KanjiDatabase
                 KanjiData selectedKanji = kanjis.Values.Where(k => k.category == "required kanji").ToList().PickRandom();
                 prompt.words.Add(new PromptWord()
                 {
-                    type = PromptWord.WordType.kanji,
+                    type = SymbolType.kanji,
                     kanji = selectedKanji.literal,
                     meanings = selectedKanji.meanings.ToArray(),
                 });
@@ -99,6 +203,14 @@ public class KanjiDatabase
             default:
                 break;
         }
+
+        // set chars
+        foreach (var word in prompt.words)
+        {
+            word.responseType = promptConfig.responseType;
+            word.displayType = promptConfig.displayType;
+        }
+        SetCharsForPrompt(ref prompt);
         return prompt;
     }
 
@@ -131,7 +243,7 @@ public class KanjiDatabase
         var remainingkanjis = kanjiList.Where(filter).ToList();
         if (remainingkanjis.Count > 0)
         {
-            var idx = Random.Range(0, remainingkanjis.Count - 1);
+            var idx = UnityEngine.Random.Range(0, remainingkanjis.Count - 1);
             return remainingkanjis[idx];
         }
         return null;
@@ -212,7 +324,7 @@ public class KanjiDatabase
     private List<string> LoadMeaningsFillerList()
     {
         HashSet<string> fillerMeanings = new HashSet<string>();
-        foreach (Prompt p in prompts.sentences)
+        foreach (PromptSentence p in prompts.sentences)
         {
             foreach (PromptWord w in p.words)
             {
@@ -277,6 +389,62 @@ public class KanjiDatabase
         'を',
         'ん',
     };
+
+
+
+
+
+        
+    private int pIdx = -1;
+
+    // TODO: debug function
+    private PromptSentence GetNextPrompt()
+    {
+        ++pIdx;
+        var prompt = GetPromptById(pIdx);
+        foreach (var word in prompt.words)
+        {
+            GetTestSetForWordType(
+                word.type,
+                out PromptDisplayType displayType,
+                out PromptInputType responseType);
+            word.responseType = responseType;
+            word.displayType = displayType;
+        }
+        SetCharsForPrompt(ref prompt);
+        return prompt;
+    }
+
+    // TODO: debug function, manually written based on what you want to test
+    private void GetTestSetForWordType(
+    SymbolType promptType,
+        out PromptDisplayType displayType,
+        out PromptInputType responseType)
+    {
+        displayType = PromptDisplayType.Kanji;
+        responseType = PromptInputType.KeyHiragana;
+
+        switch (promptType)
+        {
+            case SymbolType.kanji:
+                displayType = PromptDisplayType.Kanji;
+                responseType = PromptInputType.Meaning;
+                break;
+
+            case SymbolType.hiragana:
+                displayType = PromptDisplayType.Hiragana;
+                responseType = PromptInputType.KeyHiraganaWithRomaji;
+                break;
+
+            case SymbolType.katakana:
+                displayType = PromptDisplayType.Katana;
+                responseType = PromptInputType.KeyKatakanaWithRomaji;
+                break;
+
+            default:
+                break;
+        }
+    }
 
 
 }

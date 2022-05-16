@@ -65,11 +65,6 @@ public class GameAudio : MonoBehaviour
     /// </summary>
     private void SubscribeToAppEvents()
     {
-        //AppEvents.OnStartLevel += HandleStartLevel;
-        AppEvents.OnEndLevel += HandleEndLevel;
-        AppEvents.OnSpawnFirework += HandleSpawnFirework;
-        AppEvents.OnSpawnExplosion += HandleSpawnExplosion;
-        AppEvents.OnFireworkMissed += HandleMissedFirework;
     }
 
     /// <summary>
@@ -77,11 +72,6 @@ public class GameAudio : MonoBehaviour
     /// </summary>
     private void UnsubscribeToAppEvents()
     {
-        //AppEvents.OnStartLevel -= HandleStartLevel;
-        AppEvents.OnEndLevel -= HandleEndLevel;
-        AppEvents.OnSpawnFirework -= HandleSpawnFirework;
-        AppEvents.OnSpawnExplosion -= HandleSpawnExplosion;
-        AppEvents.OnFireworkMissed -= HandleMissedFirework;
 
     }
 

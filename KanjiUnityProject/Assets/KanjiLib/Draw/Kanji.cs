@@ -87,7 +87,7 @@ public class Kanji : MonoBehaviour
     {
         // pull a kanji
         parsedKanjiData = KanjiSVGParser.GetStrokesFromSvg(kanjiData.svgContent);
-        bool refKanjiHidden = kanjiData.progress.flawlessClears >= KanjiManager.hideWritingRefThreshold;
+        bool refKanjiHidden = kanjiData.progress.flawlessClears >= 3;
         for (int sIdx = 0; sIdx < parsedKanjiData.strokes.Count; sIdx++)
         {
             // assuming we get these in order

@@ -1,39 +1,99 @@
-﻿using System;
+﻿using KanjiLib.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using UnityEngine.Assertions;
 
 namespace KanjiLib.Prompts
 {
 
+public enum SymbolType
+{
+    none = -1,
+    kanji = 1,
+    hiragana = 2,
+    katakana = 3
+}
+
+/// <summary>
+/// What is displayed in the prompt.
+/// Limited by word type
+/// </summary>
+public enum PromptDisplayType
+{
+    Kanji,
+    Romaji,
+    Hiragana,
+    Katana,
+    Meaning,
+}
+
+/// <summary>
+/// What the input needs to supply (Call/Response type).
+/// Limited by word type
+/// </summary>
+public enum PromptInputType
+{
+    KeyHiragana,
+    KeyKatakana,
+    KeyHiraganaWithRomaji,
+    KeyKatakanaWithRomaji,
+    WritingHiragana,
+    WritingKatakana,
+    WritingKanji,
+    Meaning,
+}
+
 
 public class PromptChar
 {
+    /// <summary>
+    /// Determines the way the word will be displayed on a prompt
+    /// </summary>
+    public PromptDisplayType displayType;
+    public SymbolType Type; 
     public char character = ' ';
-    public KanjiLib.Core.KanjiData data = null;
+    public KanjiData data = null;
+    public string romaji = null;
+    public string meaning = null;
+
+    public bool Check(PromptChar other)
+    {
+        return character == other.character;
+    }
+
+    public string GetDisplaySstring()
+    {
+        string value = string.Empty;
+        switch (displayType)
+        {
+            case PromptDisplayType.Kanji:
+            case PromptDisplayType.Hiragana:
+            case PromptDisplayType.Katana:
+                value = character.ToString();
+                break;
+            case PromptDisplayType.Romaji:
+                value = WanaKanaSharp.WanaKana.ToRomaji(character.ToString());
+                break;
+            case PromptDisplayType.Meaning:
+                value = meaning;
+                break;
+        }
+        return value;
+    }
 }
 
 [System.Serializable]
 public class PromptWord
 {
-    /// <summary>
-    /// Cassification of the word. Can only perform
-    /// certain call/responses for certain word types
-    /// </summary>
-    public enum WordType
-    {
-        kanji = 1,
-        hiragana = 2,
-        katakana = 3
-    }
 
     /// <summary>
     /// Classification of the word
     /// </summary>
-    public WordType type;
+    public SymbolType type;
 
     public string kanji = null;
     public string[] meanings = null;
@@ -173,66 +233,8 @@ public class PromptWord
     #endregion Input tracking progress
 }
 
-
-
-
-/// <summary>
-/// What is displayed in the prompt.
-/// Limited by word type
-/// </summary>
-public enum PromptDisplayType
-{
-    Kanji,
-    Romaji,
-    Hiragana,
-    Katana,
-    Meaning,
-}
-
-/// <summary>
-/// What the input needs to supply (Call/Response type).
-/// Limited by word type
-/// </summary>
-public enum PromptInputType
-{
-    KeyHiragana,
-    KeyKatakana,
-    KeyHiraganaWithRomaji,
-    KeyKatakanaWithRomaji,
-    WritingHiragana,
-    WritingKatakana,
-    WritingKanji,
-    Meaning,
-}
-
-
-// Interface throught which the Prompt holder can control the main script
-// of a given game object that interacts with the prompt system
-
-public interface IPromptHolderControllable
-{
-    void Destroy();
-
-    void AddHealth(int health);
-
-    void TakeDamage(int damage);
-
-    Transform getTransform { get; }
-
-    bool isDestroyed { get; }
-
-    PromptConfiguration getPromptConfig { get; }
-
-    System.Action onDestroy { get; set; }
-
-    void OnCurrentPromptSet(Prompt prompt);
-
-    Bounds? getBounds();
-}
-
-
 [System.Serializable]
-public class Prompt
+public class PromptSentence
 {
     public List<PromptWord> words = new List<PromptWord>();
     private int pIdx { get; set; } = 0;
@@ -263,8 +265,7 @@ public class Prompt
 [System.Serializable]
 public class PromptList
 {
-    // TODO: rename this to simply prompts?
-    public List<Prompt> sentences;
+    public List<PromptSentence> sentences;
 }
 
 /// <summary>

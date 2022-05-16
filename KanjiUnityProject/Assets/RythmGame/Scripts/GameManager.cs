@@ -93,13 +93,13 @@ public class GameManager : MonoBehaviour
                 if (ht != null)
                 {
                     bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp, false);
-                    if (onBeat)
+                    if (true)
                     {
-                        ht.HandleResult(HitTarget.Result.Hit);
+                        ht.HandleBeatResult(HitTarget.Result.Hit);
                     }
                     else
                     {
-                        ht.HandleResult(HitTarget.Result.Miss);
+                        ht.HandleBeatResult(HitTarget.Result.Miss);
                     }
                     return;
                 }

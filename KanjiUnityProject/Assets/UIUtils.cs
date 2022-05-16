@@ -95,17 +95,4 @@ public static class UIUtils
         float labelYOffset = yOffsetPercentage * sH;
         lRect.position = new Vector2(labelX, labelY + labelYOffset);
     }
-
-    // cloner for simple objects
-    public static T Clone<T>(this T source)
-    {
-        var serialized = JsonUtility.ToJson(source);
-        return JsonUtility.FromJson<T>(serialized);
-    }
-
-    public static T PickRandom<T>(this List<T> source)
-    {
-        int idx = UnityEngine.Random.Range(0, source.Count() - 1);
-        return source[idx];
-    }
 }

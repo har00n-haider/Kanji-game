@@ -37,23 +37,23 @@ public class AppEvents
     public static Action OnEndLevel;
 
     /// <summary>
-    /// Event for when a firework is spawned.
+    /// Event for when an Explosion is spawned.
     /// Arg1 = GameObject = GameObject being spawned.
-    /// Arg2 = Vector3 = Force of spawning.
     /// </summary>
-    public static Action<GameObject, Vector3> OnSpawnFirework;
+    public static Action<GameObject> OnBeatHit;
+
 
     /// <summary>
     /// Event for when an Explosion is spawned.
     /// Arg1 = GameObject = GameObject being spawned.
     /// </summary>
-    public static Action<GameObject> OnBeatClick;
+    public static Action<GameObject> OnAnwserHit;
 
-    /// <summary>
-    /// Event for when a firework is clicked on by the player.
-    /// Arg1 = GameObject = Firework which was clicked on & hit detected.
-    /// </summary>
-    public static Action<GameObject> OnFireworkMissed;
-    public static Action<GameObject> OnSpawnExplosion;
+    public static Action<HitTarget> OnSelected;
+
+
+    public static Action<GameObject> OnBeatMissed;
+
+
 
 }

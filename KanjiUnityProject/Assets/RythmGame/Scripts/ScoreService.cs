@@ -163,8 +163,8 @@ public class ScoreService : MonoBehaviour
     private void SubscribeToAppEvents()
     {
         AppEvents.OnStartLevel += HandleStartLevel;
-        AppEvents.OnBeatClick += HandleFireworkClickHit;
-        AppEvents.OnFireworkMissed += HandleFireworkClickMissed;
+        AppEvents.OnBeatHit += HandleFireworkClickHit;
+        AppEvents.OnBeatMissed += HandleFireworkClickMissed;
     }
 
     /// <summary>
@@ -173,8 +173,8 @@ public class ScoreService : MonoBehaviour
     private void UnsubscribeToAppEvents()
     {
         AppEvents.OnStartLevel -= HandleStartLevel;
-        AppEvents.OnBeatClick += HandleFireworkClickHit;
-        AppEvents.OnFireworkMissed += HandleFireworkClickMissed;
+        AppEvents.OnBeatHit += HandleFireworkClickHit;
+        AppEvents.OnBeatMissed += HandleFireworkClickMissed;
     }
 
     //AppEvents.OnStartLevel += HandleStartLevel;
