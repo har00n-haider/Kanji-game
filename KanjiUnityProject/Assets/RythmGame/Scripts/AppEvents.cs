@@ -54,6 +54,8 @@ public class AppEvents
 
     public static Action<GameObject> OnBeatMissed;
 
+    public static Action<HitTargetSpawner.HitGroup> OnGroupCleared;
+
 
 
 }

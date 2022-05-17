@@ -40,9 +40,10 @@ public class HitTarget : MonoBehaviour
     // timing
     [SerializeField]
     private double hangAboutTime;
-    private double beatTimeStamp = 0;
-    public double BeatTimeStamp { get { return beatTimeStamp;} }
+    public double BeatTimeStamp { get { return beat.timestamp;} }
     private double startTimeStamp = 0;
+    private BeatManager.Beat beat;
+    public BeatManager.Beat Beat { get { return beat; } }
 
     // Effects
     [SerializeField]
@@ -78,16 +79,17 @@ public class HitTarget : MonoBehaviour
     {
     }
 
-    public void Init(double beatTimeStamp, Type type,  PromptChar prompt, HitTargetSpawner.HitGroup group)  
+    public void Init(Type type,  PromptChar prompt, HitTargetSpawner.HitGroup group, BeatManager.Beat beat)  
     {
         startTimeStamp = AudioSettings.dspTime;
-        this.beatTimeStamp = beatTimeStamp;
         beatCircleLine.positionCount = beatCirclePoints.Length;
         beatCircleLine.useWorldSpace = true;
         beatCircleLine.numCapVertices = 10; 
         beatCircleLine.endWidth = beatCircleLineWidth;  
         beatCircleLine.startWidth = beatCircleLineWidth;
         radiusEnd = modelCollider.radius;
+
+        this.beat = beat;
 
         // prompt stuff
         textMesh.text = prompt.GetDisplaySstring();
@@ -113,8 +115,8 @@ public class HitTarget : MonoBehaviour
     void Update()
     {
         bool thresholdPassed = AudioSettings.dspTime >
-            beatTimeStamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
-        if (thresholdPassed && type != Type.Question) HandleBeatResult(Result.Miss);
+            beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
+        if (thresholdPassed) HandleBeatResult(Result.Miss);
 
         UpdateBeatCircle();
     }
@@ -132,6 +134,7 @@ public class HitTarget : MonoBehaviour
             }
             else if(type == Type.Answer && group.question.selected)
             {
+                // check if the current answer is correct
                 bool promptResult = group.question.prompt.Check(prompt);
                 if (promptResult) 
                 {
@@ -139,6 +142,7 @@ public class HitTarget : MonoBehaviour
                     HandlePromptResult(ResultAction.Success);
                     group.answers.Remove(this);
                     group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
+                    AppEvents.OnGroupCleared?.Invoke(group);
                 }
                 else
                 {
@@ -149,10 +153,15 @@ public class HitTarget : MonoBehaviour
                 }
             }
         }
-        else
+        else if (hitResult == Result.Miss)
         {
-            Instantiate(failEffect, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            bool unselectedQuestion = type == Type.Question == !selected;
+            bool anwser = type == Type.Answer;
+            if( unselectedQuestion || anwser)
+            {
+                Instantiate(failEffect, transform.position, Quaternion.identity);
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -179,7 +188,7 @@ public class HitTarget : MonoBehaviour
     private void UpdateBeatCircle() 
     {
         // decrease size of the beat circle based on time elapsed
-        float t = (float) MathUtils.InverseLerp(beatTimeStamp, startTimeStamp, AudioSettings.dspTime) ;
+        float t = (float) MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime) ;
         float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
         GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
         for (int i = 0; i < beatCirclePoints.Length; i++)

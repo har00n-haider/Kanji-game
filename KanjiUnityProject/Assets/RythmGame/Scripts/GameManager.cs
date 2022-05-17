@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviour
     public UnityEngine.UI.Extensions.UICircle circle;
 
     [SerializeField]
-    private Color beatFlickercColor;
+    private Color BarFlickercColor;
+    [SerializeField]
+    private Color BeatFlickercColor;
+
     private bool colorToggle = false;
 
     // Awake() is called before Start.
@@ -61,16 +64,21 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape)) Application.Quit();
         CheckForHitTargetClicked();
+        UpdateBeat();
     }
 
     // TODO: delete me
-    public void ToggleColor()
+    public void UpdateBeat()
     {
-        colorToggle = !colorToggle;
-
-        if (colorToggle)
+        BeatManager.Beat beat = GameAudio.BeatManager.NextBeat;
+        bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
+        if (onBeat && beat.type == BeatManager.Beat.BeatType.Bar)
         {
-            circle.color = Color.red;
+            circle.color = BarFlickercColor;
+        }
+        else if (onBeat && beat.type == BeatManager.Beat.BeatType.Beat)
+        {
+            circle.color = BeatFlickercColor;
         }
         else
         {

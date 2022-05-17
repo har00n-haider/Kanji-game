@@ -9,19 +9,23 @@ public class HitTargetSpawner : MonoBehaviour
 
     public class HitGroup
     {
-        public HitTarget question;
+        public BeatManager.Beat groupBeat;
+        public HitTarget question = null;
         public List<HitTarget> answers = new List<HitTarget>();
     }
 
+    [SerializeField]
+    private int MaxNoOfGroups;
     [SerializeField]
     private BoxCollider spawnVolume;
     [SerializeField]
     private GameObject hitTargetPrefab;
 
-    [SerializeField]
     private double spawnToBeatTimeOffset;
 
-    private double nextBeatTimeStamp = -1;
+    private List<HitGroup> groups = new List<HitGroup>();
+
+    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
 
 
     private Dictionary<PromptChar, GameObject> promptToGameObjectMap = new Dictionary<PromptChar, GameObject>();
@@ -37,40 +41,61 @@ public class HitTargetSpawner : MonoBehaviour
     void Awake()
     {
         AppEvents.OnSelected += SpawnAnwsers;
+        AppEvents.OnGroupCleared += UpdateGroups;
+
     }
 
     private void OnDestroy()
     {
         AppEvents.OnSelected -= SpawnAnwsers;
+        AppEvents.OnGroupCleared -= UpdateGroups;
     }
+
+
+    private void Start()
+    {
+        spawnToBeatTimeOffset = beatManager.BeatPeriod * 1.5;
+    }
+
 
     // Update is called once per frame
     void Update()
     {
-        if(nextBeatTimeStamp < 0 ) nextBeatTimeStamp = GameManager.Instance.GameAudio.BeatManager.GetNextBeatTimeStamp();
-
-        bool validTime = nextBeatTimeStamp > 0;
-        bool withinSpawnRange = nextBeatTimeStamp - AudioSettings.dspTime < spawnToBeatTimeOffset;
-        if (withinSpawnRange && validTime) 
+        // fill up the groups with assigned beats 
+        if (groups.Count <= MaxNoOfGroups)
         {
-            SpawnGroup();
-            nextBeatTimeStamp = GameManager.Instance.GameAudio.BeatManager.GetNextBeatTimeStamp();
+            BeatManager.Beat refBeat = groups.Count > 0 ? groups[groups.Count - 1].question.Beat : null;
+            HitGroup group = new HitGroup()
+            {
+                groupBeat = beatManager.GetNextBarTimeStamp(1, refBeat)
+            };
+            groups.Add(group);
         }
+        
+        // spawn the groups
+        foreach(HitGroup g in groups)
+        {
+            bool withinSpawnRange = beatManager.TimeToBeat(g.groupBeat) < spawnToBeatTimeOffset;
+            if (g.question == null && withinSpawnRange)
+            {
+                SpawnQuestion(g);
+            }   
+        }
+   
     }
 
-    private void SpawnGroup() 
-    {
-        HitGroup group = new HitGroup(); 
 
+    private void SpawnQuestion(HitGroup group) 
+    {
+        Debug.Log("spawning question");
         // question
         PromptChar questionChar = GameManager.Instance.KanjiDatabase.GetRandomPromptChar();
         group.question = SpawnOne(
             GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
-            nextBeatTimeStamp, 
+            group.groupBeat,
             questionChar,
             HitTarget.Type.Question,
             group);
-
     }
 
     private void SpawnAnwsers(HitTarget questionTarget)
@@ -79,7 +104,7 @@ public class HitTargetSpawner : MonoBehaviour
         HitGroup group = questionTarget.group;
 
         // answers
-        double ansBeatTimeStamp = GameManager.Instance.GameAudio.BeatManager.GetNextBeatTimeStamp();
+        var ansBeat = beatManager.GetNextBeatTimeStamp(1);
         int correctAnswer = Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
@@ -98,20 +123,24 @@ public class HitTargetSpawner : MonoBehaviour
                 p = GameManager.Instance.KanjiDatabase.GetRandomPromptChar(questionChar);
                 p.displayType = PromptDisplayType.Romaji;
             }
-            group.answers.Add(SpawnOne(position, ansBeatTimeStamp, p, HitTarget.Type.Answer, group));
+            group.answers.Add(SpawnOne(position, ansBeat, p, HitTarget.Type.Answer, group));
         }
     
     }
 
-    private HitTarget SpawnOne(Vector3 position, double timeStamp, PromptChar PromptChar, HitTarget.Type type, HitGroup group) 
+    private HitTarget SpawnOne(Vector3 position, BeatManager.Beat beat, PromptChar PromptChar, HitTarget.Type type, HitGroup group) 
     {
         HitTarget ht = Instantiate(
             hitTargetPrefab,
             position,
             Quaternion.identity,
             transform).GetComponent<HitTarget>();
-        ht.Init(timeStamp, type, PromptChar, group);
+        ht.Init(type, PromptChar, group, beat);
         return ht;
     }
 
+    private void UpdateGroups(HitGroup group) 
+    {
+        groups.Remove(group);
+    }
 }
