@@ -21,8 +21,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Color BeatFlickercColor;
 
-    private bool colorToggle = false;
-
     // Awake() is called before Start.
     void Awake()
     {
@@ -101,7 +99,7 @@ public class GameManager : MonoBehaviour
                 if (ht != null)
                 {
                     bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp, false);
-                    if (true)
+                    if (onBeat)
                     {
                         ht.HandleBeatResult(HitTarget.Result.Hit);
                     }

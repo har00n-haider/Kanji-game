@@ -136,31 +136,37 @@ public class HitTarget : MonoBehaviour
             {
                 // check if the current answer is correct
                 bool promptResult = group.question.prompt.Check(prompt);
-                if (promptResult) 
+                if (promptResult)
                 {
                     group.question.HandlePromptResult(ResultAction.Success);
                     HandlePromptResult(ResultAction.Success);
-                    group.answers.Remove(this);
-                    group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
-                    AppEvents.OnGroupCleared?.Invoke(group);
                 }
                 else
                 {
                     group.question.HandlePromptResult(ResultAction.Failiure);
                     HandlePromptResult(ResultAction.Failiure);
-                    group.answers.Remove(this);
-                    group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
                 }
+                // clean up the rest of the answers
+                group.answers.Remove(this);
+                group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
+                AppEvents.OnGroupCleared?.Invoke(group);
             }
         }
         else if (hitResult == Result.Miss)
         {
-            bool unselectedQuestion = type == Type.Question == !selected;
-            bool anwser = type == Type.Answer;
-            if( unselectedQuestion || anwser)
+            if( type == Type.Question && !selected)
             {
-                Instantiate(failEffect, transform.position, Quaternion.identity);
-                Destroy(gameObject);
+                HandlePromptResult(ResultAction.Failiure);
+                AppEvents.OnGroupCleared?.Invoke(group);
+            }
+            else if(type == Type.Answer)
+            {
+                group.question.HandlePromptResult(ResultAction.Failiure);
+                HandlePromptResult(ResultAction.Failiure);
+                // clean up the rest of the answers
+                group.answers.Remove(this);
+                group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
+                AppEvents.OnGroupCleared?.Invoke(group);
             }
         }
     }
