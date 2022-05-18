@@ -8,6 +8,7 @@ public class Effect : MonoBehaviour
     [SerializeField]
     private VisualEffect visualEffect;
     [SerializeField]
+    private string audioEffectName;
     private AudioClip audioEffectClip;
     [SerializeField]
     private float effectLifetime;
@@ -15,13 +16,9 @@ public class Effect : MonoBehaviour
 
     private void Start()
     {
-
-        visualEffect.SendEvent("OnPlay");
-
-
+        audioEffectClip = GameManager.Instance.GameAudio.GetClip(audioEffectName);
         AudioSource.PlayClipAtPoint(audioEffectClip, transform.position);
-
-
+        visualEffect.SendEvent("OnPlay");
         Destroy(gameObject, effectLifetime);
     }
 

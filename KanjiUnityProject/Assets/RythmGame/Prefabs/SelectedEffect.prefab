@@ -156,5 +156,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 8701738253657892615}
-  audioEffectClip: {fileID: 8300000, guid: f4cb5d557e0c6dc499a8a3ca11c04fd8, type: 3}
+  audioEffectName: selected
   effectLifetime: 4
