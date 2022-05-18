@@ -27,12 +27,12 @@ public class Kanji2D : Kanji
     private PromptChar currCharTarget = null;
 
     // refs 
-    private Camera keyboardCamera;
+    private Camera mainCamera;
 
     public override void Init(KanjiData kanjiData)
     {
         // setup references
-        keyboardCamera = GameObject.FindGameObjectWithTag("KeyboardCamera").GetComponent<Camera>();
+        mainCamera = Camera.main;
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
         if (boxCollider == null) boxCollider = GetComponent<BoxCollider2D>();
         if (boxCollider != null && rectTransform != null) PositionCollider();
@@ -52,7 +52,7 @@ public class Kanji2D : Kanji
     {
         if (Input.GetMouseButton(0))
         {
-            Vector2 worldPos = keyboardCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             // take input only if the mouse is clicked within the box collider
             if (boxCollider.OverlapPoint(worldPos)) 
             {
