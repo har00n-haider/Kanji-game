@@ -22,7 +22,7 @@ public class BeatManager : MonoBehaviour
 
         public BeatType type;
         public double timestamp;
-        public int beatId;
+        public int beatId; // also the index into beat array
     }
 
     [SerializeField]
@@ -34,7 +34,6 @@ public class BeatManager : MonoBehaviour
     private AudioClip songClip;
     [SerializeField]
     private float beatHitAllowance;
-
 
     public float BeatHitAllowance { get { return beatHitAllowance; } }
     public float BeatPeriod { get { return 60.0f / bpm; } }
@@ -61,7 +60,7 @@ public class BeatManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         audioSource.clip = songClip;
 
-        // setting up first event time.
+        // setting up first event time
         startTime = AudioSettings.dspTime + preloadTimeDelta;
         audioSource.PlayScheduled(startTime);
         GenerateBeatMap();
@@ -103,52 +102,30 @@ public class BeatManager : MonoBehaviour
     }
     
 
-    public bool CheckIfOnBeat(double beatTimeStamp,  bool silent = true)
+    public bool CheckIfOnBeat(double beatTimeStamp)
     {
         double delta = beatTimeStamp - AudioSettings.dspTime;
         bool  result = Mathf.Abs((float)delta) < beatHitAllowance;
-        if(!silent) Debug.Log($"{delta:0.00} {(result ? "hit" : "miss")}");
         return result;
     }
 
     // relative to the next beat by default
-    public Beat GetNextBarTimeStamp(int barsToSkip = 0, Beat referenceBeat = null) 
+    public Beat GetNextBeatTimeStamp(int beatsToSkip = 0, Beat.BeatType type = Beat.BeatType.Beat, Beat referenceBeat = null) 
     {
-        int nextBeatIdx = nextBeatIntIdx;
-
-        Beat b = referenceBeat == null ? beatMap[nextBeatIdx] : referenceBeat;
-        // latch on to a bar
-        while(b.type != Beat.BeatType.Bar)
+        Beat b = referenceBeat == null ? beatMap[nextBeatIntIdx] : referenceBeat;
+        int beatIdx = b.beatId;
+        // latch on to a the required type
+        while(b.type != type)
         {
-            nextBeatIdx++;
-            b = beatMap[nextBeatIdx];
-        }
-        // skip if required
-        while(barsToSkip != 0)
-        {
-            nextBeatIdx += numBeatsPerBar;
-            b = beatMap[nextBeatIdx];
-            barsToSkip--;
-        }
-        return b.Clone();
-    }
-
-    // relative to the next beat by default
-    public Beat GetNextBeatTimeStamp(int beatsToSkip = 0, Beat referenceBeat = null) 
-    {
-        int nextBeatIdx = nextBeatIntIdx;
-        Beat b = referenceBeat == null ? beatMap[nextBeatIdx] : referenceBeat;
-        // latch on to a beat
-        while(b.type != Beat.BeatType.Beat)
-        {
-            nextBeatIdx++;
-            b = beatMap[nextBeatIdx];
+            beatIdx++;
+            b = beatMap[beatIdx];
         }
         // skip if required
         while(beatsToSkip != 0)
         {
-            nextBeatIdx++;
-            b = beatMap[nextBeatIdx];
+            // skipe the required amount depending on type 
+            beatIdx += type == Beat.BeatType.Bar ? numBeatsPerBar : 1;
+            b = beatMap[beatIdx];
             beatsToSkip--;
         }
         return b.Clone();

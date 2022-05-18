@@ -62,17 +62,23 @@ public class HitTargetSpawner : MonoBehaviour
     void Update()
     {
         // fill up the groups with assigned beats 
-        if (groups.Count <= MaxNoOfGroups)
+        while (groups.Count < MaxNoOfGroups)
         {
-            BeatManager.Beat refBeat = groups.Count > 0 ? groups[groups.Count - 1].question.Beat : null;
+            BeatManager.Beat refBeat = null;
+            // try to get a reference beat from the last group
+            if (groups.Count > 0)
+            {
+                refBeat = groups[groups.Count - 1].groupBeat;
+            }
+            // make a new group some distance from this one
             HitGroup group = new HitGroup()
             {
-                groupBeat = beatManager.GetNextBarTimeStamp(1, refBeat)
+                groupBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, refBeat)
             };
             groups.Add(group);
         }
         
-        // spawn the groups
+        // check if any of the groups can be spawned
         foreach(HitGroup g in groups)
         {
             bool withinSpawnRange = beatManager.TimeToBeat(g.groupBeat) < spawnToBeatTimeOffset;
@@ -84,10 +90,8 @@ public class HitTargetSpawner : MonoBehaviour
    
     }
 
-
     private void SpawnQuestion(HitGroup group) 
     {
-        Debug.Log("spawning question");
         // question
         PromptChar questionChar = GameManager.Instance.KanjiDatabase.GetRandomPromptChar();
         group.question = SpawnOne(
@@ -104,7 +108,7 @@ public class HitTargetSpawner : MonoBehaviour
         HitGroup group = questionTarget.group;
 
         // answers
-        var ansBeat = beatManager.GetNextBeatTimeStamp(1);
+        var ansBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, group.groupBeat);
         int correctAnswer = Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
@@ -128,7 +132,12 @@ public class HitTargetSpawner : MonoBehaviour
     
     }
 
-    private HitTarget SpawnOne(Vector3 position, BeatManager.Beat beat, PromptChar PromptChar, HitTarget.Type type, HitGroup group) 
+    private HitTarget SpawnOne(
+        Vector3 position, 
+        BeatManager.Beat beat, 
+        PromptChar PromptChar, 
+        HitTarget.Type type, 
+        HitGroup group) 
     {
         HitTarget ht = Instantiate(
             hitTargetPrefab,
@@ -143,4 +152,5 @@ public class HitTargetSpawner : MonoBehaviour
     {
         groups.Remove(group);
     }
+
 }

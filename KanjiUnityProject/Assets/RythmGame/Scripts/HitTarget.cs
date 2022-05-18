@@ -21,11 +21,13 @@ public class HitTarget : MonoBehaviour
     }
 
     [SerializeField]
+    private Color beatWindowColor;
+    [SerializeField]
     private Color questionColor;
     [SerializeField]
     private Color answerColor;
     [SerializeField]
-    private Color waitingAnswerColor;
+    private Color selectedColor;
 
     public enum Result 
     {
@@ -60,12 +62,17 @@ public class HitTarget : MonoBehaviour
     [SerializeField]
     private float radiusBegin;
     private float radiusEnd;
+    [SerializeField]
+    private float radiusEndOffset;
     private float beatCircleLineWidth = 0.1f;
+
+    // model
     [SerializeField]
     private CapsuleCollider modelCollider;
     [SerializeField]
     private GameObject model;
     private Renderer modelRenderer;
+    private Color modelColor;
 
     // prompt stuff
     public PromptChar prompt;
@@ -98,11 +105,11 @@ public class HitTarget : MonoBehaviour
         this.group = group;
         if(type == Type.Question)
         {
-            SetModelColor(questionColor);
+            modelColor = questionColor;
         }
         else
         {
-            SetModelColor(answerColor);
+            modelColor = answerColor;
         }
     }
 
@@ -119,6 +126,7 @@ public class HitTarget : MonoBehaviour
         if (thresholdPassed) HandleBeatResult(Result.Miss);
 
         UpdateBeatCircle();
+        UpdateColor();
     }
 
     public void HandleBeatResult(Result hitResult)
@@ -127,7 +135,7 @@ public class HitTarget : MonoBehaviour
         {
             if (type == Type.Question && !selected)
             {
-                SetModelColor(waitingAnswerColor);
+                modelColor = selectedColor;
                 Instantiate(selectedEffect, transform.position, Quaternion.identity);
                 AppEvents.OnSelected?.Invoke(this);
                 selected = true;
@@ -205,9 +213,22 @@ public class HitTarget : MonoBehaviour
 
     private void SetModelColor(Color color)
     {
-        if(modelRenderer == null) modelRenderer = model.GetComponent<Renderer>();
+        if (modelRenderer == null) modelRenderer = model.GetComponent<Renderer>();
+        if (modelRenderer.material.color == color) return;
         modelRenderer.material.color = color;
     }
 
+    private void UpdateColor()
+    {
+        bool onBeat = GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
+        if (onBeat )
+        {
+            SetModelColor(beatWindowColor);
+        }
+        else
+        {
+            SetModelColor(modelColor);
+        }
+    }
 
 }

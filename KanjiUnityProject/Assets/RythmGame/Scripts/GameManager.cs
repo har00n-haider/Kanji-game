@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
                 HitTarget ht = hit.transform.parent.gameObject.GetComponent<HitTarget>();
                 if (ht != null)
                 {
-                    bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp, false);
+                    bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp);
                     if (onBeat)
                     {
                         ht.HandleBeatResult(HitTarget.Result.Hit);

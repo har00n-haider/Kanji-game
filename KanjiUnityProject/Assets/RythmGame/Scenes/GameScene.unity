@@ -1292,7 +1292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a273abb1a2b86b44a46ae58f9b152c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxNoOfGroups: 0
+  MaxNoOfGroups: 4
   spawnVolume: {fileID: 1590424059}
   hitTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
 --- !u!4 &1372679957

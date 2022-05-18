@@ -48,9 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0813b7c989d24ed468f6dc4d49c65c4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  questionColor: {r: 0.018435694, g: 0.6603774, b: 0, a: 0}
-  answerColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 0}
-  waitingAnswerColor: {r: 0.36027053, g: 0.6509434, b: 0.40928397, a: 0}
+  beatWindowColor: {r: 0.8396226, g: 0.14671245, b: 0.0052805413, a: 1}
+  questionColor: {r: 0.021900272, g: 0.735849, b: 0, a: 1}
+  answerColor: {r: 0.32004267, g: 0.38053855, b: 0.8773585, a: 1}
+  selectedColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
   textMesh: {fileID: 8562822277031563684}
   hangAboutTime: 1
   succesEffect: {fileID: 8667159329183705162, guid: 76d87632781e17e4ca031aa472a5610f, type: 3}
@@ -58,9 +59,11 @@ MonoBehaviour:
   selectedEffect: {fileID: 8667159329183705162, guid: 5a5f2cf4e3d98994da7dc8b5df6d8458, type: 3}
   beatCircleLine: {fileID: 2814991159223869109}
   radiusBegin: 5
+  radiusEndOffset: -0.02
   modelCollider: {fileID: 6882461310028346358}
   model: {fileID: 3594361684890509052}
   type: 0
+  selected: 0
 --- !u!23 &1317498361565220375
 MeshRenderer:
   m_ObjectHideFlags: 0
