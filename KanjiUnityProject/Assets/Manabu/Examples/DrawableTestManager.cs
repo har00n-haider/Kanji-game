@@ -22,8 +22,8 @@ public class DrawableTestManager : MonoBehaviour
 
         KanjiDatabase.Load(kanjiDatabaseFile);
 
-        if(kanji3D.isActiveAndEnabled) kanji3D.Init(KanjiDatabase.GetKanji('人'));
-        if(kanji2D.isActiveAndEnabled) kanji2D.Init(KanjiDatabase.GetKanji('人'));
+        if(kanji3D.isActiveAndEnabled) kanji3D.Init(KanjiDatabase.GetRandomCharacter(null, CharacterType.kanji));
+        if(kanji2D.isActiveAndEnabled) kanji2D.Init(KanjiDatabase.GetRandomCharacter(null, CharacterType.kanji));
 
 
     }

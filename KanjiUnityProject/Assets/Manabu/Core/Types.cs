@@ -38,23 +38,6 @@ public class Stroke
     public List<Vector2> points = new List<Vector2>();
 }
 
-/// <summary>
-/// Holds all data relevant to a given japanese charater. This is 
-/// provided by the KanjiDatabase functions
-/// </summary>
-public class CharacterData
-{
-    public string literal = string.Empty;
-    public string code = string.Empty;
-    public List<string> meanings = new List<string>();
-    public List<string> readingsOn = new List<string>();
-    public List<string> readingsKun = new List<string>();
-    public string svgContent = string.Empty; // TODO: Move the parsing of this earlier in the chain (i.e. in the KanjiDatabase)
-    public string categoryType = string.Empty;
-    public string category = string.Empty;
-    public CharacterProgress progress = new CharacterProgress();
-}
-
 public class CharacterProgress
 {
     public int clears = 0;
@@ -98,22 +81,31 @@ public enum InputType
     Meaning,
 }
 
-
+/// <summary>
+/// Holds all data relevant to a given japanese charater. This is 
+/// provided by the KanjiDatabase functions
+/// </summary>
 public class Character
 {
     /// <summary>
     /// Determines the way the word will be displayed on a prompt
     /// </summary>
     public DisplayType displayType;
-    public CharacterType Type; 
-    public char character = ' ';
-    public CharacterData data = null;
-    public string romaji = null;
-    public string meaning = null;
+    public CharacterType type; 
+    public char literal = ' ';
+    public string code = string.Empty;
+    public string romaji = string.Empty;
+    public List<string> meanings = new List<string>();
+    public List<string> readingsOn = new List<string>();
+    public List<string> readingsKun = new List<string>();
+    public string categoryType = string.Empty;
+    public string category = string.Empty;
+    public CharacterProgress progress = new CharacterProgress();
+    public DrawData drawData = null;
 
     public bool Check(Character other)
     {
-        return character == other.character;
+        return literal == other.literal;
     }
 
     public string GetDisplaySstring()
@@ -124,13 +116,13 @@ public class Character
             case DisplayType.Kanji:
             case DisplayType.Hiragana:
             case DisplayType.Katana:
-                value = character.ToString();
+                value = literal.ToString();
                 break;
             case DisplayType.Romaji:
-                value = WanaKanaSharp.WanaKana.ToRomaji(character.ToString());
+                value = WanaKanaSharp.WanaKana.ToRomaji(literal.ToString());
                 break;
             case DisplayType.Meaning:
-                value = meaning;
+                value = meanings.Count > 0 ? meanings[0] : string.Empty;
                 break;
         }
         return value;
@@ -184,7 +176,7 @@ public class Word
         string s = string.Empty;
         foreach (var x in chars)
         {
-            s += x.character;
+            s += x.literal;
         }
         return s;
     }
@@ -258,7 +250,7 @@ public class Word
         string s = string.Empty;
         for (int i = 0; i < chars.Length; i++)
         {
-            s += i < cIdx ? chars[i].character : fillerChar;
+            s += i < cIdx ? chars[i].literal : fillerChar;
         }
         return s;
     }
@@ -270,7 +262,7 @@ public class Word
 
     public bool CheckChar(char c)
     {
-        if (c == chars[cIdx].character)
+        if (c == chars[cIdx].literal)
         {
             ++cIdx;
             return true;

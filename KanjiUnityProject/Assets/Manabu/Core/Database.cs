@@ -19,33 +19,61 @@ namespace Manabu.Core
 /// </summary>
 public class Database
 {
-    private Dictionary<string, CharacterData> kanjis = new Dictionary<string, CharacterData>(); // hex code string to kanji data map
+    /// <summary>
+    /// Unicode hex string to character data map. 
+    /// </summary>
+    private Dictionary<string, Character> characters = new Dictionary<string, Character>();
+    private List<Character> kanji = new List<Character>();
+    private List<Character> katakana = new List<Character>();
+    private List<Character> hiragana = new List<Character>();
+
+    /// <summary>
+    /// List of words and sentences 
+    /// </summary>
     private PromptList prompts = new PromptList();
     public bool kanjiDataBaseLoaded = false;
     private List<string> meaningsFillerList = new List<string>();
 
-    #region prompt methods
-    
-    public CharacterData GetRandomKanji()
-    {
-        if (!kanjiDataBaseLoaded) return null;
-        var kanjiList = kanjis.Values.ToList();
-        var idx = Random.Range(0, kanjiList.Count - 1);
-        return kanjiList[idx];
-    }
-
-    // Only hiragana for now...
+    /// <summary>
+    /// Provides a random character from a loaded database
+    /// </summary>
+    /// <param name="except"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public Character GetRandomCharacter(Character except = null, CharacterType type = CharacterType.hiragana) 
     {
-        Character prompt = new Character();
-        System.Random r = new System.Random();
-        List<char> list = new List<char>(unmodifiedHiragana);
-        if (except != null) list.Remove(except.character);
-        int randomIdx =  r.Next(0, list.Count);
-        prompt.Type = CharacterType.hiragana;
-        prompt.character = list[randomIdx];
-        prompt.romaji = WanaKanaSharp.WanaKana.ToRomaji(prompt.character.ToString());
-        return prompt;
+        Character character = new Character();
+        if (!kanjiDataBaseLoaded) return character;
+        System.Random r = new System.Random(DateTime.Now.Millisecond);
+        int idx = 0;
+        switch (type)
+        {
+            case CharacterType.kanji:
+                List<Character> filteredKanji = except == null ? kanji: kanji.Where((c) => { return c.literal != except.literal; }).ToList();
+                if (filteredKanji.Count > 0)
+                {
+                    idx = r.Next(0, filteredKanji.Count - 1);
+                    character = filteredKanji[idx];
+                }
+                break;
+            case CharacterType.hiragana:
+                List<Character> filteredHiragana = except == null ? hiragana : hiragana.Where((c) => { return c.literal != except.literal; }).ToList();
+                if (filteredHiragana.Count > 0)
+                {
+                    idx = r.Next(0, filteredHiragana.Count - 1);
+                    character = filteredHiragana[idx];
+                }
+                break;
+            case CharacterType.katakana:
+                List<Character> filteredKatakana = except == null ? katakana : katakana.Where((c) => { return c.literal != except.literal; }).ToList();
+                if (filteredKatakana.Count > 0)
+                {
+                    idx = r.Next(0, filteredKatakana.Count - 1);
+                    character = filteredKatakana[idx];
+                }
+                break;
+        }
+        return character;
     }
 
     private Sentence GetRandomPromptSentence()
@@ -102,11 +130,7 @@ public class Database
         {
             foreach (char c in s)
             {
-                cl.Add(new Character()
-                {
-                    character = c,
-                    data = GetKanji(c)
-                });
+                cl.Add(GetKanji(c));
             }
         };
 
@@ -154,8 +178,126 @@ public class Database
         return prompt;
     }
 
-    // The responsibility of this function is to return
-    // a prompt that matches the prompt type
+    public Character GetKanji(char kanji)
+    {
+        Character result = characters.Values.FirstOrDefault(k => k.literal.ToString() == kanji.ToString());;
+        return result;
+    }
+
+    public void Load(TextAsset kanjiDataBaseFile, TextAsset sentenceDataBaseFile = null)
+    {
+        characters = LoadKanjiDatabase(kanjiDataBaseFile).ToDictionary(x => x.code, c => c);
+        if(sentenceDataBaseFile != null) 
+        {
+            prompts = LoadSentenceDatabase(sentenceDataBaseFile);
+            meaningsFillerList = LoadMeaningsFillerList();
+        }
+    }
+
+    private List<Character> LoadKanjiDatabase(TextAsset dataBaseFile)
+    {
+        List<Character> characters = new List<Character>();
+        string dbPath = dataBaseFile.text;
+
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(dbPath);
+        var kanjiElems = xmlDoc.GetElementsByTagName("kanji");
+        foreach (XmlNode kanjiElem in kanjiElems)
+        {
+            Character character = new Character();
+            character.literal = kanjiElem["literal"].InnerText[0]; // should only ever be 1 char long?
+            character.code = kanjiElem.Attributes["code"].InnerText;
+            if (kanjiElem["meaning_group"] != null)
+            {
+                foreach (XmlNode meaningNode in kanjiElem["meaning_group"])
+                {
+                    character.meanings.Add(meaningNode.InnerText);
+                }
+            }
+            if (kanjiElem["reading_group"] != null)
+            {
+                foreach (XmlNode readingNode in kanjiElem["reading_group"])
+                {
+                    if (readingNode.Attributes["r_type"].InnerText == "ja_kun")
+                    {
+                        character.readingsKun.Add(readingNode.InnerText);
+                    }
+                    else if (readingNode.Attributes["r_type"].InnerText == "ja_on")
+                    {
+                        character.readingsOn.Add(readingNode.InnerText);
+                    }
+                }
+            }
+            character.drawData = SVGParser.GetStrokesFromSvg(kanjiElem["svg"].InnerXml);
+            character.category = kanjiElem["category"].InnerText;
+            character.categoryType = kanjiElem["category"].Attributes["type"].InnerText;
+            character.type = GetTypeFromString(character.category); // HACK: need to have a int here as input
+            character.romaji = WanaKanaSharp.WanaKana.ToRomaji(character.literal.ToString());
+
+            characters.Add(character);
+            
+            switch (character.type)
+            {
+                case CharacterType.kanji:
+                    kanji.Add(character);
+                    break;
+                case CharacterType.hiragana:
+                    hiragana.Add(character);
+                    break;
+                case CharacterType.katakana:
+                    katakana.Add(character);
+                    break;
+            }
+        }
+        kanjiDataBaseLoaded = true;
+        return characters;
+    }
+
+    private CharacterType GetTypeFromString(string type)
+    {
+        CharacterType value = CharacterType.none;
+        switch (type)
+        {
+            case "required kanji":
+                value = CharacterType.kanji;
+                break;
+            case "hiragana set":
+                value = CharacterType.hiragana;
+                break;
+            case "katakana set":
+                value = CharacterType.katakana;
+                break;
+            default:
+                break;
+        }
+        return value;
+    }
+
+    private PromptList LoadSentenceDatabase(TextAsset dataBaseFile)
+    {
+        return JsonUtility.FromJson<PromptList>(dataBaseFile.text);
+    }
+
+    private List<string> LoadMeaningsFillerList()
+    {
+        HashSet<string> fillerMeanings = new HashSet<string>();
+        foreach (Sentence p in prompts.sentences)
+        {
+            foreach (Word w in p.words)
+            {
+                if (w.meanings != null)
+                {
+                    foreach (string m in w.meanings)
+                    {
+                        fillerMeanings.Add(m);
+                    }
+                }
+            }
+        }
+        return fillerMeanings.ToList();
+    }
+
+    // Returns a prompt that matches the prompt type
     // TODO: Need to specify exactly what state a prompt is in
     // before returning it
     public Sentence GetPrompt(PromptConfiguration promptConfig)
@@ -165,7 +307,7 @@ public class Database
         {
             case RequestType.SingleKana:
                 // get a random kanji from the kanji list
-                char selectedKana = unmodifiedHiragana.ToList().PickRandom();
+                char selectedKana = Utils.unmodifiedHiragana.ToList().PickRandom();
                 prompt.words.Add(new Word()
                 {
                     type = CharacterType.hiragana,
@@ -175,11 +317,11 @@ public class Database
 
             case RequestType.SingleKanji:
                 // get a random kanji from the kanji list
-                CharacterData selectedKanji = kanjis.Values.Where(k => k.category == "required kanji").ToList().PickRandom();
+                Character selectedKanji = characters.Values.Where(k => k.category == "required kanji").ToList().PickRandom();
                 prompt.words.Add(new Word()
                 {
                     type = CharacterType.kanji,
-                    kanji = selectedKanji.literal,
+                    kanji = selectedKanji.literal.ToString(),
                     meanings = selectedKanji.meanings.ToArray(),
                 });
                 break;
@@ -211,8 +353,6 @@ public class Database
         return prompt;
     }
 
-    #endregion prompt methods
-
     public List<string> GetRandomFillerMeanings(int noOfStrings, string except)
     {
         if (noOfStrings > meaningsFillerList.Count) return new List<string>();
@@ -233,10 +373,10 @@ public class Database
         return meanings.ToList();
     }
 
-    public CharacterData GetRandomKanjiFiltered(System.Func<CharacterData, bool> filter)
+    public Character GetRandomKanjiFiltered(System.Func<Character, bool> filter)
     {
         if (!kanjiDataBaseLoaded) return null;
-        var kanjiList = kanjis.Values;
+        var kanjiList = characters.Values;
         var remainingkanjis = kanjiList.Where(filter).ToList();
         if (remainingkanjis.Count > 0)
         {
@@ -246,152 +386,14 @@ public class Database
         return null;
     }
 
-    public int CountKanji(System.Func<CharacterData, bool> filter)
+    public List<Character> GetListOfMatchingCharacters(System.Func<Character, bool> filter)
     {
-        if (!kanjiDataBaseLoaded) return 0;
-        var kanjiList = kanjis.Values;
-        return kanjiList.Where(filter).Count();
+        if (!kanjiDataBaseLoaded) return new List<Character>();
+        return characters.Values.Where(filter).ToList();
     }
 
-    public CharacterData GetKanji(char kanji)
-    {
-        CharacterData result = kanjis.Values.FirstOrDefault(k => k.literal == kanji.ToString());
-        return result;
-    }
+    #region Debug
 
-    public void Load(TextAsset kanjiDataBaseFile, TextAsset sentenceDataBaseFile = null)
-    {
-        kanjis = LoadKanjiDatabase(kanjiDataBaseFile).ToDictionary(x => x.code, c => c);
-        if(sentenceDataBaseFile != null) 
-        {
-            prompts = LoadSentenceDatabase(sentenceDataBaseFile);
-            meaningsFillerList = LoadMeaningsFillerList();
-        }
-    }
-
-    private List<CharacterData> LoadKanjiDatabase(TextAsset dataBaseFile)
-    {
-        List<CharacterData> kanjis = new List<CharacterData>();
-        string dbPath = dataBaseFile.text;
-
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(dbPath);
-        var kanjiElems = xmlDoc.GetElementsByTagName("kanji");
-        foreach (XmlNode kanjiElem in kanjiElems)
-        {
-            CharacterData kanji = new CharacterData();
-            kanji.literal = kanjiElem["literal"].InnerText;
-            kanji.code = kanjiElem.Attributes["code"].InnerText;
-            if (kanjiElem["meaning_group"] != null)
-            {
-                foreach (XmlNode meaningNode in kanjiElem["meaning_group"])
-                {
-                    kanji.meanings.Add(meaningNode.InnerText);
-                }
-            }
-            if (kanjiElem["reading_group"] != null)
-            {
-                foreach (XmlNode readingNode in kanjiElem["reading_group"])
-                {
-                    if (readingNode.Attributes["r_type"].InnerText == "ja_kun")
-                    {
-                        kanji.readingsKun.Add(readingNode.InnerText);
-                    }
-                    else if (readingNode.Attributes["r_type"].InnerText == "ja_on")
-                    {
-                        kanji.readingsOn.Add(readingNode.InnerText);
-                    }
-                }
-            }
-            kanji.svgContent = kanjiElem["svg"].InnerXml;
-            kanji.category = kanjiElem["category"].InnerText;
-            kanji.categoryType = kanjiElem["category"].Attributes["type"].InnerText;
-
-            kanjis.Add(kanji);
-        }
-        kanjiDataBaseLoaded = true;
-        return kanjis;
-    }
-
-    private PromptList LoadSentenceDatabase(TextAsset dataBaseFile)
-    {
-        return JsonUtility.FromJson<PromptList>(dataBaseFile.text);
-    }
-
-    private List<string> LoadMeaningsFillerList()
-    {
-        HashSet<string> fillerMeanings = new HashSet<string>();
-        foreach (Sentence p in prompts.sentences)
-        {
-            foreach (Word w in p.words)
-            {
-                if (w.meanings != null)
-                {
-                    foreach (string m in w.meanings)
-                    {
-                        fillerMeanings.Add(m);
-                    }
-                }
-            }
-        }
-        return fillerMeanings.ToList();
-    }
-
-    public static char[] unmodifiedHiragana = new char[]
-    {
-        'あ',
-        'い',
-        'う',
-        'え',
-        'お',
-        'か',
-        'き',
-        'く',
-        'け',
-        'こ',
-        'さ',
-        'し',
-        'す',
-        'せ',
-        'そ',
-        'た',
-        'ち',
-        'つ',
-        'て',
-        'と',
-        'な',
-        'に',
-        'ぬ',
-        'ね',
-        'の',
-        'は',
-        'ひ',
-        'ふ',
-        'へ',
-        'ほ',
-        'ま',
-        'み',
-        'む',
-        'め',
-        'も',
-        'や',
-        'ゆ',
-        'よ',
-        'ら',
-        'り',
-        'る',
-        'れ',
-        'ろ',
-        'わ',
-        'を',
-        'ん',
-    };
-
-
-
-
-
-        
     private int pIdx = -1;
 
     // TODO: debug function
@@ -443,7 +445,7 @@ public class Database
         }
     }
 
-
+    #endregion
 }
 
 }

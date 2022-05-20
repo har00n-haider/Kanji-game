@@ -31,7 +31,7 @@ public class DrawableCharacter3D : DrawableCharacter
     [SerializeField]
     private float gridThickness;
 
-    public override void Init(CharacterData kanjiData)
+    public override void Init(Character kanjiData)
     {
         // set up before initialising the base class (need the collider set up)
         if (boxCollider == null)
@@ -43,7 +43,7 @@ public class DrawableCharacter3D : DrawableCharacter
         if (kanjiGrid == null)
         {
             kanjiGrid = GetComponentInChildren<Grid3D>();
-            kanjiGrid.Init(parsedKanjiData, boxCollider, gridThickness);
+            kanjiGrid.Init(kanjiData.drawData, boxCollider, gridThickness);
         }
 
         base.Init(kanjiData);

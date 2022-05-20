@@ -1541,6 +1541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameAudio: {fileID: 1770974222}
+  databaseFile: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
   circle: {fileID: 1163877317}
   BarFlickercColor: {r: 0.8980392, g: 0.33652204, b: 0.11372546, a: 1}
   BeatFlickercColor: {r: 0, g: 1, b: 0.10793543, a: 1}

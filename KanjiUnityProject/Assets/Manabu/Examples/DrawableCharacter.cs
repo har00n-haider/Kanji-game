@@ -31,9 +31,9 @@ public class DrawableCharacter : MonoBehaviour
         public StrokeResult strokeResult = null;
         public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
     }
-
+    
     [Serializable]
-    public class KanjiConfig
+    public class DrawConfiguration
     {
         // configuration for strokes
         public int noRefPointsInStroke { get; private set; } = 5;
@@ -62,11 +62,10 @@ public class DrawableCharacter : MonoBehaviour
 
     // kanji data
     [SerializeField]
-    private KanjiConfig _config;
+    private DrawConfiguration _config;
 
-    public KanjiConfig config { get { return _config; } private set { _config = value; } }
-    public CharacterData kanjiData { get; private set; } = null;
-    protected DrawData parsedKanjiData = null;
+    public DrawConfiguration config { get { return _config; } private set { _config = value; } }
+    public Character kanjiData { get; private set; } = null;
 
     // refs
     public DrawableStroke strokePrefab;
@@ -81,26 +80,25 @@ public class DrawableCharacter : MonoBehaviour
     /// <summary>
     /// Handles the loading of a kanji from the parser
     /// </summary>
-    /// <param name="kanjiData"></param>
+    /// <param name="characterData"></param>
     /// <param name="scale"></param>
-    public virtual void Init(CharacterData kanjiData)
+    public virtual void Init(Character characterData)
     {
         // pull a kanji
-        parsedKanjiData = SVGParser.GetStrokesFromSvg(kanjiData.svgContent);
-        bool refKanjiHidden = kanjiData.progress.flawlessClears >= 3;
-        for (int sIdx = 0; sIdx < parsedKanjiData.strokes.Count; sIdx++)
+        bool refKanjiHidden = characterData.progress.flawlessClears >= 3;
+        for (int sIdx = 0; sIdx < characterData.drawData.strokes.Count; sIdx++)
         {
             // assuming we get these in order
             strokes.Add(
                 sIdx,
                 new StrokePair()
                 {
-                    refStroke = GenerateRefStroke(parsedKanjiData.strokes[sIdx], refKanjiHidden),
+                    refStroke = GenerateRefStroke(characterData.drawData.strokes[sIdx], refKanjiHidden),
                     inpStroke = GenerateInpStroke()
                 });
         }
         curStrokeIdx = 0;
-        this.kanjiData = kanjiData;
+        this.kanjiData = characterData;
         // start the looking for the first stroke
         strokes[0].inpStroke.gameObject.SetActive(true);
     }
@@ -122,7 +120,6 @@ public class DrawableCharacter : MonoBehaviour
 
         // data
         kanjiData = null;
-        parsedKanjiData = null;
     }
 
     protected void UpdateEvaluation()

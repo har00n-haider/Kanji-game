@@ -28,7 +28,7 @@ public class DrawableCharacter2D : DrawableCharacter
     // refs 
     private Camera mainCamera;
 
-    public override void Init(CharacterData kanjiData)
+    public override void Init(Character characterData)
     {
         // setup references
         mainCamera = Camera.main;
@@ -40,11 +40,11 @@ public class DrawableCharacter2D : DrawableCharacter
         if (kanjiGrid == null)
         {
             kanjiGrid = GetComponentInChildren<Grid2D>();
-            kanjiGrid.Init(parsedKanjiData, boxCollider, gridThickness);
+            kanjiGrid.Init(characterData.drawData, boxCollider, gridThickness);
         }
 
         // initialise the base class after set up (need the collider configured)
-        base.Init(kanjiData);
+        base.Init(characterData);
     }
 
     protected override void UpdateInput()
@@ -81,7 +81,7 @@ public class DrawableCharacter2D : DrawableCharacter
     {
         currCharTarget = promptChar;
         Reset();
-        Init(currCharTarget.data);
+        Init(currCharTarget);
     }
 
     protected override void Completed() 
@@ -93,7 +93,7 @@ public class DrawableCharacter2D : DrawableCharacter
         else
         {
             Reset();
-            Init(currCharTarget.data);
+            Init(currCharTarget);
         }
     }
 

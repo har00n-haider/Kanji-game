@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public GameAudio GameAudio;
     public Database Database;
+    public TextAsset databaseFile;
 
     //TODO: delete me - debug
     public UnityEngine.UI.Extensions.UICircle circle;
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Database = new Database();
+        Database.Load(databaseFile);
         if (Instance == null) Instance = this;
         SubscribeToAppEvents();
     }
