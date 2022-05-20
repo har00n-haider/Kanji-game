@@ -5,13 +5,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
-using KanjiLib.Core;
+using Manabu.Core;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public GameAudio GameAudio;
-    public KanjiDatabase KanjiDatabase;
+    public Database Database;
 
     //TODO: delete me - debug
     public UnityEngine.UI.Extensions.UICircle circle;
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     // Awake() is called before Start.
     void Awake()
     {
-        KanjiDatabase = new KanjiDatabase();
+        Database = new Database();
         if (Instance == null) Instance = this;
         SubscribeToAppEvents();
     }

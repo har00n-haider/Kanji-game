@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-using KanjiLib.Prompts;
+using Manabu.Core;
 
 public class HitTargetSpawner : MonoBehaviour
 {
@@ -28,7 +27,7 @@ public class HitTargetSpawner : MonoBehaviour
     private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
 
 
-    private Dictionary<PromptChar, GameObject> promptToGameObjectMap = new Dictionary<PromptChar, GameObject>();
+    private Dictionary<Character, GameObject> promptToGameObjectMap = new Dictionary<Character, GameObject>();
 
 
     // vectors for answers
@@ -93,7 +92,7 @@ public class HitTargetSpawner : MonoBehaviour
     private void SpawnQuestion(HitGroup group) 
     {
         // question
-        PromptChar questionChar = GameManager.Instance.KanjiDatabase.GetRandomPromptChar();
+        Character questionChar = GameManager.Instance.Database.GetRandomCharacter();
         group.question = SpawnOne(
             GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
             group.groupBeat,
@@ -104,7 +103,7 @@ public class HitTargetSpawner : MonoBehaviour
 
     private void SpawnAnwsers(HitTarget questionTarget)
     {
-        PromptChar questionChar = questionTarget.prompt;
+        Character questionChar = questionTarget.prompt;
         HitGroup group = questionTarget.group;
 
         // answers
@@ -116,16 +115,16 @@ public class HitTargetSpawner : MonoBehaviour
             if (i == 0) position = group.question.transform.position + up;
             if (i == 1) position = group.question.transform.position + left;
             if (i == 2) position = group.question.transform.position + right;
-            PromptChar p;
+            Character p;
             if(i == correctAnswer)
             {
-               p = Utils.Clone<PromptChar>(questionChar);
-               p.displayType = PromptDisplayType.Romaji;
+               p = Utils.Clone<Character>(questionChar);
+               p.displayType = DisplayType.Romaji;
             }
             else
             {
-                p = GameManager.Instance.KanjiDatabase.GetRandomPromptChar(questionChar);
-                p.displayType = PromptDisplayType.Romaji;
+                p = GameManager.Instance.Database.GetRandomCharacter(questionChar);
+                p.displayType = DisplayType.Romaji;
             }
             group.answers.Add(SpawnOne(position, ansBeat, p, HitTarget.Type.Answer, group));
         }
@@ -135,7 +134,7 @@ public class HitTargetSpawner : MonoBehaviour
     private HitTarget SpawnOne(
         Vector3 position, 
         BeatManager.Beat beat, 
-        PromptChar PromptChar, 
+        Character Character, 
         HitTarget.Type type, 
         HitGroup group) 
     {
@@ -144,7 +143,7 @@ public class HitTargetSpawner : MonoBehaviour
             position,
             Quaternion.identity,
             transform).GetComponent<HitTarget>();
-        ht.Init(type, PromptChar, group, beat);
+        ht.Init(type, Character, group, beat);
         return ht;
     }
 

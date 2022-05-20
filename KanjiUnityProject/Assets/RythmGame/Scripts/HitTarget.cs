@@ -3,7 +3,7 @@ using UnityEngine.Assertions;
 using UnityEngine.VFX;
 using TMPro;
 using System.Collections.Generic;
-using KanjiLib.Prompts;
+using Manabu.Core;
 
 public class HitTarget : MonoBehaviour
 {
@@ -75,7 +75,7 @@ public class HitTarget : MonoBehaviour
     private Color modelColor;
 
     // prompt stuff
-    public PromptChar prompt;
+    public Character prompt;
     public Type type;
     public HitTargetSpawner.HitGroup group;
     public bool selected = false;
@@ -86,7 +86,7 @@ public class HitTarget : MonoBehaviour
     {
     }
 
-    public void Init(Type type,  PromptChar prompt, HitTargetSpawner.HitGroup group, BeatManager.Beat beat)  
+    public void Init(Type type, Character prompt, HitTargetSpawner.HitGroup group, BeatManager.Beat beat)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;
