@@ -76,101 +76,6 @@ public class Database
         return character;
     }
 
-    private Sentence GetRandomPromptSentence()
-    {
-        Sentence prompt = GetRandomPromptSentence();
-        foreach (var word in prompt.words)
-        {
-            GetRandomTestSetForWordType(
-                word.type,
-                out DisplayType displayType,
-                out InputType responseType);
-            word.responseType = responseType;
-            word.displayType = displayType;
-        }
-        SetCharsForPrompt(ref prompt);
-        return prompt;
-    }
-
-    private void GetRandomTestSetForWordType(
-        CharacterType promptType,
-        out DisplayType displayType,
-        out InputType responseType)
-    {
-        displayType = DisplayType.Kanji;
-        responseType = InputType.KeyHiragana;
-
-        switch (promptType)
-        {
-            case CharacterType.kanji:
-                displayType = Utils.kanjiPrompts.GetRandomPrompt();
-                responseType = Utils.kanjiInputs.GetRandomInput();
-                break;
-
-            case CharacterType.hiragana:
-                displayType = Utils.hiraganaPrompts.GetRandomPrompt();
-                responseType = Utils.hiraganaInputs.GetRandomInput();
-                break;
-
-            case CharacterType.katakana:
-                displayType = Utils.katakanaPrompts.GetRandomPrompt();
-                responseType = Utils.katakanaInputs.GetRandomInput();
-                break;
-
-            default:
-            break;
-        }
-    }
-
-    /// <param name="prompt">Prompt that has been configured for a test</param>
-    private void SetCharsForPrompt(ref Sentence prompt)
-    {
-        Action<List<Character>, string> populateCharList =
-        (List<Character> cl, string s) =>
-        {
-            foreach (char c in s)
-            {
-                cl.Add(GetKanji(c));
-            }
-        };
-
-        // Set the chars to iterate through depending
-        // on the type of the word and the input type
-        foreach (Word word in prompt.words)
-        {
-            List<Character> chars = new List<Character>();
-            switch (word.type)
-            {
-                case CharacterType.kanji:
-                    // take the input type into consideration
-                    // for kanji as it could go multpile ways
-                    switch (word.responseType)
-                    {
-                        case InputType.KeyHiraganaWithRomaji:
-                        case InputType.KeyHiragana:
-                        case InputType.WritingHiragana:
-                            populateCharList(chars, word.hiragana);
-                            break;
-
-                        case InputType.WritingKanji:
-                        case InputType.Meaning:
-                            populateCharList(chars, word.kanji);
-                            break;
-                    }
-                    break;
-                // hiragana/katana will always only have their own char type
-                case CharacterType.hiragana:
-                    populateCharList(chars, word.hiragana);
-                    break;
-
-                case CharacterType.katakana:
-                    populateCharList(chars, word.katakana);
-                    break;
-            }
-            word.chars = chars.ToArray();
-        }
-    }
-
     public Sentence GetPromptById(int id)
     {
         if (prompts == null || prompts.sentences.Count == 0) return null;
@@ -242,9 +147,11 @@ public class Database
                     kanji.Add(character);
                     break;
                 case CharacterType.hiragana:
-                    hiragana.Add(character);
+                    //HACK: need to control what goes in the database, or filtering betterc
+                    if(CharacterConversionUtils.UnmodifiedHiragana.Contains(character.literal)) hiragana.Add(character);
                     break;
                 case CharacterType.katakana:
+                    //if(CharacterConversionUtils.UnmodifiedHiragana.Contains(CharacterConversionUtils.KatakanaToHiragana(character.literal))) katakana.Add(character);
                     katakana.Add(character);
                     break;
             }
@@ -297,61 +204,6 @@ public class Database
         return fillerMeanings.ToList();
     }
 
-    // Returns a prompt that matches the prompt type
-    // TODO: Need to specify exactly what state a prompt is in
-    // before returning it
-    public Sentence GetPrompt(PromptConfiguration promptConfig)
-    {
-        Sentence prompt = new Sentence();
-        switch (promptConfig.promptType)
-        {
-            case RequestType.SingleKana:
-                // get a random kanji from the kanji list
-                char selectedKana = Utils.unmodifiedHiragana.ToList().PickRandom();
-                prompt.words.Add(new Word()
-                {
-                    type = CharacterType.hiragana,
-                    hiragana = selectedKana.ToString(),
-                });
-                break;
-
-            case RequestType.SingleKanji:
-                // get a random kanji from the kanji list
-                Character selectedKanji = characters.Values.Where(k => k.category == "required kanji").ToList().PickRandom();
-                prompt.words.Add(new Word()
-                {
-                    type = CharacterType.kanji,
-                    kanji = selectedKanji.literal.ToString(),
-                    meanings = selectedKanji.meanings.ToArray(),
-                });
-                break;
-
-            case RequestType.SingleWord:
-                if (promptConfig.useSpecificWord)
-                {
-                    prompt = prompts.sentences.Where(p => p.words.Count == 1).First(w => w.words[0].hiragana == promptConfig.word);
-                }
-                else
-                {
-                    prompt = prompts.sentences.Where(p => p.words.Count == 1).ToList().PickRandom();
-                }
-                break;
-
-            case RequestType.Sentence:
-            case RequestType.Mixed:
-            default:
-                break;
-        }
-
-        // set chars
-        foreach (var word in prompt.words)
-        {
-            word.responseType = promptConfig.responseType;
-            word.displayType = promptConfig.displayType;
-        }
-        SetCharsForPrompt(ref prompt);
-        return prompt;
-    }
 
     public List<string> GetRandomFillerMeanings(int noOfStrings, string except)
     {
@@ -392,60 +244,12 @@ public class Database
         return characters.Values.Where(filter).ToList();
     }
 
-    #region Debug
-
-    private int pIdx = -1;
-
-    // TODO: debug function
-    private Sentence GetNextPrompt()
+    [System.Serializable]
+    public class PromptList
     {
-        ++pIdx;
-        var prompt = GetPromptById(pIdx);
-        foreach (var word in prompt.words)
-        {
-            GetTestSetForWordType(
-                word.type,
-                out DisplayType displayType,
-                out InputType responseType);
-            word.responseType = responseType;
-            word.displayType = displayType;
-        }
-        SetCharsForPrompt(ref prompt);
-        return prompt;
+        public List<Sentence> sentences;
     }
 
-    // TODO: debug function, manually written based on what you want to test
-    private void GetTestSetForWordType(
-    CharacterType promptType,
-        out DisplayType displayType,
-        out InputType responseType)
-    {
-        displayType = DisplayType.Kanji;
-        responseType = InputType.KeyHiragana;
-
-        switch (promptType)
-        {
-            case CharacterType.kanji:
-                displayType = DisplayType.Kanji;
-                responseType = InputType.Meaning;
-                break;
-
-            case CharacterType.hiragana:
-                displayType = DisplayType.Hiragana;
-                responseType = InputType.KeyHiraganaWithRomaji;
-                break;
-
-            case CharacterType.katakana:
-                displayType = DisplayType.Katana;
-                responseType = InputType.KeyKatakanaWithRomaji;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    #endregion
 }
 
 }

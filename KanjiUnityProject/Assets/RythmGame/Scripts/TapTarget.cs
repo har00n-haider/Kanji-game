@@ -84,7 +84,7 @@ public class TapTarget : MonoBehaviour
     {
     }
 
-    public void Init(Type type, Character prompt, TargetSpawner.HitGroup group, BeatManager.Beat beat)  
+    public void Init(Type type, Character character, TargetSpawner.HitGroup group, BeatManager.Beat beat)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;
@@ -97,8 +97,8 @@ public class TapTarget : MonoBehaviour
         this.beat = beat;
 
         // prompt stuff
-        textMesh.text = prompt.GetDisplaySstring();
-        this.prompt = prompt;
+        textMesh.text = character.GetDisplayString();
+        this.prompt = character;
         this.type = type;
         this.group = group;
         if(type == Type.Question)

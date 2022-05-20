@@ -8,6 +8,19 @@ using UnityEngine;
 namespace Manabu.Core
 {
 
+/// <summary>
+/// What is displayed in the prompt.
+/// Limited by word type
+/// </summary>
+public enum DisplayType
+{
+    Default,
+    Kanji,
+    Romaji,
+    Hiragana,
+    Katakana,
+}
+
 public class DrawData
 {
     public float width;
@@ -53,44 +66,13 @@ public enum CharacterType
 }
 
 /// <summary>
-/// What is displayed in the prompt.
-/// Limited by word type
-/// </summary>
-public enum DisplayType
-{
-    Kanji,
-    Romaji,
-    Hiragana,
-    Katana,
-    Meaning,
-}
-
-/// <summary>
-/// What the input needs to supply (Call/Response type).
-/// Limited by word type
-/// </summary>
-public enum InputType
-{
-    KeyHiragana,
-    KeyKatakana,
-    KeyHiraganaWithRomaji,
-    KeyKatakanaWithRomaji,
-    WritingHiragana,
-    WritingKatakana,
-    WritingKanji,
-    Meaning,
-}
-
-/// <summary>
 /// Holds all data relevant to a given japanese charater. This is 
 /// provided by the KanjiDatabase functions
 /// </summary>
 public class Character
 {
-    /// <summary>
-    /// Determines the way the word will be displayed on a prompt
-    /// </summary>
-    public DisplayType displayType;
+    private DisplayType displayType;
+    public DisplayType DisplayType { get { return displayType; } set { if (CanSetDisplayType(value)) displayType = value; } } 
     public CharacterType type; 
     public char literal = ' ';
     public string code = string.Empty;
@@ -108,23 +90,77 @@ public class Character
         return literal == other.literal;
     }
 
-    public string GetDisplaySstring()
+    private bool CanSetDisplayType(DisplayType displayType)
+    {
+        switch (displayType)
+        {
+            case DisplayType.Kanji:
+                if(type == CharacterType.kanji)
+                {
+                    return true;
+                } 
+                break;
+            case DisplayType.Hiragana:
+            case DisplayType.Katakana:
+            case DisplayType.Romaji:
+                switch (type)
+                {
+                    case CharacterType.hiragana:
+                    case CharacterType.katakana:
+                        return true;
+                }
+                break;
+            case DisplayType.Default:
+                return true;
+        }
+        return false;
+    }
+
+    public string GetDisplayString()
     {
         string value = string.Empty;
         switch (displayType)
         {
             case DisplayType.Kanji:
+                if(type == CharacterType.kanji) value = literal.ToString();
+                break;
             case DisplayType.Hiragana:
-            case DisplayType.Katana:
-                value = literal.ToString();
+                switch (type)
+                {
+                    case CharacterType.hiragana:
+                        value = literal.ToString();
+                        break;
+                    case CharacterType.katakana:
+                        value = CharacterConversionUtils.KatakanaToHiragana(literal).ToString();
+                        break;;
+                }
+                break;
+            case DisplayType.Katakana:
+                switch (type)
+                {
+                    case CharacterType.hiragana:
+                        value = CharacterConversionUtils.HiraganaToKatakana(literal).ToString();
+                        break;
+                    case CharacterType.katakana:
+                        value = literal.ToString();
+                        break;;
+                }
                 break;
             case DisplayType.Romaji:
-                value = WanaKanaSharp.WanaKana.ToRomaji(literal.ToString());
+                switch (type)
+                {
+                    case CharacterType.hiragana:
+                    case CharacterType.katakana:
+                        value = CharacterConversionUtils.JapaneseToRomaji(literal.ToString());
+                        break;
+                }
                 break;
-            case DisplayType.Meaning:
-                value = meanings.Count > 0 ? meanings[0] : string.Empty;
-                break;
+            case DisplayType.Default:
+                value = literal.ToString();
+                break;       
         }
+
+        Debug.Log("| type: " + type + "| display type: " + displayType + "| literal:" + literal + "| value: " + value);
         return value;
     }
 }
@@ -133,28 +169,11 @@ public class Character
 public class Word
 {
 
-    /// <summary>
-    /// Classification of the word
-    /// </summary>
-    public CharacterType type;
-
     public string kanji = null;
     public string[] meanings = null;
     public string romaji = null;
     public string hiragana = null;
     public string katakana = null;
-
-    /// <summary>
-    /// Type of response required to complete the word
-    /// </summary>
-    [System.NonSerialized]
-    public InputType responseType;
-
-    /// <summary>
-    /// Determines the way the word will be displayed on a prompt
-    /// </summary>
-    [System.NonSerialized]
-    public DisplayType displayType;
 
     /// <summary>
     /// These are iterated through by the input to complete a word. Not used for display.
@@ -168,7 +187,6 @@ public class Word
     [System.NonSerialized]
     private int cIdx = 0;
 
-    private bool meaningCompleted = false;
     private static readonly char fillerChar = '☐';
 
     public override string ToString()
@@ -184,29 +202,8 @@ public class Word
     public void Reset()
     {
         cIdx = 0;
-        meaningCompleted = false;
     }
 
-    public bool Completed()
-    {
-        switch (responseType)
-        {
-            case InputType.KeyHiragana:
-            case InputType.KeyKatakana:
-            case InputType.KeyHiraganaWithRomaji:
-            case InputType.KeyKatakanaWithRomaji:
-            case InputType.WritingHiragana:
-            case InputType.WritingKatakana:
-            case InputType.WritingKanji:
-                return cIdx == chars.Length;
-
-            case InputType.Meaning:
-                return meaningCompleted;
-
-            default:
-                return false;
-        }
-    }
 
     #region Meaning tracking
 
@@ -217,8 +214,7 @@ public class Word
 
     public bool CheckMeaning(string input)
     {
-        meaningCompleted = input == GetMeaning();
-        return meaningCompleted;
+        return input == GetMeaning();
     }
 
     #endregion Meaning tracking
@@ -305,12 +301,6 @@ public class Sentence
     }
 }
 
-[System.Serializable]
-public class PromptList
-{
-    public List<Sentence> sentences;
-}
-
 /// <summary>
 /// Used to request prompts from the database
 /// </summary>
@@ -330,10 +320,6 @@ public class PromptConfiguration
 
     [HideInInspector]
     public int wordCount;
-
-    public InputType responseType;
-
-    public DisplayType displayType;
 
     [HideInInspector]
     public string word;

@@ -8,6 +8,7 @@ public class TargetSpawner : MonoBehaviour
 
     public class HitGroup
     {
+        public bool kanaToRomaji = false;
         public BeatManager.Beat groupBeat;
         public TapTarget question = null;
         public List<TapTarget> answers = new List<TapTarget>();
@@ -29,6 +30,7 @@ public class TargetSpawner : MonoBehaviour
 
     private Dictionary<Character, GameObject> promptToGameObjectMap = new Dictionary<Character, GameObject>();
 
+    private bool tapTargetQuestionToggle = false;
 
     // vectors for answers
     readonly static float distanceFromQuestion = 4.2f;
@@ -72,8 +74,10 @@ public class TargetSpawner : MonoBehaviour
             // make a new group some distance from this one
             HitGroup group = new HitGroup()
             {
-                groupBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, refBeat)
+                groupBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, refBeat),
+                kanaToRomaji = tapTargetQuestionToggle
             };
+            tapTargetQuestionToggle = !tapTargetQuestionToggle;
             groups.Add(group);
         }
         
@@ -93,6 +97,7 @@ public class TargetSpawner : MonoBehaviour
     {
         // question
         Character questionChar = GameManager.Instance.Database.GetRandomCharacter();
+        questionChar.DisplayType = group.kanaToRomaji? DisplayType.Hiragana : DisplayType.Romaji;
         group.question = SpawnOne(
             GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
             group.groupBeat,
@@ -116,16 +121,15 @@ public class TargetSpawner : MonoBehaviour
             if (i == 1) position = group.question.transform.position + left;
             if (i == 2) position = group.question.transform.position + right;
             Character p;
-            if(i == correctAnswer)
+            if (i == correctAnswer)
             {
-               p = Utils.Clone<Character>(questionChar);
-               p.displayType = DisplayType.Romaji;
+               p = Utils.Clone(questionChar);
             }
             else
             {
                 p = GameManager.Instance.Database.GetRandomCharacter(questionChar);
-                p.displayType = DisplayType.Romaji;
             }
+            p.DisplayType = !group.kanaToRomaji? DisplayType.Hiragana : DisplayType.Romaji;
             group.answers.Add(SpawnOne(position, ansBeat, p, TapTarget.Type.Answer, group));
         }
     
