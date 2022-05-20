@@ -1146,7 +1146,7 @@ GameObject:
   - component: {fileID: 1372679957}
   - component: {fileID: 1372679956}
   m_Layer: 0
-  m_Name: HitTargetSpawner
+  m_Name: TargetSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

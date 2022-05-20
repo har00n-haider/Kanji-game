@@ -95,17 +95,17 @@ public class GameManager : MonoBehaviour
                 // Check the hit detect is a target - just use Unity tags for this, simple.
                 bool isTarget = hit.transform.gameObject.CompareTag("HitTarget");
                 if (!isTarget) return; 
-                HitTarget ht = hit.transform.parent.gameObject.GetComponent<HitTarget>();
+                TapTarget ht = hit.transform.parent.gameObject.GetComponent<TapTarget>();
                 if (ht != null)
                 {
                     bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp);
                     if (onBeat)
                     {
-                        ht.HandleBeatResult(HitTarget.Result.Hit);
+                        ht.HandleBeatResult(TapTarget.Result.Hit);
                     }
                     else
                     {
-                        ht.HandleBeatResult(HitTarget.Result.Miss);
+                        ht.HandleBeatResult(TapTarget.Result.Miss);
                     }
                     return;
                 }

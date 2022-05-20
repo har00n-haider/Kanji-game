@@ -5,7 +5,7 @@ using TMPro;
 using System.Collections.Generic;
 using Manabu.Core;
 
-public class HitTarget : MonoBehaviour
+public class TapTarget : MonoBehaviour
 {
     public enum Type
     {
@@ -62,8 +62,6 @@ public class HitTarget : MonoBehaviour
     [SerializeField]
     private float radiusBegin;
     private float radiusEnd;
-    [SerializeField]
-    private float radiusEndOffset;
     private float beatCircleLineWidth = 0.1f;
 
     // model
@@ -77,7 +75,7 @@ public class HitTarget : MonoBehaviour
     // prompt stuff
     public Character prompt;
     public Type type;
-    public HitTargetSpawner.HitGroup group;
+    public TargetSpawner.HitGroup group;
     public bool selected = false;
 
 
@@ -86,7 +84,7 @@ public class HitTarget : MonoBehaviour
     {
     }
 
-    public void Init(Type type, Character prompt, HitTargetSpawner.HitGroup group, BeatManager.Beat beat)  
+    public void Init(Type type, Character prompt, TargetSpawner.HitGroup group, BeatManager.Beat beat)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;

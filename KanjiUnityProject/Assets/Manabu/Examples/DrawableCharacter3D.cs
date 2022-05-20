@@ -10,7 +10,7 @@ namespace Manabu.Examples
 {
 
 /// <summary>
-/// Example of how to use the charatcter data from from the database to to create a 
+/// Example of how to use the character data from from Manabu to create a 
 /// drawable character on the screen
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]

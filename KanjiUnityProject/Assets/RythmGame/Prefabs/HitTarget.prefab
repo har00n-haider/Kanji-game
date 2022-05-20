@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6093515144543164089}
-  - component: {fileID: 750478167555961159}
   - component: {fileID: 1317498361565220375}
+  - component: {fileID: 737840021028773686}
   m_Layer: 0
   m_Name: HitTarget
   m_TagString: HitTarget
@@ -36,34 +36,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &750478167555961159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 750478167555961153}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0813b7c989d24ed468f6dc4d49c65c4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  beatWindowColor: {r: 0.8396226, g: 0.14671245, b: 0.0052805413, a: 1}
-  questionColor: {r: 0.021900272, g: 0.735849, b: 0, a: 1}
-  answerColor: {r: 0.32004267, g: 0.38053855, b: 0.8773585, a: 1}
-  selectedColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
-  textMesh: {fileID: 8562822277031563684}
-  hangAboutTime: 1
-  succesEffect: {fileID: 8667159329183705162, guid: 76d87632781e17e4ca031aa472a5610f, type: 3}
-  failEffect: {fileID: 8667159329183705162, guid: f4adce8bf0c8a334a8c4809b9bff5e0e, type: 3}
-  selectedEffect: {fileID: 8667159329183705162, guid: 5a5f2cf4e3d98994da7dc8b5df6d8458, type: 3}
-  beatCircleLine: {fileID: 2814991159223869109}
-  radiusBegin: 5
-  radiusEndOffset: -0.02
-  modelCollider: {fileID: 6882461310028346358}
-  model: {fileID: 3594361684890509052}
-  type: 0
-  selected: 0
 --- !u!23 &1317498361565220375
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -106,6 +78,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &737840021028773686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750478167555961153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7da6629cf54ea2448fac11d91f9022b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beatWindowColor: {r: 0.8862745, g: 0, b: 0, a: 1}
+  questionColor: {r: 0.02830354, g: 0.745283, b: 0.025780143, a: 1}
+  answerColor: {r: 0.81566495, g: 0.056366343, b: 0.8962264, a: 1}
+  selectedColor: {r: 0.1851192, g: 0.735849, b: 0.6957667, a: 1}
+  textMesh: {fileID: 8562822277031563684}
+  hangAboutTime: 0.2
+  succesEffect: {fileID: 8667159329183705162, guid: 76d87632781e17e4ca031aa472a5610f, type: 3}
+  failEffect: {fileID: 8667159329183705162, guid: f4adce8bf0c8a334a8c4809b9bff5e0e, type: 3}
+  selectedEffect: {fileID: 8667159329183705162, guid: 5a5f2cf4e3d98994da7dc8b5df6d8458, type: 3}
+  beatCircleLine: {fileID: 2814991159223869109}
+  radiusBegin: 5
+  modelCollider: {fileID: 6882461310028346358}
+  model: {fileID: 3594361684890509052}
+  type: 0
+  selected: 0
 --- !u!1 &3594361684890509052
 GameObject:
   m_ObjectHideFlags: 0

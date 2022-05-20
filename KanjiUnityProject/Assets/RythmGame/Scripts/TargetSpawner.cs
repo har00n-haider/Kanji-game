@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Manabu.Core;
 
-public class HitTargetSpawner : MonoBehaviour
+public class TargetSpawner : MonoBehaviour
 {
 
     public class HitGroup
     {
         public BeatManager.Beat groupBeat;
-        public HitTarget question = null;
-        public List<HitTarget> answers = new List<HitTarget>();
+        public TapTarget question = null;
+        public List<TapTarget> answers = new List<TapTarget>();
     }
 
     [SerializeField]
@@ -97,11 +97,11 @@ public class HitTargetSpawner : MonoBehaviour
             GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
             group.groupBeat,
             questionChar,
-            HitTarget.Type.Question,
+            TapTarget.Type.Question,
             group);
     }
 
-    private void SpawnAnwsers(HitTarget questionTarget)
+    private void SpawnAnwsers(TapTarget questionTarget)
     {
         Character questionChar = questionTarget.prompt;
         HitGroup group = questionTarget.group;
@@ -126,23 +126,23 @@ public class HitTargetSpawner : MonoBehaviour
                 p = GameManager.Instance.Database.GetRandomCharacter(questionChar);
                 p.displayType = DisplayType.Romaji;
             }
-            group.answers.Add(SpawnOne(position, ansBeat, p, HitTarget.Type.Answer, group));
+            group.answers.Add(SpawnOne(position, ansBeat, p, TapTarget.Type.Answer, group));
         }
     
     }
 
-    private HitTarget SpawnOne(
+    private TapTarget SpawnOne(
         Vector3 position, 
         BeatManager.Beat beat, 
         Character Character, 
-        HitTarget.Type type, 
+        TapTarget.Type type, 
         HitGroup group) 
     {
-        HitTarget ht = Instantiate(
+        TapTarget ht = Instantiate(
             hitTargetPrefab,
             position,
             Quaternion.identity,
-            transform).GetComponent<HitTarget>();
+            transform).GetComponent<TapTarget>();
         ht.Init(type, Character, group, beat);
         return ht;
     }

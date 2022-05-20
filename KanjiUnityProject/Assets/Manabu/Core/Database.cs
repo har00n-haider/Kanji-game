@@ -6,8 +6,7 @@ using System.Linq;
 using Manabu.Core;
 using System;
 
-using UnityEngine; // only for json loading
-
+using UnityEngine; // only for json loading, otherwise should not be used
 
 using Random = UnityEngine.Random;
 
@@ -15,10 +14,9 @@ using Random = UnityEngine.Random;
 namespace Manabu.Core
 {     
 
-// Point of access to all the kanji that will be used
-// in the game. Should be the only thing that deals with
-// pure data (i.e. no game unity/gameobject stuff) relating
-// to kanji
+/// <summary>
+/// Point of access to all Japanese character/word data. 
+/// </summary>
 public class Database
 {
     private Dictionary<string, CharacterData> kanjis = new Dictionary<string, CharacterData>(); // hex code string to kanji data map
@@ -76,23 +74,23 @@ public class Database
 
         switch (promptType)
         {
-            //case CharacterType.kanji:
-            //    displayType = Utils.GetRandomPrompt();
-            //    responseType = Utils.kanjiInputs.GetRandomInput();
-            //    break;
+            case CharacterType.kanji:
+                displayType = Utils.kanjiPrompts.GetRandomPrompt();
+                responseType = Utils.kanjiInputs.GetRandomInput();
+                break;
 
-            //case CharacterType.hiragana:
-            //    displayType =  Utils.GetRandomPrompt();
-            //    responseType = Utils.hiraganaInputs.GetRandomInput();
-            //    break;
+            case CharacterType.hiragana:
+                displayType = Utils.hiraganaPrompts.GetRandomPrompt();
+                responseType = Utils.hiraganaInputs.GetRandomInput();
+                break;
 
-            //case CharacterType.katakana:
-            //    displayType =  Utils.katakanaInputs.GetRandomPrompt();
-            //    responseType = Utils.katakanaInputs.GetRandomInput();
-            //    break;
+            case CharacterType.katakana:
+                displayType = Utils.katakanaPrompts.GetRandomPrompt();
+                responseType = Utils.katakanaInputs.GetRandomInput();
+                break;
 
             default:
-                break;
+            break;
         }
     }
 
