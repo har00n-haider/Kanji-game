@@ -500,6 +500,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &679622399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 679622400}
+  m_Layer: 0
+  m_Name: DrawTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &679622400
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679622399}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.661671, y: 9.764231, z: -6.6343384}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,7 +1175,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1372679957}
-  - component: {fileID: 1372679956}
+  - component: {fileID: 1372679958}
   m_Layer: 0
   m_Name: TargetSpawner
   m_TagString: Untagged
@@ -1152,21 +1183,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1372679956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1372679955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a273abb1a2b86b44a46ae58f9b152c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MaxNoOfGroups: 4
-  spawnVolume: {fileID: 1590424059}
-  hitTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
 --- !u!4 &1372679957
 Transform:
   m_ObjectHideFlags: 0
@@ -1182,6 +1198,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1372679958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372679955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bd1c03ef63c12049a0ffe9488aa0c18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxNoOfGroups: 3
+  kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
+  MaxNoOfEmptyTargets: 5
+  emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
+  spawnVolume: {fileID: 1590424059}
 --- !u!1 &1394353259
 GameObject:
   m_ObjectHideFlags: 0

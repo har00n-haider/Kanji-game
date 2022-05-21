@@ -49,12 +49,12 @@ public class AppEvents
     /// </summary>
     public static Action<GameObject> OnAnwserHit;
 
-    public static Action<TapTarget> OnSelected;
+    public static Action<ReadTarget> OnSelected;
 
 
     public static Action<GameObject> OnBeatMissed;
 
-    public static Action<TargetSpawner.HitGroup> OnGroupCleared;
+    public static Action<TargetSpawner.KanaReadingGroup> OnGroupCleared;
 
 
 

@@ -4,8 +4,9 @@ using UnityEngine.VFX;
 using TMPro;
 using System.Collections.Generic;
 using Manabu.Core;
+using RythmGame;
 
-public class TapTarget : MonoBehaviour
+public class ReadTarget : MonoBehaviour
 {
     public enum Type
     {
@@ -28,12 +29,6 @@ public class TapTarget : MonoBehaviour
     private Color answerColor;
     [SerializeField]
     private Color selectedColor;
-
-    public enum Result 
-    {
-        Miss,
-        Hit
-    }
 
     // text
     [SerializeField]
@@ -75,7 +70,7 @@ public class TapTarget : MonoBehaviour
     // prompt stuff
     public Character prompt;
     public Type type;
-    public TargetSpawner.HitGroup group;
+    public TargetSpawner.KanaReadingGroup group;
     public bool selected = false;
 
 
@@ -84,7 +79,7 @@ public class TapTarget : MonoBehaviour
     {
     }
 
-    public void Init(Type type, Character character, TargetSpawner.HitGroup group, BeatManager.Beat beat)  
+    public void Init(Type type, Character character, TargetSpawner.KanaReadingGroup group, BeatManager.Beat beat)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;

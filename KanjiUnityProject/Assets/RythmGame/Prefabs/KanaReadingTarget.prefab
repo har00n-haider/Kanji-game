@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1317498361565220375}
   - component: {fileID: 737840021028773686}
   m_Layer: 0
-  m_Name: HitTarget
+  m_Name: KanaReadingTarget
   m_TagString: HitTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

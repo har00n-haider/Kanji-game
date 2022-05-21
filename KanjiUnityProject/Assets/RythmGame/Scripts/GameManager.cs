@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using Manabu.Core;
+using RythmGame;
 
 public class GameManager : MonoBehaviour
 {
@@ -97,17 +98,17 @@ public class GameManager : MonoBehaviour
                 // Check the hit detect is a target - just use Unity tags for this, simple.
                 bool isTarget = hit.transform.gameObject.CompareTag("HitTarget");
                 if (!isTarget) return; 
-                TapTarget ht = hit.transform.parent.gameObject.GetComponent<TapTarget>();
+                ITappable ht = hit.transform.parent.gameObject.GetComponent<ITappable>();
                 if (ht != null)
                 {
                     bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp);
                     if (onBeat)
                     {
-                        ht.HandleBeatResult(TapTarget.Result.Hit);
+                        ht.HandleBeatResult(Result.Hit);
                     }
                     else
                     {
-                        ht.HandleBeatResult(TapTarget.Result.Miss);
+                        ht.HandleBeatResult(Result.Miss);
                     }
                     return;
                 }

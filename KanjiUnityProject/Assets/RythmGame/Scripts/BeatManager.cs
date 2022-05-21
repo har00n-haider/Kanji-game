@@ -114,11 +114,14 @@ public class BeatManager : MonoBehaviour
     {
         Beat b = referenceBeat == null ? beatMap[nextBeatIntIdx] : referenceBeat;
         int beatIdx = b.beatId;
-        // latch on to a the required type
-        while(b.type != type)
+        // latch on to a the required type (bar is still a beat)
+        if(type != Beat.BeatType.Beat)
         {
-            beatIdx++;
-            b = beatMap[beatIdx];
+            while(b.type != type)
+            {
+                beatIdx++;
+                b = beatMap[beatIdx];
+            }
         }
         // skip if required
         while(beatsToSkip != 0)
