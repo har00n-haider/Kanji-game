@@ -18,14 +18,15 @@ public class TargetSpawner : MonoBehaviour
         {
             public BeatManager.Beat startBeat;
             public BeatManager.Beat endBeat;
-            public List<Vector3> linePoins;
+            public int strokeId;
         }
 
-        public BeatManager.Beat groupBeat; // TODO
         public Character character;
         //public TextMeshProGUI question = null; // TODO: This will just me some text display the kana to write
         public List<Stroke> strokes;
     }
+    [SerializeField]
+    private GameObject drawTargetPrefab;
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -87,18 +88,70 @@ public class TargetSpawner : MonoBehaviour
         AppEvents.OnGroupCleared -= UpdateKanaReadingGroups;
     }
 
-
     private void Start()
     {
         spawnToBeatTimeOffset = beatManager.BeatPeriod * 1.5;
     }
 
-
     // Update is called once per frame
     void Update()
     {
-        CreateEmptyTargets();
+        //CreateEmptyTargets();
+
+        CreateDrawTargets();
     }
+
+
+
+    #region Draw targets
+
+    private bool createdOne = false;
+    private void CreateDrawTargets()
+    {
+        if(!createdOne)
+        {
+            // generate the group, with assigned beats 
+            KanaWritingGroup kanaGroup = new KanaWritingGroup();
+            var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
+            kanaGroup.strokes = new List<KanaWritingGroup.Stroke>()
+            {
+                new KanaWritingGroup.Stroke()
+                { 
+                    startBeat = startBeat,
+                    endBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, startBeat),
+                    strokeId = 0 
+                },
+                new KanaWritingGroup.Stroke()
+                { 
+                    startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, startBeat),
+                    endBeat = beatManager.GetNextBeatTimeStamp(3, BeatManager.Beat.BeatType.Beat, startBeat),
+                    strokeId = 1 
+                },
+                new KanaWritingGroup.Stroke()
+                { 
+                    startBeat = beatManager.GetNextBeatTimeStamp(4, BeatManager.Beat.BeatType.Beat, startBeat),
+                    endBeat = beatManager.GetNextBeatTimeStamp(5, BeatManager.Beat.BeatType.Beat, startBeat),
+                    strokeId = 2
+                },
+            };
+
+            // instantiate the group all at ance
+            foreach(KanaWritingGroup.Stroke s in kanaGroup.strokes)
+            {
+                DrawTarget d = Instantiate(
+                    drawTargetPrefab,
+                    GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
+                    Quaternion.identity,
+                    transform).GetComponent<DrawTarget>();
+                d.Init(s.startBeat, s.endBeat, GameManager.Instance.Database.GetRandomCharacter(), s.strokeId);
+            }
+            createdOne = true;
+        }    
+    }
+
+    #endregion
+
+    #region Empty targets
 
     private void CreateEmptyTargets()
     {
@@ -143,7 +196,7 @@ public class TargetSpawner : MonoBehaviour
         emptyTargetBeats.Remove( emptyTargetBeats.Find(et => et.beat == beat));
     }
 
-
+    #endregion
 
     #region Reading group
     private void CreateReadingGroupns()

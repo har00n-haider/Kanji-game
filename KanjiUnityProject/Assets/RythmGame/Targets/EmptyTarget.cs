@@ -48,6 +48,7 @@ public class EmptyTarget : MonoBehaviour, ITappable
     // lifetime
     Action<BeatManager.Beat> onDestroyCallback;
 
+    public event Action OnHitSuccesfully;
 
     // Start is called before the first frame update
     void Start()
@@ -87,6 +88,7 @@ public class EmptyTarget : MonoBehaviour, ITappable
         {
             case Result.Hit:
                 Instantiate(succesEffect, transform.position, Quaternion.identity);
+                OnHitSuccesfully?.Invoke();
                 break;
             case Result.Miss:
                 Instantiate(failEffect, transform.position, Quaternion.identity);

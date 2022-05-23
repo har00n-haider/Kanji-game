@@ -74,5 +74,16 @@ public class GeometryUtils
         }
     }
 
+    public static void PopulateLinePoints(ref Vector3[] points, Vector3 start, Vector3 end) 
+    {
+        int lastPntIdx = points.Length - 1;
+        Vector3 segmentVector = (end - start) / lastPntIdx;
+        for (int i = 0; i <= lastPntIdx; i++)
+        {
+            points[i] = start + segmentVector * i;
+        }
+    }
+
+
 }
 

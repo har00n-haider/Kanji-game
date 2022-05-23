@@ -54,6 +54,10 @@ public class AppEvents
 
     public static Action<GameObject> OnBeatMissed;
 
+    public static Action OnButtonPressed;
+    public static Action OnButtonReleased;
+
+
     public static Action<TargetSpawner.KanaReadingGroup> OnGroupCleared;
 
 

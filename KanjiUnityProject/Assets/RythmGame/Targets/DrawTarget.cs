@@ -4,107 +4,71 @@ using UnityEngine.VFX;
 using TMPro;
 using System.Collections.Generic;
 using Manabu.Core;
+using RythmGame;
+using System.Linq;
 
-public class DrawTarget : MonoBehaviour
+public class DrawTarget : MonoBehaviour, ITappable
 {
-    public enum Type
-    {
-        Question,
-        Answer
-    }
 
-    public enum ResultAction
-    {
-        Success,
-        Failiure,
-        Nothing
-    }
-
+    // draw line
     [SerializeField]
-    private Color beatWindowColor;
-    [SerializeField]
-    private Color questionColor;
-    [SerializeField]
-    private Color answerColor;
-    [SerializeField]
-    private Color selectedColor;
-
-    // text
-    [SerializeField]
-    private TextMeshPro textMesh;
-
-    // timing
-    [SerializeField]
-    private double hangAboutTime;
-    public double BeatTimeStamp { get { return beat.timestamp;} }
-    private double startTimeStamp = 0;
-    private BeatManager.Beat beat;
-    public BeatManager.Beat Beat { get { return beat; } }
-
-    // Effects
-    [SerializeField]
-    private GameObject succesEffect;
-    [SerializeField]
-    private GameObject failEffect;
-    [SerializeField]
-    private GameObject selectedEffect;
-
-    // beat circle
-    [SerializeField]
-    private LineRenderer beatCircleLine;
-    private Vector3[] beatCirclePoints = new Vector3[40];
-    [SerializeField]
-    private float radiusBegin;
-    private float radiusEnd;
-    private float beatCircleLineWidth = 0.1f;
-
-    // model
-    [SerializeField]
-    private CapsuleCollider modelCollider;
-    [SerializeField]
-    private GameObject model;
-    private Renderer modelRenderer;
-    private Color modelColor;
+    private LineRenderer lineRenderer;
 
     // prompt stuff
-    public Character prompt;
-    public Type type;
-    public TargetSpawner.KanaReadingGroup group;
-    public bool selected = false;
+    private Character character;
+    private int strokeNumber;
 
+
+    // sub targets
+    [SerializeField]
+    private GameObject emptyTargePrefab;
+    private EmptyTarget startTarget;
+    private EmptyTarget endTarget;
+
+    public double BeatTimeStamp => throw new System.NotImplementedException();
 
     // Start is called before the first frame update
     void Start()
     {
+        AppEvents.OnButtonReleased += InputReleased;
     }
 
-    public void Init(Type type, Character character, TargetSpawner.KanaReadingGroup group, BeatManager.Beat beat)  
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Character character, int strokeId)  
     {
-        startTimeStamp = AudioSettings.dspTime;
-        beatCircleLine.positionCount = beatCirclePoints.Length;
-        beatCircleLine.useWorldSpace = true;
-        beatCircleLine.numCapVertices = 10; 
-        beatCircleLine.endWidth = beatCircleLineWidth;  
-        beatCircleLine.startWidth = beatCircleLineWidth;
-        radiusEnd = modelCollider.radius;
 
-        this.beat = beat;
+        this.character = character;
+        // TODO: hard coded patter for now , replace with character stroke data
+        Vector3 startPoint  = new Vector3(3*strokeId,7,5);
+        Vector3 endPosition = new Vector3(3*strokeId,0,5);
+        Vector3[] linePoints = new Vector3[20];
+        GeometryUtils.PopulateLinePoints(ref linePoints, startPoint, endPosition);
+        
+        // setup the line renderer to display a line connecting them
+        // everything else is set in the component in the editor
+        lineRenderer.useWorldSpace = true;
+        lineRenderer.positionCount = linePoints.Length;
+        lineRenderer.SetPositions(linePoints);
 
-        // prompt stuff
-        textMesh.text = character.GetDisplayString();
-        this.prompt = character;
-        this.type = type;
-        this.group = group;
-        if(type == Type.Question)
-        {
-            modelColor = questionColor;
-        }
-        else
-        {
-            modelColor = answerColor;
-        }
+        // instantiate the start/end targets with their respective beats
+        startTarget = Instantiate(
+            emptyTargePrefab,
+            startPoint,
+            Quaternion.identity,
+            transform).GetComponent<EmptyTarget>();
+        startTarget.Init(startBeat, null);
+        startTarget.OnHitSuccesfully += StartLoggingInput;
+
+        endTarget = Instantiate(
+            emptyTargePrefab,
+            endPosition,
+            Quaternion.identity,
+            transform).GetComponent<EmptyTarget>();
+        endTarget.Init(endBeat, null);
+
+
+
+
     }
-
 
     void Awake()
     {
@@ -113,65 +77,26 @@ public class DrawTarget : MonoBehaviour
 
     void Update()
     {
-        bool thresholdPassed = AudioSettings.dspTime >
-            beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
-        //if (thresholdPassed) HandleBeatResult(Result.Miss);
-
-        UpdateBeatCircle();
-        UpdateColor();
     }
 
 
-    public void HandlePromptResult(ResultAction action)
+    private void OnDestroy()
     {
-        if(this == null) return;
-
-        switch (action)
-        {
-            case ResultAction.Success:
-                Instantiate(succesEffect, transform.position, Quaternion.identity);
-                break;
-            case ResultAction.Failiure:
-                Instantiate(failEffect, transform.position, Quaternion.identity);
-                break;
-            case ResultAction.Nothing:
-                break;
-        }
-        Destroy(gameObject);
+        AppEvents.OnButtonReleased -= InputReleased;
     }
 
-
-
-    private void UpdateBeatCircle() 
+    public void HandleBeatResult(Result result)
     {
-        // decrease size of the beat circle based on time elapsed
-        float t = (float) MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime) ;
-        float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
-        GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
-        for (int i = 0; i < beatCirclePoints.Length; i++)
-        {
-            beatCircleLine.SetPosition(i, beatCirclePoints[i]);
-        }
+        throw new System.NotImplementedException();
     }
 
-    private void SetModelColor(Color color)
+    private void InputReleased()
     {
-        if (modelRenderer == null) modelRenderer = model.GetComponent<Renderer>();
-        if (modelRenderer.material.color == color) return;
-        modelRenderer.material.color = color;
+    
     }
 
-    private void UpdateColor()
+    private void StartLoggingInput()
     {
-        bool onBeat = GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
-        if (onBeat )
-        {
-            SetModelColor(beatWindowColor);
-        }
-        else
-        {
-            SetModelColor(modelColor);
-        }
+    
     }
-
 }

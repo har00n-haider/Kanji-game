@@ -8,6 +8,10 @@ using UnityEngine.UI;
 using Manabu.Core;
 using RythmGame;
 
+/// <summary>
+/// - Singleton pattern
+/// - Deals with input in the game
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -89,7 +93,22 @@ public class GameManager : MonoBehaviour
 
     void CheckForHitTargetClicked()
     {
-        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+        bool buttonPressed =
+            Input.GetMouseButtonDown(0) ||
+            Input.GetKeyDown(KeyCode.Space);
+        if (buttonPressed) AppEvents.OnButtonPressed?.Invoke();
+
+        bool buttonReleased =
+            Input.GetMouseButtonUp(0) ||
+            Input.GetKeyUp(KeyCode.Space);
+        if (buttonReleased) AppEvents.OnButtonReleased?.Invoke();
+
+        // TODO: do we want to do both button down and up globally?
+        // We are doing this for draw targets aswell but it may be easier to tap targets
+        // if we are runnig the check two frames per button press? May not be a big deal tho.
+        bool runRayCastCheck = buttonPressed || buttonReleased;
+        
+        if (runRayCastCheck)
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
