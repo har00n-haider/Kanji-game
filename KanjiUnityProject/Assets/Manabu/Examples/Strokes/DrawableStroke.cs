@@ -25,15 +25,15 @@ public class DrawableStroke : MonoBehaviour
     public bool isValid { get { return completed && refPoints?.Count == kanji.config.noRefPointsInStroke; } }  
 
     // refs
-    public StrokeRenderer strokeRenderer { get; private set; }
-    private DrawableCharacter kanji;
+    public StrokeRenderer3D strokeRenderer { get; private set; }
+    private DrawableCharacter3D kanji;
 
-    public virtual void Awake()
+    public  void Awake()
     {
-        strokeRenderer = GetComponent<StrokeRenderer>();
+        strokeRenderer = GetComponent<StrokeRenderer3D>();
     }
 
-    public virtual void Init(DrawableCharacter kanji)
+    public  void Init(DrawableCharacter3D kanji)
     {
         this.kanji = kanji;
         strokeRenderer.SetupLine();

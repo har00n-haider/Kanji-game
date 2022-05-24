@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     public TextAsset databaseFile;
 
     //TODO: delete me - debug
-    public UnityEngine.UI.Extensions.UICircle circle;
+    public Image circle;
 
     [SerializeField]
     private Color BarFlickercColor;

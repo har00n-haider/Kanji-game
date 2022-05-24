@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using Manabu.Core;
-
+using System;
 
 namespace Manabu.Examples
 {
@@ -14,7 +14,7 @@ namespace Manabu.Examples
 /// drawable character on the screen
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]
-public class DrawableCharacter3D : DrawableCharacter
+public class DrawableCharacter3D : MonoBehaviour
 {
     // box resize stuff
     // used to scale the normalised kanji points to the the dims of the box
@@ -31,8 +31,28 @@ public class DrawableCharacter3D : DrawableCharacter
     [SerializeField]
     private float gridThickness;
 
-    public override void Init(Character kanjiData)
+    [SerializeField]
+    private char character;
+
+    [SerializeField]
+    private TextAsset databaseFile;
+
+    private void Start()
     {
+        Database database = new Database();
+        database.Load(databaseFile);
+        kanjiData = database.GetKanji(character);
+        Init(kanjiData);
+    }
+
+    /// <summary>
+    /// Handles the loading of a kanji from the parser
+    /// </summary>
+    /// <param name="characterData"></param>
+    /// <param name="scale"></param>
+    private void Init(Character characterData)
+    {
+
         // set up before initialising the base class (need the collider set up)
         if (boxCollider == null)
         {
@@ -46,7 +66,23 @@ public class DrawableCharacter3D : DrawableCharacter
             kanjiGrid.Init(kanjiData.drawData, boxCollider, gridThickness);
         }
 
-        base.Init(kanjiData);
+        // pull a kanji
+        bool refKanjiHidden = characterData.progress.flawlessClears >= 3;
+        for (int sIdx = 0; sIdx < characterData.drawData.strokes.Count; sIdx++)
+        {
+            // assuming we get these in order
+            strokes.Add(
+                sIdx,
+                new StrokePair()
+                {
+                    refStroke = GenerateRefStroke(characterData.drawData.strokes[sIdx], refKanjiHidden),
+                    inpStroke = GenerateInpStroke()
+                });
+        }
+        curStrokeIdx = 0;
+        this.kanjiData = characterData;
+        // start the looking for the first stroke
+        strokes[0].inpStroke.gameObject.SetActive(true);
     }
 
     private void ResizeCollider()
@@ -56,7 +92,15 @@ public class DrawableCharacter3D : DrawableCharacter
         boxCollider.center = halfSize;
     }
 
-    protected override void UpdateInput()
+    /// <summary>
+    /// The input has to be provided in normalised coordinates (0-1) in this coordinate system:
+    ///  y/\
+    ///   |
+    ///   |
+    ///    -----> x
+    /// relative to a rect in which the kanji exists
+    /// </summary>
+    private void UpdateInput()
     {
         // populate line
         bool buttonPressed = Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space); 
@@ -181,6 +225,207 @@ public class DrawableCharacter3D : DrawableCharacter
     }
 
 #endif
+
+
+    #region classes
+
+    public class StrokeResult
+    {
+        public bool pass = false;
+
+        // same order and size as the refpoints
+        public List<float?> refPointDistances = new List<float?>();
+
+        public int tightPointIdx = -1;
+    }
+
+    public class StrokePair
+    {
+        public DrawableStroke inpStroke = null;
+        public DrawableStroke refStroke = null;
+        public StrokeResult strokeResult = null;
+        public bool isValid { get { return inpStroke.isValid && refStroke.isValid; } }
+    }
+    
+    [Serializable]
+    public class DrawConfiguration
+    {
+        // configuration for strokes
+        public int noRefPointsInStroke { get; private set; } = 5;
+
+        public float compThreshTight = 0.3f;
+        public float compThreshLoose = 0.7f;
+        public float lengthBuffer = 1f;
+        public Color wrongColor;
+        public Color correctColor;
+        public Color hintColor;
+        public Color completedColor;
+        public Color drawnColor;
+        public float thickness;
+    }
+
+    #endregion classes
+
+    // current state of the kanji
+    private Dictionary<int, StrokePair> strokes = new Dictionary<int, StrokePair>();
+
+    private StrokePair curStroke { get { return strokes[curStrokeIdx]; } }
+    private int curStrokeIdx = 0;
+    public bool completed { get; private set; } = false;
+    public bool pass { get; private set; } = false;
+    public float score { get; private set; } = 0;
+
+    // kanji data
+    [SerializeField]
+    private DrawConfiguration _config;
+
+    public DrawConfiguration config { get { return _config; } private set { _config = value; } }
+    public Character kanjiData { get; private set; } = null;
+
+    // refs
+    public DrawableStroke strokePrefab;
+
+    private void Update()
+    {
+        if (completed || strokes.Count == 0) return;
+        UpdateInput();
+        UpdateEvaluation();
+    }
+
+    public void Reset()
+    {
+        // game objects
+        foreach (var strokePair in strokes.Values)
+        {
+            Destroy(strokePair.inpStroke.gameObject);
+            Destroy(strokePair.refStroke.gameObject);
+        }
+
+        // state
+        strokes.Clear();
+        curStrokeIdx = 0;
+        completed = false;
+        pass = false;
+
+        // data
+        kanjiData = null;
+    }
+
+    private void UpdateEvaluation()
+    {
+        // process current stroke
+        if (curStroke.isValid)
+        {
+            EvaluateStroke(strokes[curStrokeIdx]);
+            if (curStroke.strokeResult.pass)
+            {
+                curStroke.inpStroke.gameObject.SetActive(false);
+                curStroke.refStroke.strokeRenderer.SetVisibility(true);
+                curStroke.refStroke.strokeRenderer.lineColor = config.completedColor;
+                curStroke.refStroke.strokeRenderer.SetHightlight(config.correctColor);
+                curStroke.refStroke.strokeRenderer.Highlight();
+                MoveToNextStroke();
+            }
+            else
+            {
+                curStroke.inpStroke.gameObject.SetActive(false);
+                curStroke.refStroke.strokeRenderer.SetVisibility(true);
+                curStroke.refStroke.strokeRenderer.lineColor = config.wrongColor;
+                curStroke.refStroke.strokeRenderer.SetHightlight(config.wrongColor);
+                curStroke.refStroke.strokeRenderer.Highlight();
+                MoveToNextStroke();
+            }
+        };
+        if (completed)
+        {
+            score = strokes.Count(sp => sp.Value.strokeResult.pass) / (float)strokes.Count;
+            pass = score > 0;
+            //Debug.Log(string.Format("{0} completed, pass: {1}, score: {2:0.00}", kanjiData.literal, pass, score));
+            // update progress for the kanji
+            if (score >= 1)
+            {
+                kanjiData.progress.flawlessClears++;
+                kanjiData.progress.clears++;
+            }
+            else if (score > 0)
+            {
+                kanjiData.progress.clears++;
+            }
+            Completed();
+        }
+    }
+
+    private DrawableStroke GenerateRefStroke(Stroke rawStroke, bool isHidden = false)
+    {
+        var refStroke = Instantiate(strokePrefab, transform).GetComponent<DrawableStroke>();
+        refStroke.gameObject.name = "Reference Stroke " + rawStroke.orderNo;
+        refStroke.Init(this);
+        refStroke.strokeRenderer.SetVisibility(!isHidden);
+        refStroke.strokeRenderer.lineColor = config.hintColor;
+        refStroke.strokeRenderer.lineWidth = config.thickness;
+        refStroke.AddPoints(rawStroke.points);
+        refStroke.Complete();
+        return refStroke;
+    }
+
+    private DrawableStroke GenerateInpStroke()
+    {
+        // create the first input stroke
+        var inputStroke = Instantiate(strokePrefab, transform).GetComponent<DrawableStroke>();
+        inputStroke.gameObject.name = "Input stroke " + (curStrokeIdx + 1);
+        inputStroke.Init(this);
+        inputStroke.strokeRenderer.lineColor = config.drawnColor;
+        inputStroke.strokeRenderer.lineWidth = config.thickness;
+        inputStroke.gameObject.SetActive(false);
+        return inputStroke;
+    }
+
+    private void MoveToNextStroke()
+    {
+        if (curStrokeIdx == (strokes.Count - 1))
+        {
+            completed = true;
+            return;
+        }
+        else
+        {
+            curStrokeIdx++;
+            strokes[curStrokeIdx].inpStroke.gameObject.SetActive(true);
+        }
+    }
+
+    private void EvaluateStroke(StrokePair sp)
+    {
+        StrokeResult result = new StrokeResult();
+        // all points need to be under the loose threshold
+        result.pass = true;
+        for (int i = 0; i < sp.inpStroke.refPoints.Count; i++)
+        {
+            float distance = Mathf.Abs((
+                sp.inpStroke.refPoints[i] -
+                sp.refStroke.refPoints[i]).magnitude);
+            result.refPointDistances.Add(distance);
+            result.pass &= distance < config.compThreshLoose;
+        }
+        // at least one point needs to be under the tight thresh
+        float? tightDist = result.refPointDistances.FirstOrDefault(d => d < config.compThreshTight);
+        if (tightDist != null)
+        {
+            result.tightPointIdx = result.refPointDistances.IndexOf(tightDist);
+        }
+        result.pass &= result.tightPointIdx != -1;
+        // total length needs to be within limits
+        float minVal = sp.refStroke.length - config.lengthBuffer;
+        float maxVal = sp.refStroke.length + config.lengthBuffer;
+        result.pass &= sp.inpStroke.length > minVal && sp.inpStroke.length < maxVal;
+        sp.strokeResult = result;
+    }
+
+
+    private  void Completed()
+    {
+    }
+
 }
 
 }
