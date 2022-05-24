@@ -6,7 +6,7 @@ using Manabu.Core;
 namespace Manabu.Examples
 {
 
-public class Grid3D : MonoBehaviour
+public class CharacterGrid : MonoBehaviour
 {
     public LineRenderer gridLinePrefab;
     float gridThickness = 0f;
@@ -22,10 +22,10 @@ public class Grid3D : MonoBehaviour
 
     }
 
-    public void Init(DrawData parsedKanji, BoxCollider box, float gridThickness)
+    public void Init(DrawData charData, BoxCollider box, float gridThickness)
     {
         this.gridThickness = gridThickness;
-        GenerateGrid(parsedKanji, box.size);
+        GenerateGrid(charData, box.size);
     }
 
     // origin assumed at 0,0,0

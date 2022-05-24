@@ -10,15 +10,15 @@ namespace Manabu.Examples
 {
 
 [RequireComponent(typeof(LineRenderer))]
-public class StrokeRenderer3D : MonoBehaviour
+public class StrokeRenderer : MonoBehaviour
 {
     private LineRenderer line;
-    private DrawableCharacter3D kanji3D;
+    private DrawableCharacter kanji3D;
 
     public  void SetupLine()
     {
         // hierarchy dependant
-        kanji3D = GetComponentInParent<DrawableCharacter3D>();
+        kanji3D = GetComponentInParent<DrawableCharacter>();
         line = GetComponent<LineRenderer>();
         line.useWorldSpace = false;
         line.material = lineMaterial;

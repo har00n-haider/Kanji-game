@@ -11,10 +11,9 @@ namespace Manabu.Examples
 /// Holds the data relevant to a kanji stroke. Uses 2D coordinates.
 /// Designed to be used directly from the Kanji class.
 /// 
-/// strokeRenderer should be set up in the prefab.
-/// 
 /// All the poinst should be normalised to a 0-1 range.
 /// </summary>
+[RequireComponent(typeof(StrokeRenderer))]
 public class DrawableStroke : MonoBehaviour
 {
     // stats/data for the stroke
@@ -25,15 +24,15 @@ public class DrawableStroke : MonoBehaviour
     public bool isValid { get { return completed && refPoints?.Count == kanji.config.noRefPointsInStroke; } }  
 
     // refs
-    public StrokeRenderer3D strokeRenderer { get; private set; }
-    private DrawableCharacter3D kanji;
+    public StrokeRenderer strokeRenderer { get; private set; }
+    private DrawableCharacter kanji;
 
     public  void Awake()
     {
-        strokeRenderer = GetComponent<StrokeRenderer3D>();
+        strokeRenderer = GetComponent<StrokeRenderer>();
     }
 
-    public  void Init(DrawableCharacter3D kanji)
+    public  void Init(DrawableCharacter kanji)
     {
         this.kanji = kanji;
         strokeRenderer.SetupLine();

@@ -83,7 +83,7 @@ public class Database
         return prompt;
     }
 
-    public Character GetKanji(char kanji)
+    public Character GetCharacter(char kanji)
     {
         Character result = characters.Values.FirstOrDefault(k => k.literal.ToString() == kanji.ToString());;
         return result;

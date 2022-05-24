@@ -14,7 +14,7 @@ namespace Manabu.Examples
 /// drawable character on the screen
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]
-public class DrawableCharacter3D : MonoBehaviour
+public class DrawableCharacter : MonoBehaviour
 {
     // box resize stuff
     // used to scale the normalised kanji points to the the dims of the box
@@ -27,7 +27,7 @@ public class DrawableCharacter3D : MonoBehaviour
     public float kanjiZBoxRelativepos = 0.5f;
 
     // grid
-    private Grid3D kanjiGrid = null;
+    private CharacterGrid charGrid = null;
     [SerializeField]
     private float gridThickness;
 
@@ -41,8 +41,8 @@ public class DrawableCharacter3D : MonoBehaviour
     {
         Database database = new Database();
         database.Load(databaseFile);
-        kanjiData = database.GetKanji(character);
-        Init(kanjiData);
+        charData = database.GetCharacter(character);
+        Init(charData);
     }
 
     /// <summary>
@@ -60,10 +60,10 @@ public class DrawableCharacter3D : MonoBehaviour
             ResizeCollider();
         }
         // setup the grid
-        if (kanjiGrid == null)
+        if (charGrid == null)
         {
-            kanjiGrid = GetComponentInChildren<Grid3D>();
-            kanjiGrid.Init(kanjiData.drawData, boxCollider, gridThickness);
+            charGrid = GetComponentInChildren<CharacterGrid>();
+            charGrid.Init(charData.drawData, boxCollider, gridThickness);
         }
 
         // pull a kanji
@@ -80,7 +80,7 @@ public class DrawableCharacter3D : MonoBehaviour
                 });
         }
         curStrokeIdx = 0;
-        this.kanjiData = characterData;
+        this.charData = characterData;
         // start the looking for the first stroke
         strokes[0].inpStroke.gameObject.SetActive(true);
     }
@@ -280,7 +280,7 @@ public class DrawableCharacter3D : MonoBehaviour
     private DrawConfiguration _config;
 
     public DrawConfiguration config { get { return _config; } private set { _config = value; } }
-    public Character kanjiData { get; private set; } = null;
+    public Character charData { get; private set; } = null;
 
     // refs
     public DrawableStroke strokePrefab;
@@ -308,7 +308,7 @@ public class DrawableCharacter3D : MonoBehaviour
         pass = false;
 
         // data
-        kanjiData = null;
+        charData = null;
     }
 
     private void UpdateEvaluation()
@@ -344,14 +344,13 @@ public class DrawableCharacter3D : MonoBehaviour
             // update progress for the kanji
             if (score >= 1)
             {
-                kanjiData.progress.flawlessClears++;
-                kanjiData.progress.clears++;
+                charData.progress.flawlessClears++;
+                charData.progress.clears++;
             }
             else if (score > 0)
             {
-                kanjiData.progress.clears++;
+                charData.progress.clears++;
             }
-            Completed();
         }
     }
 
@@ -419,11 +418,6 @@ public class DrawableCharacter3D : MonoBehaviour
         float maxVal = sp.refStroke.length + config.lengthBuffer;
         result.pass &= sp.inpStroke.length > minVal && sp.inpStroke.length < maxVal;
         sp.strokeResult = result;
-    }
-
-
-    private  void Completed()
-    {
     }
 
 }
