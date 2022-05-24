@@ -151,7 +151,7 @@ public class Character
                 {
                     case CharacterType.hiragana:
                     case CharacterType.katakana:
-                        value = CharacterConversionUtils.JapaneseToRomaji(literal.ToString());
+                        value = CharacterConversionUtils.KanaToRomaji(literal.ToString());
                         break;
                 }
                 break;

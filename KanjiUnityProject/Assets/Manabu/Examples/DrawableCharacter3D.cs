@@ -59,16 +59,19 @@ public class DrawableCharacter3D : DrawableCharacter
     protected override void UpdateInput()
     {
         // populate line
-        if (Input.GetMouseButton(0))
+        bool buttonPressed = Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space); 
+        if (buttonPressed)
         {
             // convert mouse position to a point on the kanji plane 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (boxCollider.Raycast(ray, out RaycastHit hitInfo, 10000)) 
             {
+
                 bool hit = GetPlane().Raycast(ray, out float enter);
                 if (hit)
                 {
+                    Debug.Log("ray hit plane");
                     // normalize the input points for correct comparison with ref stroke
                     Vector3 worldPoint = ray.direction * enter + ray.origin;
                     Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
@@ -79,8 +82,10 @@ public class DrawableCharacter3D : DrawableCharacter
 
 
         }
+        
         // clear line
-        if (Input.GetMouseButtonUp(0))
+        bool buttonReleased = Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space); 
+        if (buttonReleased)
         {
             curStroke.inpStroke.Complete();
         }

@@ -387,7 +387,7 @@ public static class CharacterConversionUtils
         return KatakanaToHiraganaMap[hiragana];
     } 
 
-    public static string JapaneseToRomaji(string input)
+    public static string KanaToRomaji(string input)
     {
          return WanaKanaSharp.WanaKana.ToRomaji(input);
     }
