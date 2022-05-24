@@ -114,6 +114,7 @@ namespace Manabu.Core
             return totalDist;
         }
 
+        // TODO: use interpolation between points to get a more consistent ref points
         public static List<Vector2> GenRefPntsForPnts(List<Vector2> points, int noOfPoints = 5)
         {
             if (noOfPoints > points.Count || noOfPoints < 1) return new List<Vector2>();

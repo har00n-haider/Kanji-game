@@ -383,6 +383,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridLinePrefab: {fileID: 7454153777236063110, guid: fd0583c84d56bdc4c97e8115c4b8f278, type: 3}
+  charSizeToGridSizePercentage: 0.02
+  charSizeToGridSpacingPercentage: 5
+  color: {r: 0, g: 0, b: 0, a: 0.3254902}
 --- !u!4 &2265220183707770766
 Transform:
   m_ObjectHideFlags: 0
@@ -425,7 +428,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6460547158960747543}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -447,9 +450,6 @@ MonoBehaviour:
   boxCollider: {fileID: 0}
   boxColliderSize: {x: 1, y: 1, z: 1}
   kanjiZBoxRelativepos: 0.5
-  gridThickness: 0
-  character: 23665
-  databaseFile: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
   _config:
     compThreshTight: 0.03
     compThreshLoose: 0.07
@@ -460,6 +460,8 @@ MonoBehaviour:
     completedColor: {r: 0.24705882, g: 0.24705882, b: 0.24705882, a: 1}
     drawnColor: {r: 0.23137255, g: 0.4745098, b: 0.9529412, a: 1}
     thickness: 0.08
+  character: 23665
+  databaseFile: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
   strokePrefab: {fileID: 2179437541193669765, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
 --- !u!1 &6460547158960747543
 GameObject:

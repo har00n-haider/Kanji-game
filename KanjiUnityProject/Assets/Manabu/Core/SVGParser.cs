@@ -9,12 +9,8 @@ using System.Text.RegularExpressions;
 
 namespace Manabu.Core
 {
-
-
     public class SVGParser
     {
-
-        #region  public 
 
         /// <summary>
         /// Points are return in unity coordinate system.
@@ -53,10 +49,6 @@ namespace Manabu.Core
             return new DrawData(1, 1, 1, strokes);
         }
 
-        #endregion
-
-
-        #region  private 
 
         /**
          * Uses regex to get the SVG parametric objects from the d 
@@ -182,19 +174,6 @@ namespace Manabu.Core
             }
             return vectorPaths;
         }
-
-        #endregion
-
-
-
-
-
-
-
-
-
-
-
 
     }
 

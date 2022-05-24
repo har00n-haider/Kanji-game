@@ -51,12 +51,6 @@ namespace Manabu.Core
         public List<Vector2> points = new List<Vector2>();
     }
 
-    public class CharacterProgress
-    {
-        public int clears = 0;
-        public int flawlessClears = 0;
-    }
-
     public enum CharacterType
     {
         none = -1,
@@ -82,7 +76,6 @@ namespace Manabu.Core
         public List<string> readingsKun = new List<string>();
         public string categoryType = string.Empty;
         public string category = string.Empty;
-        public CharacterProgress progress = new CharacterProgress();
         public DrawData drawData = null;
 
         public bool Check(Character other)
