@@ -6,32 +6,32 @@ using Manabu.Core;
 namespace Manabu.Examples
 {
 
-public class CharacterGrid : MonoBehaviour
-{
-    public LineRenderer gridLinePrefab;
-    float gridThickness = 0f;
-
-    // Start is called before the first frame update
-    void Start()
+    public class CharacterGrid : MonoBehaviour
     {
-    }
+        public LineRenderer gridLinePrefab;
+        float gridThickness = 0f;
 
-    // Update is called once per frame
-    void Update()
-    {
+        // Start is called before the first frame update
+        void Start()
+        {
+        }
 
-    }
+        // Update is called once per frame
+        void Update()
+        {
 
-    public void Init(DrawData charData, BoxCollider box, float gridThickness)
-    {
-        this.gridThickness = gridThickness;
-        GenerateGrid(charData, box.size);
-    }
+        }
 
-    // origin assumed at 0,0,0
-    void GenerateGrid(DrawData parsedKanji, Vector3 size)
-    {
-        Vector3[] gridPnts = new Vector3[]{
+        public void Init(DrawData charData, BoxCollider box, float gridThickness)
+        {
+            this.gridThickness = gridThickness;
+            GenerateGrid(charData, box.size);
+        }
+
+        // origin assumed at 0,0,0
+        void GenerateGrid(DrawData parsedKanji, Vector3 size)
+        {
+            Vector3[] gridPnts = new Vector3[]{
             new Vector3( 0.0f, 0.0f, 0.5f), // 0 - bottom left
             new Vector3( 0.5f, 0.0f, 0.5f), // 1 - bottom  middle
             new Vector3( 1.0f, 0.0f, 0.5f), // 2 - bottom right
@@ -43,30 +43,30 @@ public class CharacterGrid : MonoBehaviour
             new Vector3( 1.0f, 1.0f, 0.5f), // 8 - top right
         };
 
-        for (int i = 0; i < gridPnts.Length; i++)
-        {
-            gridPnts[i].Scale(size);
+            for (int i = 0; i < gridPnts.Length; i++)
+            {
+                gridPnts[i].Scale(size);
+            }
+
+            // horizontal lines
+            SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 0, 2);
+            SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 3, 5);
+            SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 6, 8);
+
+            // vertical lines
+            SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 0, 6);
+            SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 1, 7);
+            SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 2, 8);
+
         }
 
-        // horizontal lines
-        SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 0, 2);
-        SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 3, 5);
-        SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 6, 8);
-
-        // vertical lines
-        SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 0, 6);
-        SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 1, 7);
-        SetupLineRenderer(Instantiate(gridLinePrefab, transform), gridPnts, 2, 8);
-
+        void SetupLineRenderer(LineRenderer line, Vector3[] pnts, int sIdx, int eIdx)
+        {
+            line.positionCount = 2;
+            line.SetPositions(new Vector3[] { pnts[sIdx], pnts[eIdx] });
+            line.startWidth = gridThickness;
+            line.endWidth = gridThickness;
+        }
     }
-
-    void SetupLineRenderer(LineRenderer line, Vector3[] pnts, int sIdx, int eIdx)
-    {
-        line.positionCount = 2;
-        line.SetPositions(new Vector3[] { pnts[sIdx], pnts[eIdx] });
-        line.startWidth = gridThickness;
-        line.endWidth = gridThickness;
-    }
-}
 
 }

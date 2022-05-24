@@ -8,160 +8,160 @@ using System.Collections.Generic;
 namespace Manabu.Core
 {
 
-public class CubicBezier
-{
-    public Vector2 p1 = new Vector2();
-    public Vector2 p2 = new Vector2();
-    public Vector2 p3 = new Vector2();
-    public Vector2 p4 = new Vector2();
-}
-
-public static class SVGUtils
-{
-
-    // t must be a value from 0 - 1
-    private static Vector2 GetPntOnCubicBezier(float t, CubicBezier cB)
+    public class CubicBezier
     {
-        var ti = 1 - t;
-        Vector2 term1 = cB.p1 * (ti * ti * ti);
-        Vector2 term2 = cB.p2 * (3 * ti * ti * t);
-        Vector2 term3 = cB.p3 * (3 * ti * t * t);
-        Vector2 term4 = cB.p4 * (t * t * t);
-        Vector2 r = term1 + term2 + term3 + term4;
-        return r;
+        public Vector2 p1 = new Vector2();
+        public Vector2 p2 = new Vector2();
+        public Vector2 p3 = new Vector2();
+        public Vector2 p4 = new Vector2();
     }
 
-    private static List<Vector2> GetPntsOnCubicBezier(CubicBezier cB, int noOfPnts)
+    public static class SVGUtils
     {
-        List<Vector2> pnts = new List<Vector2>();
-        for (int i = 0; i < noOfPnts; i++)
+
+        // t must be a value from 0 - 1
+        private static Vector2 GetPntOnCubicBezier(float t, CubicBezier cB)
         {
-            pnts.Add(GetPntOnCubicBezier(i / (float)noOfPnts, cB));
+            var ti = 1 - t;
+            Vector2 term1 = cB.p1 * (ti * ti * ti);
+            Vector2 term2 = cB.p2 * (3 * ti * ti * t);
+            Vector2 term3 = cB.p3 * (3 * ti * t * t);
+            Vector2 term4 = cB.p4 * (t * t * t);
+            Vector2 r = term1 + term2 + term3 + term4;
+            return r;
         }
-        return pnts;
-    }
 
-    private static float GetLengthOfCubicBezier(CubicBezier cB, float res = 0.1f)
-    {
-        float length = 0;
-        Vector2 curPnt = cB.p1;
-        for (float i = res; i <= 1; i += res)
+        private static List<Vector2> GetPntsOnCubicBezier(CubicBezier cB, int noOfPnts)
         {
-            Vector2 newPnt = GetPntOnCubicBezier(i, cB);
-            length += (newPnt - curPnt).magnitude;
-            curPnt = newPnt;
+            List<Vector2> pnts = new List<Vector2>();
+            for (int i = 0; i < noOfPnts; i++)
+            {
+                pnts.Add(GetPntOnCubicBezier(i / (float)noOfPnts, cB));
+            }
+            return pnts;
         }
-        return length;
-    }
 
-    private struct PathInfo
-    {
-        public float[] lengths;
-        public float[] offsets;
-        public float totLength;
-    };
-
-    public static List<Vector2> GetPointsForVectorStroke(List<CubicBezier> vectorPaths, int pntsInStroke)
-    {
-        // get the bezier offsets
-
-        PathInfo pthInfo = new PathInfo
+        private static float GetLengthOfCubicBezier(CubicBezier cB, float res = 0.1f)
         {
-            lengths = new float[vectorPaths.Count],
-            offsets = new float[vectorPaths.Count],
-            totLength = 0f
+            float length = 0;
+            Vector2 curPnt = cB.p1;
+            for (float i = res; i <= 1; i += res)
+            {
+                Vector2 newPnt = GetPntOnCubicBezier(i, cB);
+                length += (newPnt - curPnt).magnitude;
+                curPnt = newPnt;
+            }
+            return length;
+        }
+
+        private struct PathInfo
+        {
+            public float[] lengths;
+            public float[] offsets;
+            public float totLength;
         };
 
-        int lstIdx = vectorPaths.Count - 1;
-        for (int i = 0; i < vectorPaths.Count; i++)
+        public static List<Vector2> GetPointsForVectorStroke(List<CubicBezier> vectorPaths, int pntsInStroke)
         {
-            pthInfo.lengths[i] = GetLengthOfCubicBezier(vectorPaths[i]);
-            pthInfo.totLength += pthInfo.lengths[i];
-            if (i > 0)
-            {
-                pthInfo.offsets[i] = pthInfo.lengths[i - 1] + pthInfo.offsets[i - 1];
-            }
-        }
+            // get the bezier offsets
 
-        // get the points across the whole vector path
-        List<Vector2> pnts = new List<Vector2>();
-        int pthIdx = 0;
-        for (int i = 0; i < pntsInStroke; i++)
-        {
-            float tPth = i / (float)pntsInStroke;
-            float pPthScaled = tPth * pthInfo.totLength;
-            int nxtPthIdx = pthIdx + 1;
-            if (nxtPthIdx != vectorPaths.Count &&
-               pPthScaled > pthInfo.offsets[nxtPthIdx])
+            PathInfo pthInfo = new PathInfo
             {
-                pthIdx = nxtPthIdx;
-            }
-            float tVecPath = (pPthScaled - pthInfo.offsets[pthIdx]) / pthInfo.lengths[pthIdx];
-            tVecPath = Mathf.Clamp(tVecPath, 0, 1);
-            pnts.Add(GetPntOnCubicBezier(tVecPath, vectorPaths[pthIdx]));
-        }
-        return pnts;
-    }
+                lengths = new float[vectorPaths.Count],
+                offsets = new float[vectorPaths.Count],
+                totLength = 0f
+            };
 
-    public static float GetLengthForPnts(List<Vector2> points)
-    {
-        // get total length of line
-        float totalDist = 0;
-        for (int i = 1; i < points.Count; i++)
-        {
-            totalDist += (points[i] - points[i - 1]).magnitude;
-        }
-        return totalDist;
-    }
-
-    public static List<Vector2> GenRefPntsForPnts(List<Vector2> points, int noOfPoints = 5)
-    {
-        if (noOfPoints > points.Count || noOfPoints < 1) return new List<Vector2>();
-        if (points.Count > 3)
-        {
-            List<Vector2> refPnts = new List<Vector2>();
-            // get total length of line
-            float totalDist = GetLengthForPnts(points);
-            noOfPoints--; // add last point manually
-            float increment = totalDist / noOfPoints;
-            // add points
-            for (int j = 0; j < noOfPoints; j++)
+            int lstIdx = vectorPaths.Count - 1;
+            for (int i = 0; i < vectorPaths.Count; i++)
             {
-                float currDist = 0;
-                float targetDist = j * increment;
-                for (int i = 1; i < points.Count; i++)
+                pthInfo.lengths[i] = GetLengthOfCubicBezier(vectorPaths[i]);
+                pthInfo.totLength += pthInfo.lengths[i];
+                if (i > 0)
                 {
-                    currDist += (points[i] - points[i - 1]).magnitude;
-                    if (currDist > targetDist)
-                    {
-                        refPnts.Add(points[i]);
-                        break;
-                    }
+                    pthInfo.offsets[i] = pthInfo.lengths[i - 1] + pthInfo.offsets[i - 1];
                 }
             }
-            refPnts.Add(points[points.Count - 1]);
 
-            return refPnts;
+            // get the points across the whole vector path
+            List<Vector2> pnts = new List<Vector2>();
+            int pthIdx = 0;
+            for (int i = 0; i < pntsInStroke; i++)
+            {
+                float tPth = i / (float)pntsInStroke;
+                float pPthScaled = tPth * pthInfo.totLength;
+                int nxtPthIdx = pthIdx + 1;
+                if (nxtPthIdx != vectorPaths.Count &&
+                   pPthScaled > pthInfo.offsets[nxtPthIdx])
+                {
+                    pthIdx = nxtPthIdx;
+                }
+                float tVecPath = (pPthScaled - pthInfo.offsets[pthIdx]) / pthInfo.lengths[pthIdx];
+                tVecPath = Mathf.Clamp(tVecPath, 0, 1);
+                pnts.Add(GetPntOnCubicBezier(tVecPath, vectorPaths[pthIdx]));
+            }
+            return pnts;
         }
-        return points;
+
+        public static float GetLengthForPnts(List<Vector2> points)
+        {
+            // get total length of line
+            float totalDist = 0;
+            for (int i = 1; i < points.Count; i++)
+            {
+                totalDist += (points[i] - points[i - 1]).magnitude;
+            }
+            return totalDist;
+        }
+
+        public static List<Vector2> GenRefPntsForPnts(List<Vector2> points, int noOfPoints = 5)
+        {
+            if (noOfPoints > points.Count || noOfPoints < 1) return new List<Vector2>();
+            if (points.Count > 3)
+            {
+                List<Vector2> refPnts = new List<Vector2>();
+                // get total length of line
+                float totalDist = GetLengthForPnts(points);
+                noOfPoints--; // add last point manually
+                float increment = totalDist / noOfPoints;
+                // add points
+                for (int j = 0; j < noOfPoints; j++)
+                {
+                    float currDist = 0;
+                    float targetDist = j * increment;
+                    for (int i = 1; i < points.Count; i++)
+                    {
+                        currDist += (points[i] - points[i - 1]).magnitude;
+                        if (currDist > targetDist)
+                        {
+                            refPnts.Add(points[i]);
+                            break;
+                        }
+                    }
+                }
+                refPnts.Add(points[points.Count - 1]);
+
+                return refPnts;
+            }
+            return points;
+        }
+
+        public static List<Vector2> SVGToUnityCoords(List<Vector2> points)
+        {
+            return points.ConvertAll(p => new Vector2(p.x, -p.y));
+        }
+
+        public static List<Vector2> NormalizeAndConvertToUnity(List<Vector2> points, float height, float width)
+        {
+            return points.ConvertAll(p => new Vector2(p.x * (1 / width), 1f + (p.y * (1 / height))));
+        }
+
     }
 
-    public static List<Vector2> SVGToUnityCoords(List<Vector2> points)
+    public static class CharacterConversionUtils
     {
-        return points.ConvertAll(p => new Vector2(p.x, -p.y));
-    }
 
-    public static List<Vector2> NormalizeAndConvertToUnity(List<Vector2> points, float height, float width)
-    {
-        return points.ConvertAll(p => new Vector2(p.x * (1 / width), 1f + (p.y * (1 / height))));
-    }
-
-}
-
-public static class CharacterConversionUtils
-{
-
-    private static readonly Dictionary<char, char> KatakanaToHiraganaMap = new Dictionary<char, char>()
+        private static readonly Dictionary<char, char> KatakanaToHiraganaMap = new Dictionary<char, char>()
     {
         {'ア','あ'},
         {'イ','い'},
@@ -245,7 +245,7 @@ public static class CharacterConversionUtils
         {'ー','ー'},
     };
 
-    private static readonly Dictionary<char, char> HiraganaToKatakanaMap = new Dictionary<char, char>()
+        private static readonly Dictionary<char, char> HiraganaToKatakanaMap = new Dictionary<char, char>()
     {
         {'あ','ア'},
         {'い','イ'},
@@ -327,8 +327,8 @@ public static class CharacterConversionUtils
         {'ー','ー'},
     };
 
-    public static char[] UnmodifiedHiragana = new char[]
-    {
+        public static char[] UnmodifiedHiragana = new char[]
+        {
         'あ',
         'い',
         'う',
@@ -375,22 +375,22 @@ public static class CharacterConversionUtils
         'わ',
         'を',
         'ん',
-    };
+        };
 
-    public static char HiraganaToKatakana(char hiragana)
-    {
-        return HiraganaToKatakanaMap[hiragana];
-    } 
+        public static char HiraganaToKatakana(char hiragana)
+        {
+            return HiraganaToKatakanaMap[hiragana];
+        }
 
-    public static char KatakanaToHiragana(char hiragana)
-    {
-        return KatakanaToHiraganaMap[hiragana];
-    } 
+        public static char KatakanaToHiragana(char hiragana)
+        {
+            return KatakanaToHiraganaMap[hiragana];
+        }
 
-    public static string KanaToRomaji(string input)
-    {
-         return WanaKanaSharp.WanaKana.ToRomaji(input);
+        public static string KanaToRomaji(string input)
+        {
+            return WanaKanaSharp.WanaKana.ToRomaji(input);
+        }
+
     }
-
-}
 }
