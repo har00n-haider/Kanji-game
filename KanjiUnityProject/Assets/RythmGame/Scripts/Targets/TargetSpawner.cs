@@ -3,28 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Manabu.Core;
 
+
+// TODO: split broadly into to two activities:
+// - generating and assigning beats to data objects that hold information required to spawn interactable targets (e.g. groups below)
+// - instantiating the required targets when required
 public class TargetSpawner : MonoBehaviour
 {
     // =========================== Writing group =========================== 
-    /// <summary>
-    /// Writing test for a given kana
-    /// </summary>
-    public class KanaWritingGroup
-    {
-        /// <summary>
-        /// Will form a single stroke in a given character
-        /// </summary>
-        public class Stroke
-        {
-            public BeatManager.Beat startBeat;
-            public BeatManager.Beat endBeat;
-            public int strokeId;
-        }
-
-        public Character character;
-        //public TextMeshProGUI question = null; // TODO: This will just me some text display the kana to write
-        public List<Stroke> strokes;
-    }
     [SerializeField]
     private GameObject drawTargetPrefab;
 
@@ -108,45 +93,45 @@ public class TargetSpawner : MonoBehaviour
     private bool createdOne = false;
     private void CreateDrawTargets()
     {
-        if(!createdOne)
-        {
-            // generate the group, with assigned beats 
-            KanaWritingGroup kanaGroup = new KanaWritingGroup();
-            var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
-            kanaGroup.strokes = new List<KanaWritingGroup.Stroke>()
-            {
-                new KanaWritingGroup.Stroke()
-                { 
-                    startBeat = startBeat,
-                    endBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, startBeat),
-                    strokeId = 0 
-                },
-                new KanaWritingGroup.Stroke()
-                { 
-                    startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, startBeat),
-                    endBeat = beatManager.GetNextBeatTimeStamp(3, BeatManager.Beat.BeatType.Beat, startBeat),
-                    strokeId = 1 
-                },
-                new KanaWritingGroup.Stroke()
-                { 
-                    startBeat = beatManager.GetNextBeatTimeStamp(4, BeatManager.Beat.BeatType.Beat, startBeat),
-                    endBeat = beatManager.GetNextBeatTimeStamp(5, BeatManager.Beat.BeatType.Beat, startBeat),
-                    strokeId = 2
-                },
-            };
+        //if(!createdOne)
+        //{
+        //    // generate the group, with assigned beats 
+        //    CharacterStrokeGroup kanaGroup = new CharacterStrokeGroup();
+        //    var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
+        //    kanaGroup.strokes = new List<CharacterStrokeGroup.Stroke>()
+        //    {
+        //        new CharacterStrokeGroup.Stroke()
+        //        { 
+        //            startBeat = startBeat,
+        //            endBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, startBeat),
+        //            strokeId = 0 
+        //        },
+        //        new CharacterStrokeGroup.Stroke()
+        //        { 
+        //            startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, startBeat),
+        //            endBeat = beatManager.GetNextBeatTimeStamp(3, BeatManager.Beat.BeatType.Beat, startBeat),
+        //            strokeId = 1 
+        //        },
+        //        new CharacterStrokeGroup.Stroke()
+        //        { 
+        //            startBeat = beatManager.GetNextBeatTimeStamp(4, BeatManager.Beat.BeatType.Beat, startBeat),
+        //            endBeat = beatManager.GetNextBeatTimeStamp(5, BeatManager.Beat.BeatType.Beat, startBeat),
+        //            strokeId = 2
+        //        },
+        //    };
 
-            // instantiate the group all at ance
-            foreach(KanaWritingGroup.Stroke s in kanaGroup.strokes)
-            {
-                DrawTarget d = Instantiate(
-                    drawTargetPrefab,
-                    GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
-                    Quaternion.identity,
-                    transform).GetComponent<DrawTarget>();
-                d.Init(s.startBeat, s.endBeat, GameManager.Instance.Database.GetRandomCharacter(), s.strokeId);
-            }
-            createdOne = true;
-        }    
+        //    // instantiate the group all at ance
+        //    foreach(CharacterStrokeGroup.Stroke s in kanaGroup.strokes)
+        //    {
+        //        StrokeTarget d = Instantiate(
+        //            drawTargetPrefab,
+        //            GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
+        //            Quaternion.identity,
+        //            transform).GetComponent<StrokeTarget>();
+        //        d.Init(s.startBeat, s.endBeat, GameManager.Instance.Database.GetRandomCharacter(), s.strokeId);
+        //    }
+        //    createdOne = true;
+        //}    
     }
 
     #endregion
@@ -199,6 +184,11 @@ public class TargetSpawner : MonoBehaviour
     #endregion
 
     #region Reading group
+    
+    //TODO: switch to using events between the question and answer so that the question directly spawns answers when it 
+    // is selected. 
+
+
     private void CreateReadingGroupns()
     {
 
@@ -233,6 +223,7 @@ public class TargetSpawner : MonoBehaviour
     
     }
 
+    // TODO: move this to the group
     private void SpawnQuestion(KanaReadingGroup group) 
     {
         // question

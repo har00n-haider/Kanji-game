@@ -7,14 +7,15 @@ using Manabu.Core;
 using RythmGame;
 using System.Linq;
 
-public class DrawTarget : MonoBehaviour, ITappable
+
+public class StrokeTarget : MonoBehaviour, ITappable
 {
 
     // draw line
     [SerializeField]
-    private LineRenderer lineRenderer;
+    private LineRenderer inputLineRenderer;
 
-    // prompt stuff
+    // data
     private Character character;
     private int strokeNumber;
 
@@ -33,6 +34,7 @@ public class DrawTarget : MonoBehaviour, ITappable
         AppEvents.OnButtonReleased += InputReleased;
     }
 
+    // Takes 
     public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Character character, int strokeId)  
     {
 
@@ -45,9 +47,9 @@ public class DrawTarget : MonoBehaviour, ITappable
         
         // setup the line renderer to display a line connecting them
         // everything else is set in the component in the editor
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.positionCount = linePoints.Length;
-        lineRenderer.SetPositions(linePoints);
+        inputLineRenderer.useWorldSpace = true;
+        inputLineRenderer.positionCount = linePoints.Length;
+        inputLineRenderer.SetPositions(linePoints);
 
         // instantiate the start/end targets with their respective beats
         startTarget = Instantiate(
@@ -64,7 +66,7 @@ public class DrawTarget : MonoBehaviour, ITappable
             Quaternion.identity,
             transform).GetComponent<EmptyTarget>();
         endTarget.Init(endBeat, null);
-
+        endTarget.OnHitSuccesfully += StartLoggingInput;
 
 
 
@@ -99,4 +101,11 @@ public class DrawTarget : MonoBehaviour, ITappable
     {
     
     }
+
+    private void StopLoggingInput()
+    {
+    
+    }
+
+
 }
