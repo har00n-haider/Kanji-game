@@ -224,7 +224,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1559882585}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 10000, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -328,7 +328,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1717626450}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0.51, y: 0.92, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -336,7 +336,7 @@ Transform:
   - {fileID: 2265220183707770766}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1717626454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,22 +370,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &703735297936797578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6460547158960747543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 388020dc0e32b444ca72ec0d787a2a31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridLinePrefab: {fileID: 7454153777236063110, guid: fd0583c84d56bdc4c97e8115c4b8f278, type: 3}
-  charSizeToGridSizePercentage: 0.02
-  charSizeToGridSpacingPercentage: 5
-  color: {r: 0, g: 0, b: 0, a: 0.3254902}
 --- !u!4 &2265220183707770766
 Transform:
   m_ObjectHideFlags: 0
@@ -393,12 +377,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2265220183707770864}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.192, y: -0.383, z: 1.132}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.468, y: -0.488, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5676146731048752517}
+  m_Children: []
   m_Father: {fileID: 1717626453}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -420,21 +403,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5676146731048752517
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6460547158960747543}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2265220183707770766}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5747381576258232001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,36 +415,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d2ef40bb96c93f4aac559cf36cde406, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxCollider: {fileID: 0}
   boxColliderSize: {x: 1, y: 1, z: 1}
   kanjiZBoxRelativepos: 0.5
+  boxCollider: {fileID: 0}
   _config:
+    noRefPointsInStroke: 5
     compThreshTight: 0.03
     compThreshLoose: 0.07
-    lengthBuffer: 0.2
-    wrongColor: {r: 0.9254902, g: 0.14509805, b: 0.14509805, a: 1}
-    correctColor: {r: 0.40784314, g: 1, b: 0.37254903, a: 1}
-    hintColor: {r: 0.58431375, g: 0.58431375, b: 0.58431375, a: 1}
-    completedColor: {r: 0.24705882, g: 0.24705882, b: 0.24705882, a: 1}
-    drawnColor: {r: 0.23137255, g: 0.4745098, b: 0.9529412, a: 1}
-    thickness: 0.08
+    lengthThreshold: 2
   character: 23665
   databaseFile: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
-  strokePrefab: {fileID: 2179437541193669765, guid: 1147e62e617675e47a6aea29d9d8ba79, type: 3}
---- !u!1 &6460547158960747543
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5676146731048752517}
-  - component: {fileID: 703735297936797578}
-  m_Layer: 0
-  m_Name: Grid
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1

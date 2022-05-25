@@ -13,7 +13,7 @@ namespace Manabu.Core
     {
 
         /// <summary>
-        /// Points are return in unity coordinate system.
+        /// Points are returned in unity coordinate system, in 2D, in the range 0 - 1
         /// </summary>
         /// <param name="svgContent"></param>
         /// <param name="pntsInStroke">The number of points per stroke to use</param>
@@ -39,10 +39,9 @@ namespace Manabu.Core
                     orderNo = int.Parse(pathElem.Attributes.GetNamedItem("id").Value.Split('-')[1].Replace("s", "")),
                     points = SVGUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke),
                 };
-                rawStroke.points = SVGUtils.SVGToUnityCoords(rawStroke.points);
                 // HACK: Hardcoded for now as it doesn't seem that these values change in the
                 // source kanji svg files
-                rawStroke.points = SVGUtils.NormalizeAndConvertToUnity(rawStroke.points, 109, 109);
+                rawStroke.points = SVGUtils.NormalizeAndConvertToUnityCoords(rawStroke.points, 109, 109);
                 strokes.Add(rawStroke);
             }
 

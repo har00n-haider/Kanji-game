@@ -147,14 +147,9 @@ namespace Manabu.Core
             return points;
         }
 
-        public static List<Vector2> SVGToUnityCoords(List<Vector2> points)
+        public static List<Vector2> NormalizeAndConvertToUnityCoords(List<Vector2> points, float svgHeight, float svgWidth)
         {
-            return points.ConvertAll(p => new Vector2(p.x, -p.y));
-        }
-
-        public static List<Vector2> NormalizeAndConvertToUnity(List<Vector2> points, float height, float width)
-        {
-            return points.ConvertAll(p => new Vector2(p.x * (1 / width), 1f + (p.y * (1 / height))));
+            return points.ConvertAll(p => new Vector2(p.x * (1 / svgWidth), 1 - (p.y * (1 / svgHeight))));
         }
 
     }
