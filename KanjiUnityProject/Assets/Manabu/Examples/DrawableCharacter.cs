@@ -12,7 +12,7 @@ namespace Manabu.Examples
     /// Container for a given stroke that makes comparison between user input and reference data,
     /// based on a number of key points in 
     /// </summary>
-    public class Stroke
+    public class DrawableStroke
     {
         public class ReferenceStroke
         {
@@ -20,7 +20,7 @@ namespace Manabu.Examples
             public List<Vector2> points = new List<Vector2>();    // points used for visualising the line on screen
             public float length { get; private set; }
 
-            public ReferenceStroke(Vector3 scale, int id, List<Vector2> points, int noOfKeyPoints)
+            public ReferenceStroke(Vector2 scale, int id, List<Vector2> points, int noOfKeyPoints)
             {
                 this.points.AddRange(points);
                 keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
@@ -61,22 +61,33 @@ namespace Manabu.Examples
             }
         }
 
+        [Serializable]
+        public struct DrawableStrokeConfig
+        {
+            [Header("Stroke evaluation")]
+            // configuration for strokes
+            public int noRefPointsInStroke;
+            public float compThreshTight;
+            public float compThreshLoose;
+            public float lengthThreshold;
+        }
+
         public InputStroke inpStroke = null;
         public ReferenceStroke refStroke = null;
         public bool completed { get { return inpStroke.completed; } }
-        public DrawConfiguration config = null;
+        public DrawableStrokeConfig config;
 
         // results
         public bool pass = true;
         public List<float?> keyPointDeltas = new List<float?>(); 
         public int tightPointIdx = -1;
 
-        public Stroke(int strokeId, DrawableCharacter drawChar, DrawConfiguration config)
+        public DrawableStroke(int strokeId, DrawableCharacter drawChar, DrawableStrokeConfig config)
         {
             this.config = config;
             // generate ref stroke
             refStroke = new ReferenceStroke(
-                drawChar.boxCollider.size, 
+                drawChar.CharacterSize, 
                 strokeId, 
                 drawChar.Character.drawData.strokes[strokeId].points,
                 config.noRefPointsInStroke);
@@ -103,46 +114,33 @@ namespace Manabu.Examples
         }
     }
 
-    [Serializable]
-    public class DrawConfiguration
-    {
-        [Header("Evaluation")]
-        // configuration for strokes
-        public int noRefPointsInStroke;
-        public float compThreshTight;
-        public float compThreshLoose;
-        public float lengthThreshold;
-    }
-
     /// <summary>
     /// Example of how to use the character data from from Manabu to create a 
     /// drawable character on the screen
     /// </summary>
-    [RequireComponent(typeof(BoxCollider))]
     public class DrawableCharacter : MonoBehaviour
     {
         // scale
-        [SerializeField]
-        private Vector3 boxColliderSize; // width/height size
-        [SerializeField]
-        public float kanjiZBoxRelativepos = 0.5f;
         /// <summary>
-        /// used to scale the normalised kanji points to the the dims of the box
+        /// Width & height of the character in world units. Used to scale the 0 - 1 range of the Manabu character
         /// </summary>
-        [HideInInspector]
-        public BoxCollider boxCollider = null;
+        public Vector3 CharacterSize { get { return characterSize; }  }
+        [SerializeField]
+        private Vector3 characterSize;
+        public Vector3 CharacterCenter { get { return new Vector3(0.5f * characterSize.x, 0.5f * characterSize.y, 0.5f * characterSize.z); } }
+
 
         // state
-        private List<Stroke> strokes = new List<Stroke>();
-        private Stroke curStroke { get { return curStrokeIdx < strokes.Count ? strokes[curStrokeIdx] : null; } }
+        private List<DrawableStroke> strokes = new List<DrawableStroke>();
+        private DrawableStroke curStroke { get { return curStrokeIdx < strokes.Count ? strokes[curStrokeIdx] : null; } }
         private int curStrokeIdx = 0;
         public bool completed { get; private set; } = false;
 
         // character data
-        public DrawConfiguration config { get { return _config; } private set { _config = value; } }
-        public Character Character { get; private set; } = null;
+        public DrawableStroke.DrawableStrokeConfig config { get { return _config; } private set { _config = value; } }
         [SerializeField]
-        private DrawConfiguration _config;
+        private DrawableStroke.DrawableStrokeConfig _config;
+        public Character Character { get; private set; } = null;
         [SerializeField]
         private char character;
         [SerializeField]
@@ -163,14 +161,13 @@ namespace Manabu.Examples
 
         private void Init(Character charData)
         {
-            boxCollider = GetComponent<BoxCollider>();
             this.Character = charData;
 
             // generate the pairs of strokes that will take the input points, one stroke at a time
             for (int strokeId = 0; strokeId < charData.drawData.strokes.Count; strokeId++)
             {
                 // assuming we get these in order
-                strokes.Add(new Stroke(strokeId, this, config));
+                strokes.Add(new DrawableStroke(strokeId, this, config));
             };
 
             // start the looking for the first stroke
@@ -232,9 +229,8 @@ namespace Manabu.Examples
         // Get the plane on which the the character lies
         private Plane GetPlane()
         {
-            if (boxCollider == null) return new Plane();
             // create the plane on which the character will be drawn
-            Vector3 planePoint = transform.TransformPoint(boxCollider.center);
+            Vector3 planePoint = transform.TransformPoint(CharacterCenter);
             Vector3 planeDir = -gameObject.transform.forward;
             return new Plane(planeDir.normalized, planePoint);
         }
@@ -254,6 +250,9 @@ namespace Manabu.Examples
 
         private void OnDrawGizmos()
         {
+            // Box enclosing the character
+            DrawBox(transform.TransformPoint(CharacterCenter), transform.rotation, characterSize, new Color(0, 1 ,0 , 0.5f));
+
             // draw debug strokes
             DrawStrokePair();
 
@@ -266,15 +265,15 @@ namespace Manabu.Examples
             }
         }
 
-        private void DrawStrokeEvaluation(Stroke sp)
+        private void DrawStrokeEvaluation(DrawableStroke sp)
         {
             if (sp.completed)
             {
                 for (int i = 0; i < config.noRefPointsInStroke; i++)
                 {
-                    float radius = boxCollider.size.magnitude / 110.0f;
+                    float radius = characterSize.magnitude / 110.0f;
                     Gizmos.color = Color.gray;
-                    var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPoints[i].x, sp.refStroke.keyPoints[i].y, kanjiZBoxRelativepos));
+                    var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPoints[i].x, sp.refStroke.keyPoints[i].y, CharacterCenter.z));
                     Gizmos.DrawSphere(refPnt, radius);
                     Gizmos.color = new Color(0, 0, 0, 0.1f);
                     Gizmos.DrawSphere(refPnt, config.compThreshLoose);
@@ -282,7 +281,7 @@ namespace Manabu.Examples
                     Gizmos.color = sp.pass ? Color.green : Color.red;
                     // tight dist color
                     Gizmos.color = sp.tightPointIdx == i ? new Color(1, 0, 1) : Gizmos.color; // purple
-                    var inpPnt = transform.TransformPoint(new Vector3(sp.inpStroke.keyPoints[i].x, sp.inpStroke.keyPoints[i].y, kanjiZBoxRelativepos));
+                    var inpPnt = transform.TransformPoint(new Vector3(sp.inpStroke.keyPoints[i].x, sp.inpStroke.keyPoints[i].y, CharacterCenter.z));
                     Gizmos.DrawSphere(inpPnt, radius);
                     // connect the two
                     Gizmos.color = Color.red;
@@ -297,8 +296,8 @@ namespace Manabu.Examples
             {
                 for (int i = 1; i < l.Count; i++)
                 {
-                    Vector3 start = transform.TransformPoint(new Vector3(l[i - 1].x, l[i - 1].y, kanjiZBoxRelativepos));
-                    Vector3 end = transform.TransformPoint(new Vector3(l[i].x, l[i].y, kanjiZBoxRelativepos));
+                    Vector3 start = transform.TransformPoint(new Vector3(l[i - 1].x, l[i - 1].y, CharacterCenter.z));
+                    Vector3 end = transform.TransformPoint(new Vector3(l[i].x, l[i].y, CharacterCenter.z));
                     Debug.DrawLine(start, end, c);
                 }
             };
@@ -309,6 +308,38 @@ namespace Manabu.Examples
             }
 
             if (curStroke != null) drawStroke(curStroke.inpStroke.points, Color.blue);
+        }
+
+        public void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
+        {
+            // create matrix
+            Matrix4x4 m = new Matrix4x4();
+            m.SetTRS(pos, rot, scale);
+
+            var point1 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, 0.5f));
+            var point2 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, 0.5f));
+            var point3 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, -0.5f));
+            var point4 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, -0.5f));
+
+            var point5 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, 0.5f));
+            var point6 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, 0.5f));
+            var point7 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, -0.5f));
+            var point8 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, -0.5f));
+
+            Debug.DrawLine(point1, point2, c);
+            Debug.DrawLine(point2, point3, c);
+            Debug.DrawLine(point3, point4, c);
+            Debug.DrawLine(point4, point1, c);
+
+            Debug.DrawLine(point5, point6, c);
+            Debug.DrawLine(point6, point7, c);
+            Debug.DrawLine(point7, point8, c);
+            Debug.DrawLine(point8, point5, c);
+
+            Debug.DrawLine(point1, point5, c);
+            Debug.DrawLine(point2, point6, c);
+            Debug.DrawLine(point3, point7, c);
+            Debug.DrawLine(point4, point8, c);
         }
 
 #endif
