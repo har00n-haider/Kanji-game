@@ -20,7 +20,7 @@ namespace Manabu.Examples
             public List<Vector2> points = new List<Vector2>();    // points used for visualising the line on screen
             public float length { get; private set; }
 
-            public ReferenceStroke(Vector2 scale, int id, List<Vector2> points, int noOfKeyPoints)
+            public ReferenceStroke(Vector2 scale, List<Vector2> points, int noOfKeyPoints)
             {
                 this.points.AddRange(points);
                 keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
@@ -43,7 +43,7 @@ namespace Manabu.Examples
             public bool active;
             private int noOfKeyPoints;
 
-            public InputStroke(int id, int noOfKeyPoints)
+            public InputStroke(int noOfKeyPoints)
             {
                 this.noOfKeyPoints = noOfKeyPoints;
             }
@@ -62,37 +62,32 @@ namespace Manabu.Examples
         }
 
         [Serializable]
-        public struct DrawableStrokeConfig
+        public class DrawableStrokeConfig
         {
             [Header("Stroke evaluation")]
             // configuration for strokes
-            public int noRefPointsInStroke;
-            public float compThreshTight;
-            public float compThreshLoose;
-            public float lengthThreshold;
+            public int noRefPointsInStroke = 5;
+            public float compThreshTight = 0.03f;
+            public float compThreshLoose = 0.07f;
+            public float lengthThreshold = 2;
         }
 
         public InputStroke inpStroke = null;
         public ReferenceStroke refStroke = null;
         public bool completed { get { return inpStroke.completed; } }
-        public DrawableStrokeConfig config;
+        public DrawableStrokeConfig config = new DrawableStrokeConfig();
 
         // results
         public bool pass = true;
         public List<float?> keyPointDeltas = new List<float?>(); 
         public int tightPointIdx = -1;
 
-        public DrawableStroke(int strokeId, DrawableCharacter drawChar, DrawableStrokeConfig config)
+        public DrawableStroke(Vector2 size, List<Vector2> points)
         {
-            this.config = config;
             // generate ref stroke
-            refStroke = new ReferenceStroke(
-                drawChar.CharacterSize, 
-                strokeId, 
-                drawChar.Character.drawData.strokes[strokeId].points,
-                config.noRefPointsInStroke);
+            refStroke = new ReferenceStroke(size, points, config.noRefPointsInStroke);
             // generate input stroke
-            inpStroke = new InputStroke(strokeId, config.noRefPointsInStroke);
+            inpStroke = new InputStroke(config.noRefPointsInStroke);
             inpStroke.active = false;
         }
 
@@ -137,9 +132,6 @@ namespace Manabu.Examples
         public bool completed { get; private set; } = false;
 
         // character data
-        public DrawableStroke.DrawableStrokeConfig config { get { return _config; } private set { _config = value; } }
-        [SerializeField]
-        private DrawableStroke.DrawableStrokeConfig _config;
         public Character Character { get; private set; } = null;
         [SerializeField]
         private char character;
@@ -167,7 +159,7 @@ namespace Manabu.Examples
             for (int strokeId = 0; strokeId < charData.drawData.strokes.Count; strokeId++)
             {
                 // assuming we get these in order
-                strokes.Add(new DrawableStroke(strokeId, this, config));
+                strokes.Add(new DrawableStroke(characterSize, charData.drawData.strokes[strokeId].points));
             };
 
             // start the looking for the first stroke
@@ -198,7 +190,6 @@ namespace Manabu.Examples
             // deal with a completed character
             if (completed) OnCompleted?.Invoke();
         }
-
 
         private void UpdateInput()
         {
@@ -235,17 +226,6 @@ namespace Manabu.Examples
             return new Plane(planeDir.normalized, planePoint);
         }
 
-        public void Reset()
-        {
-            // state
-            strokes.Clear();
-            curStrokeIdx = 0;
-            completed = false;
-
-            // data
-            Character = null;
-        }
-
 #if UNITY_EDITOR
 
         private void OnDrawGizmos()
@@ -269,15 +249,15 @@ namespace Manabu.Examples
         {
             if (sp.completed)
             {
-                for (int i = 0; i < config.noRefPointsInStroke; i++)
+                for (int i = 0; i < sp.config.noRefPointsInStroke; i++)
                 {
                     float radius = characterSize.magnitude / 110.0f;
                     Gizmos.color = Color.gray;
                     var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPoints[i].x, sp.refStroke.keyPoints[i].y, CharacterCenter.z));
                     Gizmos.DrawSphere(refPnt, radius);
                     Gizmos.color = new Color(0, 0, 0, 0.1f);
-                    Gizmos.DrawSphere(refPnt, config.compThreshLoose);
-                    Gizmos.DrawSphere(refPnt, config.compThreshTight);
+                    Gizmos.DrawSphere(refPnt, sp.config.compThreshLoose);
+                    Gizmos.DrawSphere(refPnt, sp.config.compThreshTight);
                     Gizmos.color = sp.pass ? Color.green : Color.red;
                     // tight dist color
                     Gizmos.color = sp.tightPointIdx == i ? new Color(1, 0, 1) : Gizmos.color; // purple
