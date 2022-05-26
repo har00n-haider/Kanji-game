@@ -7,7 +7,7 @@ using Manabu.Core;
 using RythmGame;
 using System;
 
-public class EmptyTarget : MonoBehaviour, ITappable
+public class EmptyTarget : MonoBehaviour
 {
 
     [SerializeField]

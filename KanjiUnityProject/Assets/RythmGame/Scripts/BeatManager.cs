@@ -53,10 +53,6 @@ public class BeatManager : MonoBehaviour
 
     private void Awake()
     {
-    }
-
-    void Start()
-    {
         audioSource = GetComponent<AudioSource>();
         audioSource.clip = songClip;
 
@@ -65,6 +61,10 @@ public class BeatManager : MonoBehaviour
         audioSource.PlayScheduled(startTime);
         GenerateBeatMap();
         running = true;
+    }
+
+    void Start()
+    {
     }
 
     void Update()

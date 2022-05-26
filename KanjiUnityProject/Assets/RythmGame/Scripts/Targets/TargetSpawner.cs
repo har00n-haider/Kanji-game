@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Manabu.Core;
+using System;
 
 
 // TODO: split broadly into to two activities:
@@ -9,9 +10,14 @@ using Manabu.Core;
 // - instantiating the required targets when required
 public class TargetSpawner : MonoBehaviour
 {
-    // =========================== Writing group =========================== 
+   // =========================== Writing group =========================== 
+    [Header("Writing group")]
+    public CharacterTarget characterTargetPrefab;
+    private List<CharacterTarget> kanawritingGroups = new List<CharacterTarget>();
+    public Vector3 CharacterSize;
+    public DrawableStrokeConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
-    private GameObject drawTargetPrefab;
+    private DrawableStrokeConfig writingConfig;
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -24,7 +30,7 @@ public class TargetSpawner : MonoBehaviour
         public ReadTarget question = null;
         public List<ReadTarget> answers = new List<ReadTarget>();
     }
-
+    [Header("Reading group")]
     [SerializeField]
     private int MaxNoOfGroups;
     [SerializeField]
@@ -38,13 +44,13 @@ public class TargetSpawner : MonoBehaviour
     private List<KanaReadingGroup> groups = new List<KanaReadingGroup>();
 
 
-
     // =========================== Empty targets=========================== 
     public class EmptyTargetEntry
     {
         public BeatManager.Beat beat;
         public bool spawned = false;
     }
+    [Header("Empty target group")]
     // Empty target variables
     [SerializeField]
     private int MaxNoOfEmptyTargets;
@@ -53,6 +59,7 @@ public class TargetSpawner : MonoBehaviour
     private List<EmptyTargetEntry> emptyTargetBeats = new List<EmptyTargetEntry>();
 
     // Spawing variables
+    [Header("Spawning variables")]
     [SerializeField]
     private BoxCollider spawnVolume;
     private double spawnToBeatTimeOffset;
@@ -76,62 +83,53 @@ public class TargetSpawner : MonoBehaviour
     private void Start()
     {
         spawnToBeatTimeOffset = beatManager.BeatPeriod * 1.5;
+        CreateDrawTarget();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //CreateEmptyTargets();
-
-        CreateDrawTargets();
+        SpawnNextStrokeTarget();
     }
 
 
 
     #region Draw targets
 
-    private bool createdOne = false;
-    private void CreateDrawTargets()
+    private void CreateDrawTarget()
     {
-        //if(!createdOne)
-        //{
-        //    // generate the group, with assigned beats 
-        //    CharacterStrokeGroup kanaGroup = new CharacterStrokeGroup();
-        //    var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
-        //    kanaGroup.strokes = new List<CharacterStrokeGroup.Stroke>()
-        //    {
-        //        new CharacterStrokeGroup.Stroke()
-        //        { 
-        //            startBeat = startBeat,
-        //            endBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, startBeat),
-        //            strokeId = 0 
-        //        },
-        //        new CharacterStrokeGroup.Stroke()
-        //        { 
-        //            startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, startBeat),
-        //            endBeat = beatManager.GetNextBeatTimeStamp(3, BeatManager.Beat.BeatType.Beat, startBeat),
-        //            strokeId = 1 
-        //        },
-        //        new CharacterStrokeGroup.Stroke()
-        //        { 
-        //            startBeat = beatManager.GetNextBeatTimeStamp(4, BeatManager.Beat.BeatType.Beat, startBeat),
-        //            endBeat = beatManager.GetNextBeatTimeStamp(5, BeatManager.Beat.BeatType.Beat, startBeat),
-        //            strokeId = 2
-        //        },
-        //    };
+        Character character = GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
+        // generate the beats for the entire character
+        List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats = new();
+        int beatIdx = -1;
+        var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
+        for (int i = 0; i < character.drawData.strokes.Count; i++)
+        {
+            beats.Add(new Tuple<BeatManager.Beat, BeatManager.Beat>(
+                beatManager.GetNextBeatTimeStamp(++beatIdx, BeatManager.Beat.BeatType.Beat, startBeat),
+                beatManager.GetNextBeatTimeStamp(++beatIdx, BeatManager.Beat.BeatType.Beat, startBeat)
+            ));                            
+        }
+        // generate the group, with assigned beats 
+        CharacterTarget characterTarget = Instantiate(characterTargetPrefab, spawnVolume.center - (CharacterSize/2), Quaternion.identity);
+        characterTarget.Init(character, CharacterSize, beats);
+        kanawritingGroups.Add(characterTarget);
+    }
 
-        //    // instantiate the group all at ance
-        //    foreach(CharacterStrokeGroup.Stroke s in kanaGroup.strokes)
-        //    {
-        //        StrokeTarget d = Instantiate(
-        //            drawTargetPrefab,
-        //            GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
-        //            Quaternion.identity,
-        //            transform).GetComponent<StrokeTarget>();
-        //        d.Init(s.startBeat, s.endBeat, GameManager.Instance.Database.GetRandomCharacter(), s.strokeId);
-        //    }
-        //    createdOne = true;
-        //}    
+    private void SpawnNextStrokeTarget()
+    {
+        // check if any of the groups can be spawned
+        foreach(CharacterTarget ct in kanawritingGroups)
+        {
+            foreach(var beatPair in ct.Beats)
+            {
+                if (IsBeatWithinSpawnRange(beatPair.Item1))
+                {
+                    ct.CreateNextStroke();
+                }
+
+            }
+        } 
     }
 
     #endregion
@@ -214,8 +212,7 @@ public class TargetSpawner : MonoBehaviour
         // check if any of the groups can be spawned
         foreach(KanaReadingGroup g in groups)
         {
-            bool withinSpawnRange = beatManager.TimeToBeat(g.groupBeat) < spawnToBeatTimeOffset;
-            if (g.question == null && withinSpawnRange)
+            if (g.question == null && IsBeatWithinSpawnRange(g.groupBeat))
             {
                 SpawnQuestion(g);
             }   
@@ -244,7 +241,7 @@ public class TargetSpawner : MonoBehaviour
 
         // answers
         var ansBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, group.groupBeat);
-        int correctAnswer = Random.Range(0, 3);
+        int correctAnswer = UnityEngine.Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
             Vector3 position = new Vector3();
@@ -288,4 +285,10 @@ public class TargetSpawner : MonoBehaviour
     }
 
     #endregion 
+
+
+    private bool IsBeatWithinSpawnRange(BeatManager.Beat beat)
+    {
+        return beatManager.TimeToBeat(beat) < spawnToBeatTimeOffset;
+    }
 }

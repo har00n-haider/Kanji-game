@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public GameAudio GameAudio;
     public Database Database;
-    public TextAsset databaseFile;
+    public GameInput GameInput;
+    public TargetSpawner TargetSpawner;
+    [SerializeField]
+    private TextAsset databaseFile;
 
     //TODO: delete me - debug
     public Image circle;
@@ -68,7 +71,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (Input.GetKey(KeyCode.Escape)) Application.Quit();
-        CheckForHitTargetClicked();
         UpdateBeat();
     }
 
@@ -91,47 +93,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void CheckForHitTargetClicked()
-    {
-        bool buttonPressed =
-            Input.GetMouseButtonDown(0) ||
-            Input.GetKeyDown(KeyCode.Space);
-        if (buttonPressed) AppEvents.OnButtonPressed?.Invoke();
-
-        bool buttonReleased =
-            Input.GetMouseButtonUp(0) ||
-            Input.GetKeyUp(KeyCode.Space);
-        if (buttonReleased) AppEvents.OnButtonReleased?.Invoke();
-
-        // TODO: do we want to do both button down and up globally?
-        // We are doing this for draw targets aswell but it may be easier to tap targets
-        // if we are runnig the check two frames per button press? May not be a big deal tho.
-        bool runRayCastCheck = buttonPressed || buttonReleased;
-        
-        if (runRayCastCheck)
-        {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                // Check the hit detect is a target - just use Unity tags for this, simple.
-                bool isTarget = hit.transform.gameObject.CompareTag("HitTarget");
-                if (!isTarget) return; 
-                ITappable ht = hit.transform.parent.gameObject.GetComponent<ITappable>();
-                if (ht != null)
-                {
-                    bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(ht.BeatTimeStamp);
-                    if (onBeat)
-                    {
-                        ht.HandleBeatResult(Result.Hit);
-                    }
-                    else
-                    {
-                        ht.HandleBeatResult(Result.Miss);
-                    }
-                    return;
-                }
-            }
-        }
-    }
 }

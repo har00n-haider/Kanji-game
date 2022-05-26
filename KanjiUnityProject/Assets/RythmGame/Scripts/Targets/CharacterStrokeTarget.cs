@@ -22,7 +22,7 @@ public class ReferenceStroke
         // Reference points are 0 - 1, need to scale up to fit the collider
         for (int i = 0; i < this.points.Count; i++)
         {
-            this.points[i].Scale(scale);
+            this.points[i] = Vector2.Scale(this.points[i], scale);
         }
     }
 }
@@ -52,6 +52,7 @@ public class InputStroke
         keyPoints = SVGUtils.GenRefPntsForPnts(points, noOfKeyPoints);
         length = SVGUtils.GetLengthForPnts(points);
         completed = true;
+        active = false;
     }
 }
 
@@ -64,6 +65,8 @@ public class DrawableStrokeConfig
     public float compThreshTight = 0.03f;
     public float compThreshLoose = 0.07f;
     public float lengthThreshold = 2;
+    [Header("Stroke visuals")]
+    public float lineWidth = 2;
 }
 
 /// <summary>
@@ -74,107 +77,122 @@ public class CharacterStrokeTarget : MonoBehaviour
 {
 
     // draw line
-    [SerializeField]
     private LineRenderer refStrokeLineRenderer;
 
     // sub targets - tappable targets for the start / end of a given stroke
     [SerializeField]
     private GameObject emptyTargePrefab;
-    private EmptyTarget startTarget;
-    private EmptyTarget endTarget;
+    public EmptyTarget StartTarget { get; private set; } = null;
+    public EmptyTarget EndTarget { get; private set; } = null;
 
     // stroke data 
     public InputStroke inpStroke = null;
     public ReferenceStroke refStroke = null;
     public bool completed { get { return inpStroke.completed; } }
-    public DrawableStrokeConfig config;
+    private DrawableStrokeConfig config;
 
     // results
-    public bool pass = true;
+    public bool Pass { get; private set; } = true;
     public List<float?> keyPointDeltas = new List<float?>();
-    public int tightPointIdx = -1;
+    private int tightPointIdx = -1;
+
+    // ref
+    private CharacterTarget charTarget;
+    private bool canDrawLine = false;
+
+    // beats
+    public BeatManager.Beat StarBeat = null;
+    public BeatManager.Beat EndBeat = null;
 
 
-
-
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        AppEvents.OnButtonReleased += InputReleased;
+        config = GameManager.Instance.TargetSpawner.WritingConfig;
     }
 
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, List<Vector2> points)  
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, List<Vector2> points, CharacterTarget charTarget)  
     {
+        this.charTarget = charTarget;
+        this.StarBeat = startBeat;
+        this.EndBeat = endBeat;
 
         // generate strokes
         refStroke = new ReferenceStroke(size, points, config.noRefPointsInStroke);
         inpStroke = new InputStroke(config.noRefPointsInStroke);
         inpStroke.active = false;
 
-        // TODO: hard coded patter for now , replace with character stroke data
-        Vector3 startPoint  = points.First();
-        Vector3 endPosition = points.Last();
+        // set the beats for the target
+        Vector3 startPoint  = refStroke.points.First();
+        Vector3 endPosition = refStroke.points.Last();
 
         // setup the line renderer to display a line connecting them
         // everything else is set in the component in the editor
         if (refStrokeLineRenderer == null) refStrokeLineRenderer = GetComponent<LineRenderer>();
-        refStrokeLineRenderer.useWorldSpace = true;
-        refStrokeLineRenderer.positionCount = points.Count;
-        refStrokeLineRenderer.SetPositions( points.ConvertAll( (p) => new Vector3(p.x, p.y , 0)).ToArray()); //TODO: get the z value from the character? 
+        //refStrokeLineRenderer.useWorldSpace = false;
+        refStrokeLineRenderer.positionCount = refStroke.points.Count;
+        refStrokeLineRenderer.SetPositions( refStroke.points.ConvertAll( (p) => new Vector3(p.x, p.y , charTarget.CharacterCenter.z)).ToArray()); 
+        refStrokeLineRenderer.startWidth = config.lineWidth; 
+        refStrokeLineRenderer.endWidth= config.lineWidth; 
 
         // instantiate the start/end targets with their respective beats
-        startTarget = Instantiate(
+        StartTarget = Instantiate(
             emptyTargePrefab,
             startPoint,
             Quaternion.identity,
             transform).GetComponent<EmptyTarget>();
-        startTarget.Init(startBeat, null);
-        startTarget.OnHitSuccesfully += StartLoggingInput;
+        StartTarget.Init(startBeat, null);
+        StartTarget.OnHitSuccesfully += StartLoggingInput;
 
-        endTarget = Instantiate(
+        EndTarget = Instantiate(
             emptyTargePrefab,
             endPosition,
             Quaternion.identity,
             transform).GetComponent<EmptyTarget>();
-        endTarget.Init(endBeat, null);
-        endTarget.OnHitSuccesfully += StopLoggingInput;
-
-
+        EndTarget.Init(endBeat, null);
+        EndTarget.OnHitSuccesfully += StopLoggingInput;
     }
 
-    void Awake()
+    private void Update()
     {
+        if(canDrawLine)
+        {        
+            // populate line
+            if (GameManager.Instance.GameInput.GetButton1Down())
+            {
+                // convert mouse position to a point on the character plane 
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                bool hit = charTarget.GetCharacterPlane().Raycast(ray, out float enter);
+                if (hit)
+                {
+                    // normalize the input points for correct comparison with ref stroke
+                    Vector3 worldPoint = ray.direction * enter + ray.origin;
+                    Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+                    inpStroke.AddPoint(localPoint);
+                }
 
-    }
-
-    void Update()
-    {
+            }
+            // clear line
+            if (GameManager.Instance.GameInput.GetButton1Up())
+            {
+                inpStroke.Complete();
+                EvaluateStroke();
+            }
+        }
     }
 
 
     private void OnDestroy()
     {
-        AppEvents.OnButtonReleased -= InputReleased;
-    }
-
-    public void HandleBeatResult(Result result)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void InputReleased()
-    {
-    
     }
 
     private void StartLoggingInput()
     {
-    
+        canDrawLine = true;
     }
 
     private void StopLoggingInput()
     {
-    
+        canDrawLine = false;
     }
 
     public void EvaluateStroke()
@@ -184,14 +202,14 @@ public class CharacterStrokeTarget : MonoBehaviour
         {
             float distance = Mathf.Abs((inpStroke.keyPoints[i] - refStroke.keyPoints[i]).magnitude);
             keyPointDeltas.Add(distance);
-            pass &= distance < config.compThreshLoose;
+            Pass &= distance < config.compThreshLoose;
         }
         // at least one point needs to be under the tight thresh
         float? tightDist = keyPointDeltas.FirstOrDefault(d => d < config.compThreshTight);
         if (tightDist != null) tightPointIdx = keyPointDeltas.IndexOf(tightDist);
-        pass &= tightPointIdx != -1;
+        Pass &= tightPointIdx != -1;
         // total length needs to be within limits
-        pass &= Mathf.Abs(inpStroke.length - refStroke.length) < config.lengthThreshold;
+        Pass &= Mathf.Abs(inpStroke.length - refStroke.length) < config.lengthThreshold;
     }
 
 }
