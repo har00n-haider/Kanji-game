@@ -110,8 +110,8 @@ public class TargetSpawner : MonoBehaviour
                 beatManager.GetNextBeatTimeStamp(++beatIdx, BeatManager.Beat.BeatType.Beat, startBeat)
             ));                            
         }
-        // generate the group, with assigned beats 
-        CharacterTarget characterTarget = Instantiate(characterTargetPrefab, spawnVolume.center - (CharacterSize/2), Quaternion.identity);
+        Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (CharacterSize / 2);
+        CharacterTarget characterTarget = Instantiate(characterTargetPrefab, position, Quaternion.identity);
         characterTarget.Init(character, CharacterSize, beats);
         kanawritingGroups.Add(characterTarget);
     }

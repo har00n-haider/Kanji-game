@@ -72,7 +72,6 @@ public class DrawableStrokeConfig
 /// <summary>
 /// Goes on prefab representing a singe stroke
 /// </summary>
-[RequireComponent(typeof(LineRenderer))]
 public class CharacterStrokeTarget : MonoBehaviour
 {
 
@@ -121,14 +120,14 @@ public class CharacterStrokeTarget : MonoBehaviour
         inpStroke = new InputStroke(config.noRefPointsInStroke);
         inpStroke.active = false;
 
-        // set the beats for the target
-        Vector3 startPoint  = refStroke.points.First();
-        Vector3 endPosition = refStroke.points.Last();
+        // set the beats for the target, taking care to transform to world pos
+        Vector3 startPoint  = transform.TransformPoint(refStroke.points.First());
+        Vector3 endPosition = transform.TransformPoint(refStroke.points.Last());
 
         // setup the line renderer to display a line connecting them
         // everything else is set in the component in the editor
-        if (refStrokeLineRenderer == null) refStrokeLineRenderer = GetComponent<LineRenderer>();
-        //refStrokeLineRenderer.useWorldSpace = false;
+        if (refStrokeLineRenderer == null) refStrokeLineRenderer = GetComponentInChildren<LineRenderer>();
+        refStrokeLineRenderer.useWorldSpace = false;
         refStrokeLineRenderer.positionCount = refStroke.points.Count;
         refStrokeLineRenderer.SetPositions( refStroke.points.ConvertAll( (p) => new Vector3(p.x, p.y , charTarget.CharacterCenter.z)).ToArray()); 
         refStrokeLineRenderer.startWidth = config.lineWidth; 
