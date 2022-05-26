@@ -67,6 +67,9 @@ public class DrawableStrokeConfig
     public float lengthThreshold = 2;
     [Header("Stroke visuals")]
     public float lineWidth = 2;
+    public float targetScale = 1.0f;
+    public float targetZOffset = 0f;
+
 }
 
 /// <summary>
@@ -121,8 +124,12 @@ public class CharacterStrokeTarget : MonoBehaviour
         inpStroke.active = false;
 
         // set the beats for the target, taking care to transform to world pos
-        Vector3 startPoint  = transform.TransformPoint(refStroke.points.First());
-        Vector3 endPosition = transform.TransformPoint(refStroke.points.Last());
+        Func<Vector3, Vector3> getWorldPos = (p) => {
+            p.z = charTarget.CharacterCenter.z + config.targetZOffset;
+            return transform.TransformPoint(p);
+        };
+        Vector3 startPoint  = getWorldPos(refStroke.points.First());
+        Vector3 endPosition = getWorldPos(refStroke.points.Last());
 
         // setup the line renderer to display a line connecting them
         // everything else is set in the component in the editor
@@ -140,6 +147,7 @@ public class CharacterStrokeTarget : MonoBehaviour
             Quaternion.identity,
             transform).GetComponent<EmptyTarget>();
         StartTarget.Init(startBeat, null);
+        StartTarget.transform.localScale = new Vector3(config.targetScale, config.targetScale, config.targetScale);
         StartTarget.OnHitSuccesfully += StartLoggingInput;
 
         EndTarget = Instantiate(
@@ -148,6 +156,7 @@ public class CharacterStrokeTarget : MonoBehaviour
             Quaternion.identity,
             transform).GetComponent<EmptyTarget>();
         EndTarget.Init(endBeat, null);
+        EndTarget.transform.localScale = new Vector3(config.targetScale, config.targetScale, config.targetScale);
         EndTarget.OnHitSuccesfully += StopLoggingInput;
     }
 
