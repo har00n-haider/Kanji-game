@@ -48,8 +48,6 @@ public class EmptyTarget : MonoBehaviour
     // lifetime
     Action<BeatManager.Beat> onDestroyCallback;
 
-    public event Action OnHitSuccesfully;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -75,11 +73,18 @@ public class EmptyTarget : MonoBehaviour
         bool thresholdPassed = AudioSettings.dspTime >
             beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
         if (thresholdPassed) HandleBeatResult(Result.Miss);
-
         UpdateBeatCircle();
         UpdateBeatWindowColor();
     }
-    
+
+
+    public bool HitCheck()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
+        return modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue);
+    }
+
+
     public void HandleBeatResult(Result hitResult)
     {
         if(this == null) return;
@@ -88,7 +93,6 @@ public class EmptyTarget : MonoBehaviour
         {
             case Result.Hit:
                 Instantiate(succesEffect, transform.position, Quaternion.identity);
-                OnHitSuccesfully?.Invoke();
                 break;
             case Result.Miss:
                 Instantiate(failEffect, transform.position, Quaternion.identity);

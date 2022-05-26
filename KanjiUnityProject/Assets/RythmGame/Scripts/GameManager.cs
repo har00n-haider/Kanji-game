@@ -22,8 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private TextAsset databaseFile;
 
-    //TODO: delete me - debug
-    public Image circle;
+    public Image circle; // circle for checking the beat timing is correct
 
     [SerializeField]
     private Color BarFlickercColor;
@@ -74,7 +73,6 @@ public class GameManager : MonoBehaviour
         UpdateBeat();
     }
 
-    // TODO: delete me
     public void UpdateBeat()
     {
         BeatManager.Beat beat = GameAudio.BeatManager.NextBeat;

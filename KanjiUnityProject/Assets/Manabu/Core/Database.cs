@@ -85,7 +85,7 @@ namespace Manabu.Core
 
         public Character GetCharacter(char kanji)
         {
-            Character result = characters.Values.FirstOrDefault(k => k.literal.ToString() == kanji.ToString()); ;
+            Character result = characters.Values.FirstOrDefault(k => k.literal == kanji);
             return result;
         }
 

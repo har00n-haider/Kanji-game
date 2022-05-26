@@ -17,13 +17,13 @@ public class ReferenceStroke
     public ReferenceStroke(Vector2 scale, List<Vector2> points, int noOfKeyPoints)
     {
         this.points.AddRange(points);
-        keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
-        length = SVGUtils.GetLengthForPnts(this.points);
         // Reference points are 0 - 1, need to scale up to fit the collider
         for (int i = 0; i < this.points.Count; i++)
         {
             this.points[i] = Vector2.Scale(this.points[i], scale);
         }
+        keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
+        length = SVGUtils.GetLengthForPnts(this.points);
     }
 }
 
@@ -33,7 +33,7 @@ public class InputStroke
     public List<Vector2> keyPoints = new(); // key points in the stroke used for evaluation
     public List<Vector2> points = new();    // points used for visualising the line on screen
     public float length { get; private set; }
-    public bool completed;
+    public bool completed = false;
     public bool active;
     private int noOfKeyPoints;
 
@@ -77,7 +77,6 @@ public class DrawableStrokeConfig
 /// </summary>
 public class CharacterStrokeTarget : MonoBehaviour
 {
-
     // draw line
     private LineRenderer refStrokeLineRenderer;
 
@@ -106,13 +105,22 @@ public class CharacterStrokeTarget : MonoBehaviour
     public BeatManager.Beat StarBeat = null;
     public BeatManager.Beat EndBeat = null;
 
+    // state
+    public enum StrokeTargetState
+    {
+        NotStarted,
+        InProgress,
+    }
+    private StrokeTargetState state;
+
+
 
     void Awake()
     {
         config = GameManager.Instance.TargetSpawner.WritingConfig;
     }
 
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, List<Vector2> points, CharacterTarget charTarget)  
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, List<Vector2> points, CharacterTarget charTarget)
     {
         this.charTarget = charTarget;
         this.StarBeat = startBeat;
@@ -124,11 +132,12 @@ public class CharacterStrokeTarget : MonoBehaviour
         inpStroke.active = false;
 
         // set the beats for the target, taking care to transform to world pos
-        Func<Vector3, Vector3> getWorldPos = (p) => {
+        Func<Vector3, Vector3> getWorldPos = (p) =>
+        {
             p.z = charTarget.CharacterCenter.z + config.targetZOffset;
             return transform.TransformPoint(p);
         };
-        Vector3 startPoint  = getWorldPos(refStroke.points.First());
+        Vector3 startPoint = getWorldPos(refStroke.points.First());
         Vector3 endPosition = getWorldPos(refStroke.points.Last());
 
         // setup the line renderer to display a line connecting them
@@ -136,9 +145,9 @@ public class CharacterStrokeTarget : MonoBehaviour
         if (refStrokeLineRenderer == null) refStrokeLineRenderer = GetComponentInChildren<LineRenderer>();
         refStrokeLineRenderer.useWorldSpace = false;
         refStrokeLineRenderer.positionCount = refStroke.points.Count;
-        refStrokeLineRenderer.SetPositions( refStroke.points.ConvertAll( (p) => new Vector3(p.x, p.y , charTarget.CharacterCenter.z)).ToArray()); 
-        refStrokeLineRenderer.startWidth = config.lineWidth; 
-        refStrokeLineRenderer.endWidth= config.lineWidth; 
+        refStrokeLineRenderer.SetPositions(refStroke.points.ConvertAll((p) => new Vector3(p.x, p.y, charTarget.CharacterCenter.z)).ToArray());
+        refStrokeLineRenderer.startWidth = config.lineWidth;
+        refStrokeLineRenderer.endWidth = config.lineWidth;
 
         // instantiate the start/end targets with their respective beats
         StartTarget = Instantiate(
@@ -148,7 +157,6 @@ public class CharacterStrokeTarget : MonoBehaviour
             transform).GetComponent<EmptyTarget>();
         StartTarget.Init(startBeat, null);
         StartTarget.transform.localScale = new Vector3(config.targetScale, config.targetScale, config.targetScale);
-        StartTarget.OnHitSuccesfully += StartLoggingInput;
 
         EndTarget = Instantiate(
             emptyTargePrefab,
@@ -157,50 +165,84 @@ public class CharacterStrokeTarget : MonoBehaviour
             transform).GetComponent<EmptyTarget>();
         EndTarget.Init(endBeat, null);
         EndTarget.transform.localScale = new Vector3(config.targetScale, config.targetScale, config.targetScale);
-        EndTarget.OnHitSuccesfully += StopLoggingInput;
+
+        state = StrokeTargetState.NotStarted;
     }
 
     private void Update()
     {
-        if(canDrawLine)
-        {        
-            // populate line
-            if (GameManager.Instance.GameInput.GetButton1Down())
-            {
-                // convert mouse position to a point on the character plane 
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                bool hit = charTarget.GetCharacterPlane().Raycast(ray, out float enter);
-                if (hit)
-                {
-                    // normalize the input points for correct comparison with ref stroke
-                    Vector3 worldPoint = ray.direction * enter + ray.origin;
-                    Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
-                    inpStroke.AddPoint(localPoint);
-                }
+        bool thresholdPassed = AudioSettings.dspTime >
+            EndTarget.BeatTimeStamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
+        if (thresholdPassed) Finished(Result.Miss);
 
-            }
-            // clear line
-            if (GameManager.Instance.GameInput.GetButton1Up())
-            {
-                inpStroke.Complete();
-                EvaluateStroke();
-            }
+        switch (state)
+        {
+            case StrokeTargetState.NotStarted:
+                if (GameInput.GetButton1Down())
+                {
+                    if (StartTarget.HitCheck())
+                    {
+                        if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(StartTarget.BeatTimeStamp))
+                        {
+                            StartTarget.HandleBeatResult(Result.Hit);
+                            state = StrokeTargetState.InProgress;
+                            goto case StrokeTargetState.InProgress;
+                        }
+                        else
+                        {
+                            StartTarget.HandleBeatResult(Result.Miss);
+                            Finished(Result.Miss);
+                        }
+                    }
+                }
+                break;
+            case StrokeTargetState.InProgress:
+                if (GameInput.GetButton1())
+                {
+                    // convert mouse position to a point on the character plane 
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    bool hit = charTarget.GetCharacterPlane().Raycast(ray, out float enter);
+                    if (hit)
+                    {
+                        // normalize the input points for correct comparison with ref stroke
+                        Vector3 worldPoint = ray.direction * enter + ray.origin;
+                        Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+                        inpStroke.AddPoint(localPoint);
+                    }
+                }
+                if (GameInput.GetButton1Up())
+                {
+                    if (EndTarget.HitCheck())
+                    {
+                        if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndTarget.BeatTimeStamp))
+                        {
+                            EndTarget.HandleBeatResult(Result.Hit);
+                            Finished(Result.Hit);
+                        }
+                        else
+                        {
+                            EndTarget.HandleBeatResult(Result.Miss);
+                            Finished(Result.Miss);
+                        }
+                    }
+                }
+                break;
         }
     }
 
+    private void Finished(Result beatResult)
+    {
+        inpStroke.Complete();
+        EvaluateStroke();
+        string message = string.Empty;
+        if (Pass) message += "Passed stroke | ";
+        if (beatResult == Result.Hit) message += "Beat hit";
+        Debug.Log(message);
+        Destroy(gameObject);
+    }
 
     private void OnDestroy()
     {
-    }
-
-    private void StartLoggingInput()
-    {
-        canDrawLine = true;
-    }
-
-    private void StopLoggingInput()
-    {
-        canDrawLine = false;
     }
 
     public void EvaluateStroke()

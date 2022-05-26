@@ -71,6 +71,7 @@ public class TargetSpawner : MonoBehaviour
     {
         AppEvents.OnSelected += SpawnAnwsers;
         AppEvents.OnGroupCleared += UpdateKanaReadingGroups;
+        AppEvents.OnCharacterCleared += RemoveCharacter;
 
     }
 
@@ -78,17 +79,32 @@ public class TargetSpawner : MonoBehaviour
     {
         AppEvents.OnSelected -= SpawnAnwsers;
         AppEvents.OnGroupCleared -= UpdateKanaReadingGroups;
+        AppEvents.OnCharacterCleared -= RemoveCharacter;
+
     }
 
     private void Start()
     {
         spawnToBeatTimeOffset = beatManager.BeatPeriod * 1.5;
         CreateDrawTarget();
+
     }
 
+
+    private float spawnEvery = 2f;
+    private float spawnCtr = 0f;
     // Update is called once per frame
     void Update()
     {
+        //spawnCtr += Time.deltaTime;
+        //if (spawnCtr > spawnEvery)
+        //{
+        //    CreateDrawTarget();
+        //    spawnCtr = 0f;
+        //}
+
+
+
         SpawnNextStrokeTarget();
     }
 
@@ -96,9 +112,11 @@ public class TargetSpawner : MonoBehaviour
 
     #region Draw targets
 
+
     private void CreateDrawTarget()
     {
-        Character character = GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
+        Character character = GameManager.Instance.Database.GetCharacter('へ');
+        //Character character = GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
         // generate the beats for the entire character
         List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats = new();
         int beatIdx = -1;
@@ -127,9 +145,15 @@ public class TargetSpawner : MonoBehaviour
                 {
                     ct.CreateNextStroke();
                 }
-
             }
         } 
+    }
+
+    private void RemoveCharacter(CharacterTarget target)
+    {
+        //kanawritingGroups.Remove(target);
+        //Destroy(target.gameObject);
+
     }
 
     #endregion

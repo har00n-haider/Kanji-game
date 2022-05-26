@@ -27,9 +27,6 @@ public class CharacterTarget : MonoBehaviour
     // character data
     public Character Character { get; private set; } = null;
 
-    // events
-    public event Action OnCompleted;
-
     // refs
     public CharacterStrokeTarget strokeTargetPrefab;
     public List<Tuple<BeatManager.Beat, BeatManager.Beat>> Beats { get; private set; } = null;
@@ -41,8 +38,16 @@ public class CharacterTarget : MonoBehaviour
         Character = character;
         this.CharacterSize = CharacterSize;
         CurrentStrokeIdx = 0;
-        //Strokes[0].inpStroke.active = true;
     }
+
+    private void Update()
+    {
+        if (Strokes.TrueForAll(s => s.completed))
+        {
+            AppEvents.OnCharacterCleared?.Invoke(this);
+        }
+    }
+
 
     public void CreateNextStroke()
     {
@@ -71,6 +76,113 @@ public class CharacterTarget : MonoBehaviour
         Vector3 planeDir = -transform.forward;
         return new Plane(planeDir.normalized, planePoint);
     }
+
+
+    
+#if UNITY_EDITOR
+
+        private void OnDrawGizmos()
+        {
+            // Box enclosing the character
+            DrawBox(transform.TransformPoint(CharacterCenter), transform.rotation, CharacterSize, new Color(0, 1 ,0 , 0.5f));
+
+            // draw debug strokes
+            DrawStrokePair();
+
+            if (Strokes.Count > 0)
+            {
+                // HACK: crashes when <= is used
+                for (int i = 0; i < CurrentStrokeIdx; i++)
+                {
+                    DrawStrokeEvaluation(Strokes[i]);
+                }
+            }
+        }
+
+        private void DrawStrokeEvaluation(CharacterStrokeTarget sp)
+        {
+            var config = GameManager.Instance.TargetSpawner.WritingConfig;
+
+            if (sp.completed)
+            {
+                for (int i = 0; i < config.noRefPointsInStroke; i++)
+                {
+                    float radius = CharacterSize.magnitude / 110.0f;
+                    Gizmos.color = Color.gray;
+                    var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPoints[i].x, sp.refStroke.keyPoints[i].y, CharacterCenter.z));
+                    Gizmos.DrawSphere(refPnt, radius);
+                    Gizmos.color = new Color(0, 0, 0, 0.1f);
+                    Gizmos.DrawSphere(refPnt, config.compThreshLoose);
+                    Gizmos.DrawSphere(refPnt, config.compThreshTight);
+                    Gizmos.color = sp.Pass ? Color.green : Color.red;
+                    // tight dist color
+                    //Gizmos.color = sp.tightPointIdx == i ? new Color(1, 0, 1) : Gizmos.color; // purple
+                    Vector3 inpPnt = Vector3.zero;
+                    if(sp.inpStroke.keyPoints.Count > 0)
+                    {
+                        inpPnt = transform.TransformPoint(new Vector3(sp.inpStroke.keyPoints[i].x, sp.inpStroke.keyPoints[i].y, CharacterCenter.z));
+                    }
+                    Gizmos.DrawSphere(inpPnt, radius);
+                    // connect the two
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(refPnt, inpPnt);
+                }
+            }
+        }
+
+        private void DrawStrokePair()
+        {
+            Action<List<Vector2>, Color> drawStroke = (l, c) =>
+            {
+                for (int i = 1; i < l.Count; i++)
+                {
+                    Vector3 start = transform.TransformPoint(new Vector3(l[i - 1].x, l[i - 1].y, CharacterCenter.z));
+                    Vector3 end = transform.TransformPoint(new Vector3(l[i].x, l[i].y, CharacterCenter.z));
+                    Debug.DrawLine(start, end, c);
+                }
+            };
+
+            foreach (var s in Strokes)
+            {
+                drawStroke(s.refStroke.points, Color.green);
+            }
+
+            if (CurrentStroke != null) drawStroke(CurrentStroke.inpStroke.points, Color.blue);
+        }
+
+        public void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
+        {
+            // create matrix
+            Matrix4x4 m = new Matrix4x4();
+            m.SetTRS(pos, rot, scale);
+
+            var point1 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, 0.5f));
+            var point2 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, 0.5f));
+            var point3 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, -0.5f));
+            var point4 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, -0.5f));
+
+            var point5 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, 0.5f));
+            var point6 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, 0.5f));
+            var point7 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, -0.5f));
+            var point8 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, -0.5f));
+
+            Debug.DrawLine(point1, point2, c);
+            Debug.DrawLine(point2, point3, c);
+            Debug.DrawLine(point3, point4, c);
+            Debug.DrawLine(point4, point1, c);
+
+            Debug.DrawLine(point5, point6, c);
+            Debug.DrawLine(point6, point7, c);
+            Debug.DrawLine(point7, point8, c);
+            Debug.DrawLine(point8, point5, c);
+
+            Debug.DrawLine(point1, point5, c);
+            Debug.DrawLine(point2, point6, c);
+            Debug.DrawLine(point3, point7, c);
+            Debug.DrawLine(point4, point8, c);
+        }
+
+#endif
 
 }
  

@@ -60,6 +60,8 @@ public class AppEvents
 
     public static Action<TargetSpawner.KanaReadingGroup> OnGroupCleared;
 
+    public static Action<CharacterTarget> OnCharacterCleared;
+
     public static Action OnStrokeCleared;
 
 }
