@@ -1179,10 +1179,10 @@ MonoBehaviour:
   characterTargetPrefab: {fileID: 8045162609554504462, guid: c27d4b9990dadd24eac41dac04974ac4, type: 3}
   CharacterSize: {x: 15, y: 15, z: 1}
   writingConfig:
-    noRefPointsInStroke: 5
-    compThreshTight: 0.03
-    compThreshLoose: 0.07
-    lengthThreshold: 2.12
+    noRefPointsInStroke: 9
+    compThreshTight: 0.49
+    compThreshLoose: 0.93
+    lengthThreshold: 1.4
     lineWidth: 0.56
     targetScale: 0.77
     targetZOffset: 0.44
