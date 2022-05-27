@@ -1180,12 +1180,13 @@ MonoBehaviour:
   CharacterSize: {x: 15, y: 15, z: 1}
   writingConfig:
     noRefPointsInStroke: 9
-    compThreshTight: 0.49
-    compThreshLoose: 0.93
+    compThreshTight: 0.67
+    compThreshLoose: 1.2
     lengthThreshold: 1.4
     lineWidth: 0.56
     targetScale: 0.77
     targetZOffset: 0.44
+  overrideChar: 32
   MaxNoOfGroups: 3
   kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   MaxNoOfEmptyTargets: 5

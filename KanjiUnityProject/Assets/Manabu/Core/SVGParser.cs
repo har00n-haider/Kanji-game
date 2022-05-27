@@ -34,11 +34,11 @@ namespace Manabu.Core
             {
                 string pathStr = pathElem.Attributes.GetNamedItem("d").Value;
                 var vectorPaths = GetVectorStroke(pathStr);
-                Stroke rawStroke = new Stroke
-                {
-                    orderNo = int.Parse(pathElem.Attributes.GetNamedItem("id").Value.Split('-')[1].Replace("s", "")),
-                    points = SVGUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke),
-                };
+                Stroke rawStroke = new();
+                rawStroke.orderNo = int.Parse(pathElem.Attributes.GetNamedItem("id").Value.Split('-')[1].Replace("s", ""));
+                rawStroke.points = SVGUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke);
+                rawStroke.unscaledLength = SVGUtils.GetLengthForPnts(rawStroke.points);
+                
                 // HACK: Hardcoded for now as it doesn't seem that these values change in the
                 // source kanji svg files
                 rawStroke.points = SVGUtils.NormalizeAndConvertToUnityCoords(rawStroke.points, 109, 109);

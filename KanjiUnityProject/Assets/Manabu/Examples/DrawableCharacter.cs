@@ -23,13 +23,13 @@ namespace Manabu.Examples
             public ReferenceStroke(Vector2 scale, List<Vector2> points, int noOfKeyPoints)
             {
                 this.points.AddRange(points);
-                keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
-                length = SVGUtils.GetLengthForPnts(this.points);
-                // Reference points are 0 - 1, need to scale up to fit the collider
+                // Reference points are 0 - 1, need to scale up to fit the size
                 for (int i = 0; i < this.points.Count; i++)
                 {
-                    this.points[i].Scale(scale);
+                    this.points[i] = Vector2.Scale(this.points[i],scale);
                 }
+                keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
+                length = SVGUtils.GetLengthForPnts(this.points);
             }
         }
 

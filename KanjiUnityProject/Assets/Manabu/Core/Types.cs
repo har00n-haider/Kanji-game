@@ -32,7 +32,7 @@ namespace Manabu.Core
         public float scaledHeight;
         public List<Stroke> strokes = new List<Stroke>();
 
-        public DrawData(float width, float height, float scale, List<Stroke> strokes = null)
+        public DrawData(float width, float height, float scale, List<Stroke> strokes)
         {
             this.width = width;
             this.height = height;
@@ -49,6 +49,7 @@ namespace Manabu.Core
     {
         public int orderNo;
         public List<Vector2> points = new List<Vector2>();
+        public float unscaledLength;
     }
 
     public enum CharacterType

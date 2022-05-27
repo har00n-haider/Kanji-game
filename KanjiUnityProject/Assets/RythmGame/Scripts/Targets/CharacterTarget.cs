@@ -11,18 +11,23 @@ using System;
 /// </summary>
 public class CharacterTarget : MonoBehaviour
 {
-    // scale
+    // character pos/scale
     /// <summary>
     /// Width & height of the character in world units. Used to scale the 0 - 1 range of the Manabu character
     /// </summary>
     private Vector3 CharacterSize { get; set; }
+    /// <summary>
+    /// Center of che chan
+    /// </summary>
     public Vector3 CharacterCenter { get { return new Vector3(0.5f * CharacterSize.x, 0.5f * CharacterSize.y, 0.5f * CharacterSize.z); } }
 
     // state
     public List<CharacterStrokeTarget> Strokes = new List<CharacterStrokeTarget>();
     public CharacterStrokeTarget CurrentStroke { get { return CurrentStrokeIdx < Strokes.Count ? Strokes[CurrentStrokeIdx] : null; } }
     public int CurrentStrokeIdx { get; private set; } = 0;
-    public bool Completed { get; private set; } = false;
+    public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } } 
+    public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } } 
+
 
     // character data
     public Character Character { get; private set; } = null;
@@ -42,12 +47,8 @@ public class CharacterTarget : MonoBehaviour
 
     private void Update()
     {
-        if (Strokes.TrueForAll(s => s.completed))
-        {
-            AppEvents.OnCharacterCleared?.Invoke(this);
-        }
-    }
 
+    }
 
     public void CreateNextStroke()
     {
@@ -64,7 +65,18 @@ public class CharacterTarget : MonoBehaviour
                 Character.drawData.strokes[CurrentStrokeIdx].points,
                 this);
             Strokes.Add(strokeTarget);
+            strokeTarget.OnStrokeCompleted += UpdateStrokes;
             CurrentStrokeIdx++;
+        }
+    }
+
+    public void UpdateStrokes(CharacterStrokeTarget strokeTarget)
+    {
+        if (Completed)
+        {
+            AppEvents.OnCharacterCompleted?.Invoke(this);
+            gameObject.SetActive(false);
+            Destroy(gameObject, 3);
         }
     }
 
@@ -103,7 +115,7 @@ public class CharacterTarget : MonoBehaviour
         {
             var config = GameManager.Instance.TargetSpawner.WritingConfig;
 
-            if (sp.completed)
+            if (sp.Completed)
             {
                 for (int i = 0; i < config.noRefPointsInStroke; i++)
                 {

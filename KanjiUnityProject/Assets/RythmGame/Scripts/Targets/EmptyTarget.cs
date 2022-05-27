@@ -80,6 +80,7 @@ public class EmptyTarget : MonoBehaviour
 
     public bool HitCheck()
     {
+        if (this == null) return false;
         Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
         return modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue);
     }

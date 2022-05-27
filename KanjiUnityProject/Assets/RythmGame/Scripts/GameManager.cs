@@ -9,8 +9,7 @@ using Manabu.Core;
 using RythmGame;
 
 /// <summary>
-/// - Singleton pattern
-/// - Deals with input in the game
+/// Singleton pattern managment object for the game
 /// </summary>
 public class GameManager : MonoBehaviour
 {

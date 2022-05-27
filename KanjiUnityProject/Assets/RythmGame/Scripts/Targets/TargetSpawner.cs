@@ -18,6 +18,7 @@ public class TargetSpawner : MonoBehaviour
     public DrawableStrokeConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
     private DrawableStrokeConfig writingConfig;
+    public char overrideChar = ' ';
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -71,7 +72,7 @@ public class TargetSpawner : MonoBehaviour
     {
         AppEvents.OnSelected += SpawnAnwsers;
         AppEvents.OnGroupCleared += UpdateKanaReadingGroups;
-        AppEvents.OnCharacterCleared += RemoveCharacter;
+        AppEvents.OnCharacterCompleted += UpdateCharacterGroups;
 
     }
 
@@ -79,29 +80,26 @@ public class TargetSpawner : MonoBehaviour
     {
         AppEvents.OnSelected -= SpawnAnwsers;
         AppEvents.OnGroupCleared -= UpdateKanaReadingGroups;
-        AppEvents.OnCharacterCleared -= RemoveCharacter;
+        AppEvents.OnCharacterCompleted -= UpdateCharacterGroups;
 
     }
 
     private void Start()
     {
         spawnToBeatTimeOffset = beatManager.BeatPeriod * 1.5;
-        CreateDrawTarget();
-
     }
 
 
-    private float spawnEvery = 2f;
-    private float spawnCtr = 0f;
-    // Update is called once per frame
+    private float spawnTargetEvery = 6f;
+    private float spawnTargetCounter = 6f;
     void Update()
     {
-        //spawnCtr += Time.deltaTime;
-        //if (spawnCtr > spawnEvery)
-        //{
-        //    CreateDrawTarget();
-        //    spawnCtr = 0f;
-        //}
+        spawnTargetCounter += Time.deltaTime;
+        if (spawnTargetCounter > spawnTargetEvery)
+        {
+            CreateDrawTarget();
+            spawnTargetCounter = 0f;
+        }
 
 
 
@@ -115,17 +113,37 @@ public class TargetSpawner : MonoBehaviour
 
     private void CreateDrawTarget()
     {
-        Character character = GameManager.Instance.Database.GetCharacter('へ');
-        //Character character = GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
+
+        Character character = overrideChar != ' ' ?
+            GameManager.Instance.Database.GetCharacter(overrideChar) :
+            GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
+
         // generate the beats for the entire character
         List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats = new();
         int beatIdx = -1;
         var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
+
+        float beatThreshold1 = 150f;
+        //float beatThreshold2 = 2.6f;
+        //float beatThreshold3 = 3.8f;
+
         for (int i = 0; i < character.drawData.strokes.Count; i++)
         {
+            int startBeatOffset = ++beatIdx;
+            int endBeatOffset = startBeatOffset;
+            float length = character.drawData.strokes[i].unscaledLength;
+            if (length < beatThreshold1)
+            {
+                endBeatOffset += 1;
+            }
+            else if (length > beatThreshold1)
+            {
+                endBeatOffset += 2;
+            }
+            beatIdx = endBeatOffset;
             beats.Add(new Tuple<BeatManager.Beat, BeatManager.Beat>(
-                beatManager.GetNextBeatTimeStamp(++beatIdx, BeatManager.Beat.BeatType.Beat, startBeat),
-                beatManager.GetNextBeatTimeStamp(++beatIdx, BeatManager.Beat.BeatType.Beat, startBeat)
+                beatManager.GetNextBeatTimeStamp(startBeatOffset, BeatManager.Beat.BeatType.Beat, startBeat),
+                beatManager.GetNextBeatTimeStamp(endBeatOffset, BeatManager.Beat.BeatType.Beat, startBeat)
             ));                            
         }
         Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (CharacterSize / 2);
@@ -149,11 +167,10 @@ public class TargetSpawner : MonoBehaviour
         } 
     }
 
-    private void RemoveCharacter(CharacterTarget target)
+    private void UpdateCharacterGroups(CharacterTarget target)
     {
-        //kanawritingGroups.Remove(target);
-        //Destroy(target.gameObject);
-
+        Debug.Log("character " + target.Character.literal + " completed, passed: " + target.Pass );
+        kanawritingGroups.Remove(target);
     }
 
     #endregion

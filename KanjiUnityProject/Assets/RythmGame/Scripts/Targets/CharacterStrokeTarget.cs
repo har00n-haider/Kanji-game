@@ -33,7 +33,7 @@ public class InputStroke
     public List<Vector2> keyPoints = new(); // key points in the stroke used for evaluation
     public List<Vector2> points = new();    // points used for visualising the line on screen
     public float length { get; private set; }
-    public bool completed = false;
+    public bool Completed = false;
     public bool active;
     private int noOfKeyPoints;
 
@@ -51,7 +51,7 @@ public class InputStroke
     {
         keyPoints = SVGUtils.GenRefPntsForPnts(points, noOfKeyPoints);
         length = SVGUtils.GetLengthForPnts(points);
-        completed = true;
+        Completed = true;
         active = false;
     }
 }
@@ -89,31 +89,35 @@ public class CharacterStrokeTarget : MonoBehaviour
     // stroke data 
     public InputStroke inpStroke = null;
     public ReferenceStroke refStroke = null;
-    public bool completed { get { return inpStroke.completed; } }
     private DrawableStrokeConfig config;
 
     // results
-    public bool Pass { get; private set; } = true;
+    public bool Completed { get { return inpStroke.Completed; } }
+    public bool Pass { get { return startBeatHit && endBeatHit && strokePassedEvaluation; } }
     public List<float?> keyPointDeltas = new List<float?>();
     private int tightPointIdx = -1;
+    private bool startBeatHit = false; 
+    private bool endBeatHit = false; 
+    private bool strokePassedEvaluation = true; 
 
     // ref
     private CharacterTarget charTarget;
-    private bool canDrawLine = false;
 
     // beats
     public BeatManager.Beat StarBeat = null;
     public BeatManager.Beat EndBeat = null;
 
     // state
-    public enum StrokeTargetState
+    private enum StrokeTargetState
     {
         NotStarted,
         InProgress,
+        Finished
     }
     private StrokeTargetState state;
 
-
+    // events
+    public event Action<CharacterStrokeTarget> OnStrokeCompleted;
 
     void Awake()
     {
@@ -171,9 +175,11 @@ public class CharacterStrokeTarget : MonoBehaviour
 
     private void Update()
     {
+        if (state == StrokeTargetState.Finished) return;
+
         bool thresholdPassed = AudioSettings.dspTime >
             EndTarget.BeatTimeStamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
-        if (thresholdPassed) Finished(Result.Miss);
+        if (thresholdPassed) Finish();
 
         switch (state)
         {
@@ -185,18 +191,20 @@ public class CharacterStrokeTarget : MonoBehaviour
                         if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(StartTarget.BeatTimeStamp))
                         {
                             StartTarget.HandleBeatResult(Result.Hit);
-                            state = StrokeTargetState.InProgress;
+                            startBeatHit = true;
                             goto case StrokeTargetState.InProgress;
                         }
                         else
                         {
                             StartTarget.HandleBeatResult(Result.Miss);
-                            Finished(Result.Miss);
+                            startBeatHit = false;
+                            Finish();
                         }
                     }
                 }
                 break;
             case StrokeTargetState.InProgress:
+                state = StrokeTargetState.InProgress;
                 if (GameInput.GetButton1())
                 {
                     // convert mouse position to a point on the character plane 
@@ -217,12 +225,14 @@ public class CharacterStrokeTarget : MonoBehaviour
                         if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndTarget.BeatTimeStamp))
                         {
                             EndTarget.HandleBeatResult(Result.Hit);
-                            Finished(Result.Hit);
+                            endBeatHit = true;
+                            Finish();
                         }
                         else
                         {
                             EndTarget.HandleBeatResult(Result.Miss);
-                            Finished(Result.Miss);
+                            endBeatHit = false;
+                            Finish();
                         }
                     }
                 }
@@ -230,36 +240,35 @@ public class CharacterStrokeTarget : MonoBehaviour
         }
     }
 
-    private void Finished(Result beatResult)
-    {
-        inpStroke.Complete();
-        EvaluateStroke();
-        string message = string.Empty;
-        if (Pass) message += "Passed stroke | ";
-        if (beatResult == Result.Hit) message += "Beat hit";
-        Debug.Log(message);
-        Destroy(gameObject);
-    }
 
     private void OnDestroy()
     {
     }
 
-    public void EvaluateStroke()
+    private void Finish()
+    {
+        state = StrokeTargetState.Finished;
+        inpStroke.Complete();
+        EvaluateInputStroke();
+        Debug.Log("Passed stroke "  + Pass + " | start beat hit " + startBeatHit + "| end beat hit" + endBeatHit);
+        OnStrokeCompleted?.Invoke(this);
+    }
+
+    public void EvaluateInputStroke()
     {
         // all points need to be under the loose threshold
         for (int i = 0; i < inpStroke.keyPoints.Count; i++)
         {
             float distance = Mathf.Abs((inpStroke.keyPoints[i] - refStroke.keyPoints[i]).magnitude);
             keyPointDeltas.Add(distance);
-            Pass &= distance < config.compThreshLoose;
+            strokePassedEvaluation &= distance < config.compThreshLoose;
         }
         // at least one point needs to be under the tight thresh
         float? tightDist = keyPointDeltas.FirstOrDefault(d => d < config.compThreshTight);
         if (tightDist != null) tightPointIdx = keyPointDeltas.IndexOf(tightDist);
-        Pass &= tightPointIdx != -1;
+        strokePassedEvaluation &= tightPointIdx != -1;
         // total length needs to be within limits
-        Pass &= Mathf.Abs(inpStroke.length - refStroke.length) < config.lengthThreshold;
+        strokePassedEvaluation &= Mathf.Abs(inpStroke.length - refStroke.length) < config.lengthThreshold;
     }
 
 }
