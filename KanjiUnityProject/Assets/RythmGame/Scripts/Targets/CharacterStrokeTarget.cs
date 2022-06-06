@@ -91,7 +91,6 @@ public class CharacterStrokeTarget : MonoBehaviour
     [SerializeField]
     private GameObject emptyTargePrefab;
     public EmptyTarget StartTarget { get; private set; } = null;
-    public EmptyTarget EndTarget { get; private set; } = null;
 
     // stroke data 
     public InputStroke inpStroke = null;
@@ -173,14 +172,6 @@ public class CharacterStrokeTarget : MonoBehaviour
         StartTarget.Init(startBeat, null);
         StartTarget.transform.localScale = new Vector3(config.targetScale, config.targetScale, config.targetScale);
 
-        EndTarget = Instantiate(
-            emptyTargePrefab,
-            endPosition,
-            Quaternion.identity,
-            transform).GetComponent<EmptyTarget>();
-        EndTarget.Init(endBeat, null);
-        EndTarget.transform.localScale = new Vector3(config.targetScale, config.targetScale, config.targetScale);
-
         state = StrokeTargetState.NotStarted;
     }
 
@@ -189,7 +180,7 @@ public class CharacterStrokeTarget : MonoBehaviour
         if (state == StrokeTargetState.Finished) return;
 
         bool thresholdPassed = AudioSettings.dspTime >
-            EndTarget.BeatTimeStamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
+            EndBeat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
         if (thresholdPassed) Finish();
 
         switch (state)
@@ -216,9 +207,9 @@ public class CharacterStrokeTarget : MonoBehaviour
                 break;
             case StrokeTargetState.InProgress:
                 state = StrokeTargetState.InProgress;
+                // Update the input stroke 
                 if (GameInput.GetButton1())
                 {
-                    // convert mouse position to a point on the character plane 
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     bool hit = charTarget.GetCharacterPlane().Raycast(ray, out float enter);
                     if (hit)
@@ -229,22 +220,18 @@ public class CharacterStrokeTarget : MonoBehaviour
                         inpStroke.AddPoint(localPoint);
                     }
                 }
+                // Check the final beat
                 if (GameInput.GetButton1Up())
                 {
-                    if (EndTarget.HitCheck())
+                    if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndBeat.timestamp))
                     {
-                        if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndTarget.BeatTimeStamp))
-                        {
-                            EndTarget.HandleBeatResult(Result.Hit);
-                            endBeatHit = true;
-                            Finish();
-                        }
-                        else
-                        {
-                            EndTarget.HandleBeatResult(Result.Miss);
-                            endBeatHit = false;
-                            Finish();
-                        }
+                        endBeatHit = true;
+                        Finish();
+                    }
+                    else
+                    {
+                        endBeatHit = false;
+                        Finish();
                     }
                 }
                 break;
@@ -261,7 +248,6 @@ public class CharacterStrokeTarget : MonoBehaviour
     private void UpdateFollowCircle()
     {
         float t = (float)MathUtils.InverseLerp(StartBeat.timestamp, EndBeat.timestamp, AudioSettings.dspTime);
-        //float t = 1;
         Vector2 newPos = charTarget.Character.drawData.strokes[strokeId].GetPointOnStroke(t);
         newPos.Scale(charTarget.CharacterSize);
         Debug.Log(t + " " + newPos);
