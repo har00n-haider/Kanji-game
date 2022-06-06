@@ -766,7 +766,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 10.7
   m_Depth: -1
   m_CullingMask:
@@ -1185,6 +1185,7 @@ MonoBehaviour:
     lengthThreshold: 1.4
     lineWidth: 0.56
     targetScale: 0.77
+    followCircleScale: 1
     targetZOffset: 0.44
   overrideChar: 32
   MaxNoOfGroups: 3

@@ -15,7 +15,7 @@ public class CharacterTarget : MonoBehaviour
     /// <summary>
     /// Width & height of the character in world units. Used to scale the 0 - 1 range of the Manabu character
     /// </summary>
-    private Vector3 CharacterSize { get; set; }
+    public Vector3 CharacterSize { get; set; }
     /// <summary>
     /// Center of che chan
     /// </summary>
@@ -62,7 +62,7 @@ public class CharacterTarget : MonoBehaviour
                 Beats[CurrentStrokeIdx].Item1, 
                 Beats[CurrentStrokeIdx].Item2, 
                 CharacterSize, 
-                Character.drawData.strokes[CurrentStrokeIdx].points,
+                CurrentStrokeIdx,
                 this);
             Strokes.Add(strokeTarget);
             strokeTarget.OnStrokeCompleted += UpdateStrokes;

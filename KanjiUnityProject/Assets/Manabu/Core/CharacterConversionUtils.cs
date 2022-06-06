@@ -31,17 +31,7 @@ namespace Manabu.Core
             return r;
         }
 
-        private static List<Vector2> GetPntsOnCubicBezier(CubicBezier cB, int noOfPnts)
-        {
-            List<Vector2> pnts = new List<Vector2>();
-            for (int i = 0; i < noOfPnts; i++)
-            {
-                pnts.Add(GetPntOnCubicBezier(i / (float)noOfPnts, cB));
-            }
-            return pnts;
-        }
-
-        private static float GetLengthOfCubicBezier(CubicBezier cB, float res = 0.1f)
+        private static float GetLengthOfCubicBezier(CubicBezier cB, float res = 0.01f)
         {
             float length = 0;
             Vector2 curPnt = cB.p1;
@@ -57,48 +47,46 @@ namespace Manabu.Core
         private struct PathInfo
         {
             public float[] lengths;
-            public float[] offsets;
             public float totLength;
         };
 
-        public static List<Vector2> GetPointsForVectorStroke(List<CubicBezier> vectorPaths, int pntsInStroke)
+        public static Vector2 GetPointOnVectorStroke(List<CubicBezier> vectorPaths, float t)
         {
-            // get the bezier offsets
-
-            PathInfo pthInfo = new PathInfo
+            Vector2 result = Vector2.zero;
+            // populate lengths across the entire stroke
+            // PERF: should probably do this once when the curves are set
+            PathInfo vectorPathInfo = new PathInfo
             {
                 lengths = new float[vectorPaths.Count],
-                offsets = new float[vectorPaths.Count],
                 totLength = 0f
             };
-
-            int lstIdx = vectorPaths.Count - 1;
             for (int i = 0; i < vectorPaths.Count; i++)
             {
-                pthInfo.lengths[i] = GetLengthOfCubicBezier(vectorPaths[i]);
-                pthInfo.totLength += pthInfo.lengths[i];
-                if (i > 0)
-                {
-                    pthInfo.offsets[i] = pthInfo.lengths[i - 1] + pthInfo.offsets[i - 1];
-                }
+                vectorPathInfo.lengths[i] = GetLengthOfCubicBezier(vectorPaths[i]);
+                vectorPathInfo.totLength += vectorPathInfo.lengths[i];
             }
+            // find relevant path, adapt t for it, then find point
+            float tStrokeDistance = t * vectorPathInfo.totLength;
+            int j = 0;
+            while(j < vectorPaths.Count - 1 && tStrokeDistance > vectorPathInfo.lengths[j])
+            {
+                tStrokeDistance -= vectorPathInfo.lengths[j];
+                j++;
+            }
+            float tPathDistance = tStrokeDistance / vectorPathInfo.lengths[j];
+            tPathDistance = Mathf.Clamp(tPathDistance, 0, 1);
+            result = GetPntOnCubicBezier(tPathDistance, vectorPaths[j]);
+            return result;
+        }
 
+        public static List<Vector2> GetPointsForVectorStroke(List<CubicBezier> vectorPaths, int pntsInStroke)
+        {
             // get the points across the whole vector path
             List<Vector2> pnts = new List<Vector2>();
-            int pthIdx = 0;
-            for (int i = 0; i < pntsInStroke; i++)
+            for (int i = 0; i <= pntsInStroke; i++)
             {
-                float tPth = i / (float)pntsInStroke;
-                float pPthScaled = tPth * pthInfo.totLength;
-                int nxtPthIdx = pthIdx + 1;
-                if (nxtPthIdx != vectorPaths.Count &&
-                   pPthScaled > pthInfo.offsets[nxtPthIdx])
-                {
-                    pthIdx = nxtPthIdx;
-                }
-                float tVecPath = (pPthScaled - pthInfo.offsets[pthIdx]) / pthInfo.lengths[pthIdx];
-                tVecPath = Mathf.Clamp(tVecPath, 0, 1);
-                pnts.Add(GetPntOnCubicBezier(tVecPath, vectorPaths[pthIdx]));
+                float tStroke = i / (float)pntsInStroke; // should go from 0 - 1
+                pnts.Add(GetPointOnVectorStroke(vectorPaths, tStroke));
             }
             return pnts;
         }
@@ -147,9 +135,26 @@ namespace Manabu.Core
             return points;
         }
 
-        public static List<Vector2> NormalizeAndConvertToUnityCoords(List<Vector2> points, float svgHeight, float svgWidth)
+        public static Vector2 NormalizeAndConvertPointToUnityCoords(Vector2 p, float svgHeight, float svgWidth)
         {
-            return points.ConvertAll(p => new Vector2(p.x * (1 / svgWidth), 1 - (p.y * (1 / svgHeight))));
+            return new Vector2(p.x * (1 / svgWidth), 1 - (p.y * (1 / svgHeight)));
+        }
+
+        public static List<Vector2> NormalizeAndConvertPointsToUnityCoords(List<Vector2> points, float svgHeight, float svgWidth)
+        {
+            return points.ConvertAll(p => NormalizeAndConvertPointToUnityCoords(p, svgHeight, svgWidth));
+        }
+
+        public static List<CubicBezier> NormalizeAndConvertCurvesToUnityCoords(List<CubicBezier> curves, float svgHeight, float svgWidth)
+        {
+            foreach(CubicBezier b in curves)
+            {
+                b.p1 = NormalizeAndConvertPointToUnityCoords(b.p1, svgHeight, svgWidth);
+                b.p2 = NormalizeAndConvertPointToUnityCoords(b.p2, svgHeight, svgWidth);
+                b.p3 = NormalizeAndConvertPointToUnityCoords(b.p3, svgHeight, svgWidth);
+                b.p4 = NormalizeAndConvertPointToUnityCoords(b.p4, svgHeight, svgWidth);
+            }
+            return curves;
         }
 
     }

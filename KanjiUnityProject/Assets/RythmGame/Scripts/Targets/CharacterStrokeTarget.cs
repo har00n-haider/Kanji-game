@@ -68,7 +68,9 @@ public class DrawableStrokeConfig
     [Header("Stroke visuals")]
     public float lineWidth = 2;
     public float targetScale = 1.0f;
+    public float followCircleScale = 1.0f;
     public float targetZOffset = 0f;
+
 
 }
 
@@ -78,7 +80,12 @@ public class DrawableStrokeConfig
 public class CharacterStrokeTarget : MonoBehaviour
 {
     // draw line
-    private LineRenderer refStrokeLineRenderer;
+    [SerializeField]
+    private LineRenderer referenceStrokeLine;
+    [SerializeField]
+    private GameObject followCircle;
+
+    
 
     // sub targets - tappable targets for the start / end of a given stroke
     [SerializeField]
@@ -102,9 +109,10 @@ public class CharacterStrokeTarget : MonoBehaviour
 
     // ref
     private CharacterTarget charTarget;
+    private int strokeId;
 
     // beats
-    public BeatManager.Beat StarBeat = null;
+    public BeatManager.Beat StartBeat = null;
     public BeatManager.Beat EndBeat = null;
 
     // state
@@ -124,14 +132,15 @@ public class CharacterStrokeTarget : MonoBehaviour
         config = GameManager.Instance.TargetSpawner.WritingConfig;
     }
 
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, List<Vector2> points, CharacterTarget charTarget)
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, int strokeId, CharacterTarget charTarget)
     {
+        this.strokeId = strokeId;
         this.charTarget = charTarget;
-        this.StarBeat = startBeat;
+        this.StartBeat = startBeat;
         this.EndBeat = endBeat;
 
         // generate strokes
-        refStroke = new ReferenceStroke(size, points, config.noRefPointsInStroke);
+        refStroke = new ReferenceStroke(size, charTarget.Character.drawData.strokes[strokeId].points, config.noRefPointsInStroke);
         inpStroke = new InputStroke(config.noRefPointsInStroke);
         inpStroke.active = false;
 
@@ -146,12 +155,14 @@ public class CharacterStrokeTarget : MonoBehaviour
 
         // setup the line renderer to display a line connecting them
         // everything else is set in the component in the editor
-        if (refStrokeLineRenderer == null) refStrokeLineRenderer = GetComponentInChildren<LineRenderer>();
-        refStrokeLineRenderer.useWorldSpace = false;
-        refStrokeLineRenderer.positionCount = refStroke.points.Count;
-        refStrokeLineRenderer.SetPositions(refStroke.points.ConvertAll((p) => new Vector3(p.x, p.y, charTarget.CharacterCenter.z)).ToArray());
-        refStrokeLineRenderer.startWidth = config.lineWidth;
-        refStrokeLineRenderer.endWidth = config.lineWidth;
+        referenceStrokeLine.useWorldSpace = false;
+        referenceStrokeLine.positionCount = refStroke.points.Count;
+        referenceStrokeLine.SetPositions(refStroke.points.ConvertAll((p) => new Vector3(p.x, p.y, charTarget.CharacterCenter.z)).ToArray());
+        referenceStrokeLine.startWidth = config.lineWidth;
+        referenceStrokeLine.endWidth = config.lineWidth;
+
+        // setup the follow circle
+        followCircle.transform.lossyScale.Scale(new Vector2(config.followCircleScale, config.followCircleScale));
 
         // instantiate the start/end targets with their respective beats
         StartTarget = Instantiate(
@@ -238,6 +249,8 @@ public class CharacterStrokeTarget : MonoBehaviour
                 }
                 break;
         }
+
+        UpdateFollowCircle();
     }
 
 
@@ -245,12 +258,23 @@ public class CharacterStrokeTarget : MonoBehaviour
     {
     }
 
+    private void UpdateFollowCircle()
+    {
+        float t = (float)MathUtils.InverseLerp(StartBeat.timestamp, EndBeat.timestamp, AudioSettings.dspTime);
+        //float t = 1;
+        Vector2 newPos = charTarget.Character.drawData.strokes[strokeId].GetPointOnStroke(t);
+        newPos.Scale(charTarget.CharacterSize);
+        Debug.Log(t + " " + newPos);
+        followCircle.transform.localPosition = newPos;
+
+    }
+
     private void Finish()
     {
         state = StrokeTargetState.Finished;
         inpStroke.Complete();
         EvaluateInputStroke();
-        Debug.Log("Passed stroke "  + Pass + " | start beat hit " + startBeatHit + "| end beat hit" + endBeatHit);
+        //Debug.Log("Passed stroke "  + Pass + " | start beat hit " + startBeatHit + "| end beat hit" + endBeatHit);
         OnStrokeCompleted?.Invoke(this);
     }
 

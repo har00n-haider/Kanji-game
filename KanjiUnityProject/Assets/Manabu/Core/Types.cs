@@ -49,7 +49,9 @@ namespace Manabu.Core
     {
         public int orderNo;
         public List<Vector2> points = new List<Vector2>();
+        public List<CubicBezier> vectorPaths = new();
         public float unscaledLength;
+        public Vector2 GetPointOnStroke(float t){ return SVGUtils.GetPointOnVectorStroke(vectorPaths, t); }
     }
 
     public enum CharacterType
@@ -154,7 +156,7 @@ namespace Manabu.Core
                     break;
             }
 
-            Debug.Log("| type: " + type + "| display type: " + displayType + "| literal:" + literal + "| value: " + value);
+            //Debug.Log("| type: " + type + "| display type: " + displayType + "| literal:" + literal + "| value: " + value);
             return value;
         }
     }

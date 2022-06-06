@@ -1,7 +1,4 @@
-﻿// Converted from UnityScript to C# at http://www.M2H.nl/files/js_to_c.php - by Mike Hergaarden
-// Do test the code! You usually need to change a few small bits.
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
@@ -33,15 +30,17 @@ namespace Manabu.Core
             foreach (XmlNode pathElem in pathElems)
             {
                 string pathStr = pathElem.Attributes.GetNamedItem("d").Value;
-                var vectorPaths = GetVectorStroke(pathStr);
+                List<CubicBezier> vectorPaths = GetVectorStroke(pathStr);
                 Stroke rawStroke = new();
                 rawStroke.orderNo = int.Parse(pathElem.Attributes.GetNamedItem("id").Value.Split('-')[1].Replace("s", ""));
                 rawStroke.points = SVGUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke);
                 rawStroke.unscaledLength = SVGUtils.GetLengthForPnts(rawStroke.points);
+                rawStroke.vectorPaths = vectorPaths;
                 
                 // HACK: Hardcoded for now as it doesn't seem that these values change in the
                 // source kanji svg files
-                rawStroke.points = SVGUtils.NormalizeAndConvertToUnityCoords(rawStroke.points, 109, 109);
+                rawStroke.points = SVGUtils.NormalizeAndConvertPointsToUnityCoords(rawStroke.points, 109, 109);
+                rawStroke.vectorPaths = SVGUtils.NormalizeAndConvertCurvesToUnityCoords(rawStroke.vectorPaths, 109, 109);
                 strokes.Add(rawStroke);
             }
 

@@ -169,7 +169,7 @@ public class TargetSpawner : MonoBehaviour
 
     private void UpdateCharacterGroups(CharacterTarget target)
     {
-        Debug.Log("character " + target.Character.literal + " completed, passed: " + target.Pass );
+        //Debug.Log("character " + target.Character.literal + " completed, passed: " + target.Pass );
         kanawritingGroups.Remove(target);
     }
 
@@ -216,7 +216,7 @@ public class TargetSpawner : MonoBehaviour
 
     private void UpdateEmptyTargetList(BeatManager.Beat beat) 
     {
-        Debug.Log("Calling " + "UpdateEmptyTargetList");
+        //Debug.Log("Calling " + "UpdateEmptyTargetList");
         emptyTargetBeats.Remove( emptyTargetBeats.Find(et => et.beat == beat));
     }
 
