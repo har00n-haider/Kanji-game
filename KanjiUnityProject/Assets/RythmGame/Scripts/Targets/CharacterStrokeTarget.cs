@@ -161,7 +161,7 @@ public class CharacterStrokeTarget : MonoBehaviour
         referenceStrokeLine.endWidth = config.lineWidth;
 
         // setup the follow circle
-        followCircle.transform.lossyScale.Scale(new Vector2(config.followCircleScale, config.followCircleScale));
+        followCircle.transform.localScale = Vector3.Scale(followCircle.transform.localScale, new Vector3(config.followCircleScale, config.followCircleScale, 1));
 
         // instantiate the start/end targets with their respective beats
         StartTarget = Instantiate(

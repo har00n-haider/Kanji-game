@@ -1177,17 +1177,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterTargetPrefab: {fileID: 8045162609554504462, guid: c27d4b9990dadd24eac41dac04974ac4, type: 3}
-  CharacterSize: {x: 15, y: 15, z: 1}
+  CharacterSize: {x: 30, y: 30, z: 1}
   writingConfig:
     noRefPointsInStroke: 9
     compThreshTight: 0.67
     compThreshLoose: 1.2
     lengthThreshold: 1.4
-    lineWidth: 0.56
-    targetScale: 0.77
-    followCircleScale: 1
-    targetZOffset: 0.44
-  overrideChar: 32
+    lineWidth: 2.5
+    targetScale: 1.2
+    followCircleScale: 1.4
+    targetZOffset: -0.2
+  overrideChar: 12356
   MaxNoOfGroups: 3
   kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   MaxNoOfEmptyTargets: 5
