@@ -49,6 +49,8 @@ MonoBehaviour:
   referenceStrokeLine: {fileID: 3021454279747795174}
   followCircle: {fileID: 5734428076443855818}
   emptyTargePrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
+  keyPointPrefab: {fileID: 4895622073076623711, guid: 08a4ef4a260f45747a61cbc31e278e36, type: 3}
+  keyPointCollectEffect: {fileID: 8667159329183705160, guid: a5bd62b475dd27f4cb7757322ceae62f, type: 3}
 --- !u!1 &5734428076443855818
 GameObject:
   m_ObjectHideFlags: 0

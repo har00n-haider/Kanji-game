@@ -8,38 +8,50 @@ using RythmGame;
 using System.Linq;
 using System;
 
+
+// TODO: remove this class as there is only ever one per stroke target + input stroke is doing much at the moment
 public class ReferenceStroke
 {
-    public List<Vector2> keyPoints = new List<Vector2>(); // key points in the stroke used for evaluation
+    public List<Vector2> keyPointPositions = new List<Vector2>(); // key points in the stroke used for evaluation
     public List<Vector2> points = new List<Vector2>();    // points used for visualising the line on screen
     public float length { get; private set; }
-
-    public ReferenceStroke(Vector2 scale, List<Vector2> points, int noOfKeyPoints)
+    public Stroke stroke;
+    public int nextKeyPointIdx = 0;
+    public Vector2? nextKeyPoint { get { return nextKeyPointIdx >= keyPointPositions.Count ? null : keyPointPositions[nextKeyPointIdx]; } }
+    
+    public ReferenceStroke(Vector2 scale, Stroke stroke, CharacterStrokeConfig config)
     {
-        this.points.AddRange(points);
-        // Reference points are 0 - 1, need to scale up to fit the collider
-        for (int i = 0; i < this.points.Count; i++)
+        this.stroke = stroke;
+        points.AddRange(stroke.points);
+        keyPointPositions = SVGUtils.GetKeyPointsForVectorStroke(stroke.vectorPaths, config.keyPointDistance);
+        length = SVGUtils.GetLengthForPnts(points);
+        // points are 0 - 1, need to scale up to fit the collider
+        for (int i = 0; i < points.Count; i++)
         {
-            this.points[i] = Vector2.Scale(this.points[i], scale);
+            points[i] = Vector2.Scale(points[i], scale);
         }
-        keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
-        length = SVGUtils.GetLengthForPnts(this.points);
+        for (int i = 0; i < keyPointPositions.Count; i++)
+        {
+            keyPointPositions[i] = Vector2.Scale(keyPointPositions[i], scale);
+        }
+    }
+
+    public void TriggerKeyPoint()
+    {
+        if(nextKeyPointIdx < keyPointPositions.Count) nextKeyPointIdx++;
     }
 }
 
 public class InputStroke
 {
     // stats/data for the stroke
-    public List<Vector2> keyPoints = new(); // key points in the stroke used for evaluation
     public List<Vector2> points = new();    // points used for visualising the line on screen
     public float length { get; private set; }
     public bool Completed = false;
     public bool active;
-    private int noOfKeyPoints;
 
-    public InputStroke(int noOfKeyPoints)
+    public InputStroke()
     {
-        this.noOfKeyPoints = noOfKeyPoints;
     }
 
     public void AddPoint(Vector2 point)
@@ -49,7 +61,7 @@ public class InputStroke
 
     public void Complete()
     {
-        keyPoints = SVGUtils.GenRefPntsForPnts(points, noOfKeyPoints);
+        //keyPoints = SVGUtils.GenRefPntsForPnts(points, noOfKeyPoints);
         length = SVGUtils.GetLengthForPnts(points);
         Completed = true;
         active = false;
@@ -57,21 +69,17 @@ public class InputStroke
 }
 
 [Serializable]
-public class DrawableStrokeConfig
+public class CharacterStrokeConfig
 {
     [Header("Stroke evaluation")]
-    // configuration for strokes
-    public int noRefPointsInStroke = 5;
-    public float compThreshTight = 0.03f;
-    public float compThreshLoose = 0.07f;
-    public float lengthThreshold = 2;
+    public float compThresh = 0.03f;
     [Header("Stroke visuals")]
     public float lineWidth = 2;
     public float targetScale = 1.0f;
+    public float keyPointScale = 1.0f;
     public float followCircleScale = 1.0f;
     public float targetZOffset = 0f;
-
-
+    public float keyPointDistance = 0.02f;
 }
 
 /// <summary>
@@ -85,26 +93,29 @@ public class CharacterStrokeTarget : MonoBehaviour
     [SerializeField]
     private GameObject followCircle;
 
-    
-
     // sub targets - tappable targets for the start / end of a given stroke
     [SerializeField]
     private GameObject emptyTargePrefab;
+    [SerializeField]
+    private GameObject keyPointPrefab;
     public EmptyTarget StartTarget { get; private set; } = null;
+    [SerializeField]
+    private Effect keyPointCollectEffect;
+   
 
     // stroke data 
     public InputStroke inpStroke = null;
     public ReferenceStroke refStroke = null;
-    private DrawableStrokeConfig config;
+    private CharacterStrokeConfig config;
+    private List<GameObject> keyPoints = new();
 
     // results
     public bool Completed { get { return inpStroke.Completed; } }
-    public bool Pass { get { return startBeatHit && endBeatHit && strokePassedEvaluation; } }
+    public bool Pass { get { return startBeatHit && endBeatHit; } }
     public List<float?> keyPointDeltas = new List<float?>();
     private int tightPointIdx = -1;
     private bool startBeatHit = false; 
     private bool endBeatHit = false; 
-    private bool strokePassedEvaluation = true; 
 
     // ref
     private CharacterTarget charTarget;
@@ -139,8 +150,8 @@ public class CharacterStrokeTarget : MonoBehaviour
         this.EndBeat = endBeat;
 
         // generate strokes
-        refStroke = new ReferenceStroke(size, charTarget.Character.drawData.strokes[strokeId].points, config.noRefPointsInStroke);
-        inpStroke = new InputStroke(config.noRefPointsInStroke);
+        refStroke = new ReferenceStroke(size, charTarget.Character.drawData.strokes[strokeId], config);
+        inpStroke = new InputStroke();
         inpStroke.active = false;
 
         // set the beats for the target, taking care to transform to world pos
@@ -159,6 +170,19 @@ public class CharacterStrokeTarget : MonoBehaviour
         referenceStrokeLine.SetPositions(refStroke.points.ConvertAll((p) => new Vector3(p.x, p.y, charTarget.CharacterCenter.z)).ToArray());
         referenceStrokeLine.startWidth = config.lineWidth;
         referenceStrokeLine.endWidth = config.lineWidth;
+
+        // add the keypoints
+        foreach(Vector2 p in refStroke.keyPointPositions)
+        {
+            GameObject g = Instantiate(
+                keyPointPrefab,
+                Vector3.zero,
+                Quaternion.identity,
+                transform);
+            g.transform.localPosition = p;
+            g.transform.localScale = g.transform.localScale * config.keyPointScale;
+            keyPoints.Add(g);
+        }
 
         // setup the follow circle
         followCircle.transform.localScale = Vector3.Scale(followCircle.transform.localScale, new Vector3(config.followCircleScale, config.followCircleScale, 1));
@@ -218,6 +242,7 @@ public class CharacterStrokeTarget : MonoBehaviour
                         Vector3 worldPoint = ray.direction * enter + ray.origin;
                         Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
                         inpStroke.AddPoint(localPoint);
+                        CheckAgainstKeyPoint(localPoint);
                     }
                 }
                 // Check the final beat
@@ -236,7 +261,6 @@ public class CharacterStrokeTarget : MonoBehaviour
                 }
                 break;
         }
-
         UpdateFollowCircle();
     }
 
@@ -250,7 +274,6 @@ public class CharacterStrokeTarget : MonoBehaviour
         float t = (float)MathUtils.InverseLerp(StartBeat.timestamp, EndBeat.timestamp, AudioSettings.dspTime);
         Vector2 newPos = charTarget.Character.drawData.strokes[strokeId].GetPointOnStroke(t);
         newPos.Scale(charTarget.CharacterSize);
-        Debug.Log(t + " " + newPos);
         followCircle.transform.localPosition = newPos;
 
     }
@@ -259,26 +282,23 @@ public class CharacterStrokeTarget : MonoBehaviour
     {
         state = StrokeTargetState.Finished;
         inpStroke.Complete();
-        EvaluateInputStroke();
         //Debug.Log("Passed stroke "  + Pass + " | start beat hit " + startBeatHit + "| end beat hit" + endBeatHit);
         OnStrokeCompleted?.Invoke(this);
     }
 
-    public void EvaluateInputStroke()
+    public void CheckAgainstKeyPoint(Vector2 inputPoint)
     {
-        // all points need to be under the loose threshold
-        for (int i = 0; i < inpStroke.keyPoints.Count; i++)
+        if(refStroke.nextKeyPoint.HasValue)
         {
-            float distance = Mathf.Abs((inpStroke.keyPoints[i] - refStroke.keyPoints[i]).magnitude);
-            keyPointDeltas.Add(distance);
-            strokePassedEvaluation &= distance < config.compThreshLoose;
+            // check if a key point was hit
+            float distance = Mathf.Abs((inputPoint - refStroke.nextKeyPoint.Value).magnitude);
+            if(distance < config.compThresh)
+            {
+                Instantiate(keyPointCollectEffect, keyPoints[refStroke.nextKeyPointIdx].transform.position, Quaternion.identity);
+                keyPoints[refStroke.nextKeyPointIdx].SetActive(false);
+                refStroke.TriggerKeyPoint();
+            }
         }
-        // at least one point needs to be under the tight thresh
-        float? tightDist = keyPointDeltas.FirstOrDefault(d => d < config.compThreshTight);
-        if (tightDist != null) tightPointIdx = keyPointDeltas.IndexOf(tightDist);
-        strokePassedEvaluation &= tightPointIdx != -1;
-        // total length needs to be within limits
-        strokePassedEvaluation &= Mathf.Abs(inpStroke.length - refStroke.length) < config.lengthThreshold;
     }
 
 }

@@ -28,7 +28,7 @@ namespace Manabu.Examples
                 {
                     this.points[i] = Vector2.Scale(this.points[i],scale);
                 }
-                keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
+                //keyPoints = SVGUtils.GenRefPntsForPnts(this.points, noOfKeyPoints);
                 length = SVGUtils.GetLengthForPnts(this.points);
             }
         }
@@ -55,7 +55,7 @@ namespace Manabu.Examples
 
             public void Complete()
             {
-                keyPoints = SVGUtils.GenRefPntsForPnts(points, noOfKeyPoints);
+                //keyPoints = SVGUtils.GenRefPntsForPnts(points, noOfKeyPoints);
                 length = SVGUtils.GetLengthForPnts(points);
                 completed = true;
             }

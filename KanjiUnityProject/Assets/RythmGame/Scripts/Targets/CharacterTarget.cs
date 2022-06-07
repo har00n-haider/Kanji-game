@@ -23,11 +23,9 @@ public class CharacterTarget : MonoBehaviour
 
     // state
     public List<CharacterStrokeTarget> Strokes = new List<CharacterStrokeTarget>();
-    public CharacterStrokeTarget CurrentStroke { get { return CurrentStrokeIdx < Strokes.Count ? Strokes[CurrentStrokeIdx] : null; } }
-    public int CurrentStrokeIdx { get; private set; } = 0;
-    public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } } 
-    public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } } 
-
+    public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } }
+    public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } }
+    private int strokeCounter = 0;
 
     // character data
     public Character Character { get; private set; } = null;
@@ -42,7 +40,6 @@ public class CharacterTarget : MonoBehaviour
         Beats = beats;
         Character = character;
         this.CharacterSize = CharacterSize;
-        CurrentStrokeIdx = 0;
     }
 
     private void Update()
@@ -52,21 +49,22 @@ public class CharacterTarget : MonoBehaviour
 
     public void CreateNextStroke()
     {
-        if(CurrentStrokeIdx < Beats.Count){
+        if (strokeCounter < Beats.Count)
+        {
             CharacterStrokeTarget strokeTarget = Instantiate(
                 strokeTargetPrefab,
                 transform.position,
                 Quaternion.identity,
                 transform).GetComponent<CharacterStrokeTarget>();
             strokeTarget.Init(
-                Beats[CurrentStrokeIdx].Item1, 
-                Beats[CurrentStrokeIdx].Item2, 
-                CharacterSize, 
-                CurrentStrokeIdx,
+                Beats[strokeCounter].Item1,
+                Beats[strokeCounter].Item2,
+                CharacterSize,
+                strokeCounter,
                 this);
             Strokes.Add(strokeTarget);
             strokeTarget.OnStrokeCompleted += UpdateStrokes;
-            CurrentStrokeIdx++;
+            strokeCounter++;
         }
     }
 
@@ -90,111 +88,87 @@ public class CharacterTarget : MonoBehaviour
     }
 
 
-    
+
 #if UNITY_EDITOR
 
-        private void OnDrawGizmos()
+    private void OnDrawGizmos()
+    {
+        // Box enclosing the character
+        DrawBox(transform.TransformPoint(CharacterCenter), transform.rotation, CharacterSize, new Color(0, 1, 0, 0.5f));
+
+        // draw debug strokes
+        DrawStroke();
+
+
+        DrawKeyPoints();
+
+    }
+
+    private void DrawKeyPoints()
+    {
+        var config = GameManager.Instance.TargetSpawner.WritingConfig;
+        foreach(var sp in Strokes)
         {
-            // Box enclosing the character
-            DrawBox(transform.TransformPoint(CharacterCenter), transform.rotation, CharacterSize, new Color(0, 1 ,0 , 0.5f));
-
-            // draw debug strokes
-            DrawStrokePair();
-
-            if (Strokes.Count > 0)
+            for (int i = 0; i < sp.refStroke.keyPointPositions.Count; i++)
             {
-                // HACK: crashes when <= is used
-                for (int i = 0; i < CurrentStrokeIdx; i++)
-                {
-                    DrawStrokeEvaluation(Strokes[i]);
-                }
+                float radius = CharacterSize.magnitude / 200.0f;
+                Gizmos.color = Color.gray;
+                var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPointPositions[i].x, sp.refStroke.keyPointPositions[i].y, CharacterCenter.z));
+                Gizmos.DrawSphere(refPnt, radius); // 
+                Gizmos.color = new Color(0, 0, 0, 0.1f);
+                Gizmos.DrawSphere(refPnt, config.compThresh);
             }
         }
+    }
 
-        private void DrawStrokeEvaluation(CharacterStrokeTarget sp)
+    private void DrawStroke()
+    {
+        foreach (var s in Strokes)
         {
-            var config = GameManager.Instance.TargetSpawner.WritingConfig;
-
-            if (sp.Completed)
+            var l = s.refStroke.points;
+            var c = Color.green;
+            for (int i = 1; i < l.Count; i++)
             {
-                for (int i = 0; i < config.noRefPointsInStroke; i++)
-                {
-                    float radius = CharacterSize.magnitude / 110.0f;
-                    Gizmos.color = Color.gray;
-                    var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPoints[i].x, sp.refStroke.keyPoints[i].y, CharacterCenter.z));
-                    Gizmos.DrawSphere(refPnt, radius);
-                    Gizmos.color = new Color(0, 0, 0, 0.1f);
-                    Gizmos.DrawSphere(refPnt, config.compThreshLoose);
-                    Gizmos.DrawSphere(refPnt, config.compThreshTight);
-                    Gizmos.color = sp.Pass ? Color.green : Color.red;
-                    // tight dist color
-                    //Gizmos.color = sp.tightPointIdx == i ? new Color(1, 0, 1) : Gizmos.color; // purple
-                    Vector3 inpPnt = Vector3.zero;
-                    if(sp.inpStroke.keyPoints.Count > 0)
-                    {
-                        inpPnt = transform.TransformPoint(new Vector3(sp.inpStroke.keyPoints[i].x, sp.inpStroke.keyPoints[i].y, CharacterCenter.z));
-                    }
-                    Gizmos.DrawSphere(inpPnt, radius);
-                    // connect the two
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawLine(refPnt, inpPnt);
-                }
+                Vector3 start = transform.TransformPoint(new Vector3(l[i - 1].x, l[i - 1].y, CharacterCenter.z));
+                Vector3 end = transform.TransformPoint(new Vector3(l[i].x, l[i].y, CharacterCenter.z));
+                Debug.DrawLine(start, end, c);
             }
         }
+    }
 
-        private void DrawStrokePair()
-        {
-            Action<List<Vector2>, Color> drawStroke = (l, c) =>
-            {
-                for (int i = 1; i < l.Count; i++)
-                {
-                    Vector3 start = transform.TransformPoint(new Vector3(l[i - 1].x, l[i - 1].y, CharacterCenter.z));
-                    Vector3 end = transform.TransformPoint(new Vector3(l[i].x, l[i].y, CharacterCenter.z));
-                    Debug.DrawLine(start, end, c);
-                }
-            };
+    public void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
+    {
+        // create matrix
+        Matrix4x4 m = new Matrix4x4();
+        m.SetTRS(pos, rot, scale);
 
-            foreach (var s in Strokes)
-            {
-                drawStroke(s.refStroke.points, Color.green);
-            }
+        var point1 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, 0.5f));
+        var point2 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, 0.5f));
+        var point3 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, -0.5f));
+        var point4 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, -0.5f));
 
-            if (CurrentStroke != null) drawStroke(CurrentStroke.inpStroke.points, Color.blue);
-        }
+        var point5 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, 0.5f));
+        var point6 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, 0.5f));
+        var point7 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, -0.5f));
+        var point8 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, -0.5f));
 
-        public void DrawBox(Vector3 pos, Quaternion rot, Vector3 scale, Color c)
-        {
-            // create matrix
-            Matrix4x4 m = new Matrix4x4();
-            m.SetTRS(pos, rot, scale);
+        Debug.DrawLine(point1, point2, c);
+        Debug.DrawLine(point2, point3, c);
+        Debug.DrawLine(point3, point4, c);
+        Debug.DrawLine(point4, point1, c);
 
-            var point1 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, 0.5f));
-            var point2 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, 0.5f));
-            var point3 = m.MultiplyPoint(new Vector3(0.5f, -0.5f, -0.5f));
-            var point4 = m.MultiplyPoint(new Vector3(-0.5f, -0.5f, -0.5f));
+        Debug.DrawLine(point5, point6, c);
+        Debug.DrawLine(point6, point7, c);
+        Debug.DrawLine(point7, point8, c);
+        Debug.DrawLine(point8, point5, c);
 
-            var point5 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, 0.5f));
-            var point6 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, 0.5f));
-            var point7 = m.MultiplyPoint(new Vector3(0.5f, 0.5f, -0.5f));
-            var point8 = m.MultiplyPoint(new Vector3(-0.5f, 0.5f, -0.5f));
-
-            Debug.DrawLine(point1, point2, c);
-            Debug.DrawLine(point2, point3, c);
-            Debug.DrawLine(point3, point4, c);
-            Debug.DrawLine(point4, point1, c);
-
-            Debug.DrawLine(point5, point6, c);
-            Debug.DrawLine(point6, point7, c);
-            Debug.DrawLine(point7, point8, c);
-            Debug.DrawLine(point8, point5, c);
-
-            Debug.DrawLine(point1, point5, c);
-            Debug.DrawLine(point2, point6, c);
-            Debug.DrawLine(point3, point7, c);
-            Debug.DrawLine(point4, point8, c);
-        }
+        Debug.DrawLine(point1, point5, c);
+        Debug.DrawLine(point2, point6, c);
+        Debug.DrawLine(point3, point7, c);
+        Debug.DrawLine(point4, point8, c);
+    }
 
 #endif
 
 }
- 
+

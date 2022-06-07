@@ -15,6 +15,7 @@ public class GameAudio : MonoBehaviour
     public AudioClip fail;
     public AudioClip select;
     public AudioClip success;
+    public AudioClip keyPointCollect;
     
     void Awake()
     {
@@ -28,6 +29,7 @@ public class GameAudio : MonoBehaviour
         audioClipMap["success"] = success;
         audioClipMap["fail"] = fail;
         audioClipMap["selected"] = select;
+        audioClipMap["keyPointCollect"] = keyPointCollect;
     }
 
     /// <summary>

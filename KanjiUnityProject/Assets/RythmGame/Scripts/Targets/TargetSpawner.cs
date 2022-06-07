@@ -15,9 +15,9 @@ public class TargetSpawner : MonoBehaviour
     public CharacterTarget characterTargetPrefab;
     private List<CharacterTarget> kanawritingGroups = new List<CharacterTarget>();
     public Vector3 CharacterSize;
-    public DrawableStrokeConfig WritingConfig { get { return writingConfig; } }
+    public CharacterStrokeConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
-    private DrawableStrokeConfig writingConfig;
+    private CharacterStrokeConfig writingConfig;
     public char overrideChar = ' ';
 
     // =========================== Reading group =========================== 
@@ -91,7 +91,7 @@ public class TargetSpawner : MonoBehaviour
 
 
     private float spawnTargetEvery = 6f;
-    private float spawnTargetCounter = 6f;
+    private float spawnTargetCounter = 3f;
     void Update()
     {
         spawnTargetCounter += Time.deltaTime;
@@ -134,11 +134,11 @@ public class TargetSpawner : MonoBehaviour
             float length = character.drawData.strokes[i].unscaledLength;
             if (length < beatThreshold1)
             {
-                endBeatOffset += 1;
+                endBeatOffset += 2;
             }
             else if (length > beatThreshold1)
             {
-                endBeatOffset += 2;
+                endBeatOffset += 3;
             }
             beatIdx = endBeatOffset;
             beats.Add(new Tuple<BeatManager.Beat, BeatManager.Beat>(

@@ -88,12 +88,12 @@ namespace Manabu.Core
                 float tStroke = i / (float)pntsInStroke; // should go from 0 - 1
                 pnts.Add(GetPointOnVectorStroke(vectorPaths, tStroke));
             }
+            //Debug.Break();
             return pnts;
         }
 
         public static float GetLengthForPnts(List<Vector2> points)
         {
-            // get total length of line
             float totalDist = 0;
             for (int i = 1; i < points.Count; i++)
             {
@@ -102,37 +102,32 @@ namespace Manabu.Core
             return totalDist;
         }
 
-        // TODO: use interpolation between points to get a more consistent ref points
-        public static List<Vector2> GenRefPntsForPnts(List<Vector2> points, int noOfPoints = 5)
+        public static float GetLengthForVectorStroke(List<CubicBezier> vectorPaths)
         {
-            if (noOfPoints > points.Count || noOfPoints < 1) return new List<Vector2>();
-            if (points.Count > 3)
+            // get total length of line
+            float totalDist = 0;
+            for (int i = 0; i < vectorPaths.Count; i++)
             {
-                List<Vector2> refPnts = new List<Vector2>();
-                // get total length of line
-                float totalDist = GetLengthForPnts(points);
-                noOfPoints--; // add last point manually
-                float increment = totalDist / noOfPoints;
-                // add points
-                for (int j = 0; j < noOfPoints; j++)
-                {
-                    float currDist = 0;
-                    float targetDist = j * increment;
-                    for (int i = 1; i < points.Count; i++)
-                    {
-                        currDist += (points[i] - points[i - 1]).magnitude;
-                        if (currDist > targetDist)
-                        {
-                            refPnts.Add(points[i]);
-                            break;
-                        }
-                    }
-                }
-                refPnts.Add(points[points.Count - 1]);
-
-                return refPnts;
+                totalDist += GetLengthOfCubicBezier(vectorPaths[i]);
             }
-            return points;
+            return totalDist;
+        
+        }
+
+        // TODO: use interpolation between points to get a more consistent ref points
+        public static List<Vector2> GetKeyPointsForVectorStroke(List<CubicBezier> vectorPaths, float segmentLength)
+        {
+            float totalLength = GetLengthForVectorStroke(vectorPaths);
+            List<Vector2> keyPoints = new();
+            float currentLength = totalLength;
+            if (currentLength <= 0) return keyPoints;
+            while(currentLength >= 0)
+            {
+                float t = currentLength / totalLength;
+                keyPoints.Insert(0, GetPointOnVectorStroke(vectorPaths, t));
+                currentLength -= segmentLength;
+            }
+            return keyPoints;
         }
 
         public static Vector2 NormalizeAndConvertPointToUnityCoords(Vector2 p, float svgHeight, float svgWidth)
