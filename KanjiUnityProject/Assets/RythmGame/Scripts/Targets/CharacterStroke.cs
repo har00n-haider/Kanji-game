@@ -177,8 +177,6 @@ public class CharacterStroke : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
             if (followTarget.Collider.Raycast(ray, out RaycastHit hit, float.MaxValue))
             {
-                //Vector3 worldPoint = hit.point;
-                //Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
                 followTarget.SetColor(Color.yellow);
                 followTarget.RangeCircleActive = true;
                 CheckAgainstKeyPoint();
