@@ -1180,9 +1180,9 @@ MonoBehaviour:
   CharacterSize: {x: 30, y: 30, z: 1}
   writingConfig:
     compThresh: 1.13
-    lengthThreshold: 1.4
     lineWidth: 1
     targetScale: 1.2
+    keyPointScale: 1.5
     followCircleScale: 1.4
     targetZOffset: -0.2
     keyPointDistance: 0.15
@@ -2124,6 +2124,7 @@ MonoBehaviour:
   fail: {fileID: 8300000, guid: 7c237aa361275464798f7e752125dc80, type: 3}
   select: {fileID: 8300000, guid: b681cb6d3807b244ca0a575b123c8b59, type: 3}
   success: {fileID: 8300000, guid: 1c2d265ec7e1cdc45b1a00b98dea9ba4, type: 3}
+  keyPointCollect: {fileID: 8300000, guid: 7e0e8e891746a9b4e89dc20a96ef13ba, type: 3}
 --- !u!4 &1770974223
 Transform:
   m_ObjectHideFlags: 0
