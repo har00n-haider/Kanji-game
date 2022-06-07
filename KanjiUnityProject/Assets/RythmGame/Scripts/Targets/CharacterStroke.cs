@@ -53,6 +53,7 @@ public class CharacterStrokeConfig
     public float followTargetScale = 1.0f;
     public float targetZOffset = 0f;
     public float keyPointDistance = 0.02f;
+    public float hangaboutTimeCharacter = 0.09f;
 }
 
 /// <summary>
@@ -179,16 +180,19 @@ public class CharacterStroke : MonoBehaviour
                 //Vector3 worldPoint = hit.point;
                 //Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
                 followTarget.SetColor(Color.yellow);
+                followTarget.RangeCircleActive = true;
                 CheckAgainstKeyPoint();
             }
             else
             {
                 followTarget.SetColor(Color.white);
+                followTarget.RangeCircleActive = false;
             }
         }
         else
         {
             followTarget.SetColor(Color.white);
+            followTarget.RangeCircleActive = false;
         }
 
         // Check the final beat
@@ -230,10 +234,10 @@ public class CharacterStroke : MonoBehaviour
     private void Evaluate()
     {
         // HACK: use a struct to capture the key point data correctly
-        Pass = startBeatHit.HasValue && startBeatHit.Value == true && 
+        Pass = startBeatHit.HasValue && startBeatHit.Value == true &&
             keyPointsColliders.Count(c => !c.gameObject.activeInHierarchy) > 1;
 
-        if (Pass) 
+        if (Pass)
         {
             referenceStrokeLine.startColor = successColor;
             referenceStrokeLine.endColor = successColor;

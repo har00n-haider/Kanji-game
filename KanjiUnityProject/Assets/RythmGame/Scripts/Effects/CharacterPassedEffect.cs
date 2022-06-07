@@ -61,7 +61,7 @@ public class CharacterPassedEffect : CustomEffect
 
         while(alpha >= 0)
         {
-            alpha -= 0.007f;
+            alpha -= 0.009f;
             color.a = alpha;
             foreach (var line in strokes)
             {

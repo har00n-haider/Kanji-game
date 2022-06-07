@@ -1180,11 +1180,12 @@ MonoBehaviour:
   CharacterSize: {x: 30, y: 30, z: 1}
   writingConfig:
     compThresh: 1.13
-    lineWidth: 1.59
-    keyPointScale: 0.48
-    followTargetScale: 0.9
+    lineWidth: 2.2
+    keyPointScale: 0.57
+    followTargetScale: 1.3
     targetZOffset: -0.2
     keyPointDistance: 0.15
+    hangaboutTimeCharacter: 0.2
   overrideChar: 32
   MaxNoOfGroups: 3
   kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}

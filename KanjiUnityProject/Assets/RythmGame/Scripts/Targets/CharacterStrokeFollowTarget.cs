@@ -12,7 +12,7 @@ public class CharacterStrokeFollowTarget : MonoBehaviour
     // timing
     [SerializeField]
     private double hangAboutTime;
-    public double BeatTimeStamp { get { return beat.timestamp;} }
+    public double BeatTimeStamp { get { return beat.timestamp; } }
     private double startTimeStamp = 0;
     private BeatManager.Beat beat;
     public BeatManager.Beat Beat { get { return beat; } }
@@ -25,6 +25,14 @@ public class CharacterStrokeFollowTarget : MonoBehaviour
     private float radiusBegin;
     private float radiusEnd;
     private float beatCircleLineWidth = 0.1f;
+
+    // range circle
+    // beat circle
+    [SerializeField]
+    private LineRenderer rangeCircleLine;
+    private Vector3[] rangeCirclePoints = new Vector3[40];
+    public bool RangeCircleActive { get { return rangeCircleLine.gameObject.activeInHierarchy; } set { rangeCircleLine.gameObject.SetActive(value); } }
+
 
     // model
     [SerializeField]
@@ -42,22 +50,25 @@ public class CharacterStrokeFollowTarget : MonoBehaviour
     {
     }
 
-    public void Init(BeatManager.Beat beat, Action<BeatManager.Beat> onDestroyCallback)  
+    public void Init(BeatManager.Beat beat, Action<BeatManager.Beat> onDestroyCallback)
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;
         beatCircleLine.useWorldSpace = true;
-        beatCircleLine.numCapVertices = 10; 
-        beatCircleLine.endWidth = beatCircleLineWidth;  
+        beatCircleLine.numCapVertices = 10;
+        beatCircleLine.endWidth = beatCircleLineWidth;
         beatCircleLine.startWidth = beatCircleLineWidth;
         this.beat = beat;
         this.onDestroyCallback = onDestroyCallback;
         modelCollider = model.GetComponent<SphereCollider>();
-        radiusEnd = modelCollider.radius;
+        radiusEnd = modelCollider.radius / 2;
+        rangeCircleLine.positionCount = rangeCirclePoints.Length;
+        RangeCircleActive = false;
     }
 
     void Update()
     {
+        UpdateRangeCircle();
         UpdateBeatCircle();
     }
 
@@ -69,11 +80,24 @@ public class CharacterStrokeFollowTarget : MonoBehaviour
         return modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue);
     }
 
+    private void UpdateRangeCircle()
+    {
+        // HACK: better to use local position here
+        float radius = 2.8f;
+        GeometryUtils.PopulateCirclePoints3DXY(ref rangeCirclePoints, 
+            radius, 
+            transform.position);
+        for (int i = 0; i < rangeCirclePoints.Length; i++)
+        {
+            rangeCircleLine.SetPosition(i, rangeCirclePoints[i]);
+        }
+    }
 
-    private void UpdateBeatCircle() 
+
+    private void UpdateBeatCircle()
     {
         // decrease size of the beat circle based on time elapsed
-        float t = (float) MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime) ;
+        float t = (float)MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime);
         float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
         GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
         for (int i = 0; i < beatCirclePoints.Length; i++)

@@ -26,6 +26,9 @@ public class CharacterTarget : MonoBehaviour
     public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } }
     public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } }
     private int strokeCounter = 0;
+    private bool playedPassEffect = false;
+    private bool timedDeactivate = false;
+    private float timedDeactivateTimer = 0.0f;
 
     // character data
     public Character Character { get; private set; } = null;
@@ -48,6 +51,13 @@ public class CharacterTarget : MonoBehaviour
         Character = character;
         this.CharacterSize = CharacterSize;
         this.config = config;
+        name = "CharacterTarget - " + character.literal;
+    }
+
+    private void Update()
+    {
+        if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
+        if (timedDeactivateTimer > config.hangaboutTimeCharacter) gameObject.SetActive(false);
     }
 
     public void CreateNextStroke()
@@ -76,14 +86,15 @@ public class CharacterTarget : MonoBehaviour
     {
         if (Completed)
         {
-            if (Pass)
+            if (Pass && !playedPassEffect)
             {
                 var c = Instantiate(characterPassEffect, transform.position, Quaternion.identity).GetComponent<CharacterPassedEffect>();
                 c.Init(CharacterSize, this, config, Color.green);
+                playedPassEffect = true;
             }
 
             AppEvents.OnCharacterCompleted?.Invoke(this);
-            gameObject.SetActive(false);
+            timedDeactivate = true;
             Destroy(gameObject, 3);
         }
     }
@@ -101,8 +112,11 @@ public class CharacterTarget : MonoBehaviour
 
 #if UNITY_EDITOR
 
+    public bool drawDebug = false;
+
     private void OnDrawGizmos()
     {
+        if (!drawDebug) return;
         // Box enclosing the character
         DrawBox(transform.TransformPoint(CharacterCenter), transform.rotation, CharacterSize, new Color(0, 1, 0, 0.5f));
         // draw debug strokes
