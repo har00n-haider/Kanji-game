@@ -3,7 +3,7 @@ using UnityEngine.Assertions;
 using System.Collections.Generic;
 using Manabu.Core;
 using System;
-
+using System.Linq;
 
 /// <summary>
 ///  Contains all the information required to create and manage a group of 
@@ -34,6 +34,8 @@ public class CharacterTarget : MonoBehaviour
     public CharacterStroke strokeTargetPrefab;
     public List<Tuple<BeatManager.Beat, BeatManager.Beat>> Beats { get; private set; } = null;
     private CharacterStrokeConfig config;
+    public BeatManager.Beat StartBeat { get { return Beats.First().Item1; } }
+    public BeatManager.Beat EndBeat { get { return Beats.Last().Item2; } }
 
     // effects
     [SerializeField]

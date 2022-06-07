@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Manabu.Core;
 using System;
+using System.Linq;
 
 
 // TODO: split broadly into to two activities:
@@ -13,7 +14,8 @@ public class TargetSpawner : MonoBehaviour
    // =========================== Writing group =========================== 
     [Header("Writing group")]
     public CharacterTarget characterTargetPrefab;
-    private List<CharacterTarget> kanawritingGroups = new List<CharacterTarget>();
+    private List<CharacterTarget> characterTargets = new List<CharacterTarget>();
+    private int maxNoCharacterTargetsToGenerate = 5;
     public Vector3 CharacterSize;
     public CharacterStrokeConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
@@ -90,15 +92,19 @@ public class TargetSpawner : MonoBehaviour
     }
 
 
-    private float spawnTargetEvery = 8f;
-    private float spawnTargetCounter = 3f;
     void Update()
     {
-        spawnTargetCounter += Time.deltaTime;
-        if (spawnTargetCounter > spawnTargetEvery)
+
+        if(characterTargets.Count == 0)
         {
-            CreateDrawTarget();
-            spawnTargetCounter = 0f;
+            // first character target
+            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(4, BeatManager.Beat.BeatType.Beat));
+        }
+
+        while(characterTargets.Count > 0 && characterTargets.Count < maxNoCharacterTargetsToGenerate)
+        {
+            // Generate a beat 2 beats after the last one 
+            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, characterTargets.Last().EndBeat));
         }
 
 
@@ -111,9 +117,8 @@ public class TargetSpawner : MonoBehaviour
     #region Draw targets
 
 
-    private void CreateDrawTarget()
+    private void CreateDrawTarget(BeatManager.Beat startBeat)
     {
-
         Character character = overrideChar != ' ' ?
             GameManager.Instance.Database.GetCharacter(overrideChar) :
             GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
@@ -121,7 +126,6 @@ public class TargetSpawner : MonoBehaviour
         // generate the beats for the entire character
         List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats = new();
         int beatIdx = -1;
-        var startBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat);
 
         float beatThreshold1 = 150f;
         //float beatThreshold2 = 2.6f;
@@ -134,11 +138,11 @@ public class TargetSpawner : MonoBehaviour
             float length = character.drawData.strokes[i].unscaledLength;
             if (length < beatThreshold1)
             {
-                endBeatOffset += 2;
+                endBeatOffset += 1;
             }
             else if (length > beatThreshold1)
             {
-                endBeatOffset += 3;
+                endBeatOffset += 2;
             }
             beatIdx = endBeatOffset;
             beats.Add(new Tuple<BeatManager.Beat, BeatManager.Beat>(
@@ -149,13 +153,13 @@ public class TargetSpawner : MonoBehaviour
         Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (CharacterSize / 2);
         CharacterTarget characterTarget = Instantiate(characterTargetPrefab, position, Quaternion.identity);
         characterTarget.Init(character, CharacterSize, beats, writingConfig);
-        kanawritingGroups.Add(characterTarget);
+        characterTargets.Add(characterTarget);
     }
 
     private void SpawnNextStrokeTarget()
     {
         // check if any of the groups can be spawned
-        foreach(CharacterTarget ct in kanawritingGroups)
+        foreach(CharacterTarget ct in characterTargets)
         {
             foreach(var beatPair in ct.Beats)
             {
@@ -170,7 +174,7 @@ public class TargetSpawner : MonoBehaviour
     private void UpdateCharacterGroups(CharacterTarget target)
     {
         //Debug.Log("character " + target.Character.literal + " completed, passed: " + target.Pass );
-        kanawritingGroups.Remove(target);
+        characterTargets.Remove(target);
     }
 
     #endregion
