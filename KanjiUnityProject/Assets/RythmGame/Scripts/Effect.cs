@@ -18,7 +18,7 @@ public class Effect : MonoBehaviour
     {
         audioEffectClip = GameManager.Instance.GameAudio.GetClip(audioEffectName);
         AudioSource.PlayClipAtPoint(audioEffectClip, transform.position);
-        visualEffect?.SendEvent("OnPlay");
+        if(visualEffect != null) visualEffect.SendEvent("OnPlay");
         Destroy(gameObject, effectLifetime);
     }
 

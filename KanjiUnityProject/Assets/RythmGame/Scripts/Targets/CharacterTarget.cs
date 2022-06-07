@@ -22,16 +22,15 @@ public class CharacterTarget : MonoBehaviour
     public Vector3 CharacterCenter { get { return new Vector3(0.5f * CharacterSize.x, 0.5f * CharacterSize.y, 0.5f * CharacterSize.z); } }
 
     // state
-    public List<CharacterStrokeTarget> Strokes = new List<CharacterStrokeTarget>();
+    public List<CharacterStroke> Strokes = new List<CharacterStroke>();
     public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } }
-    public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } }
     private int strokeCounter = 0;
 
     // character data
     public Character Character { get; private set; } = null;
 
     // refs
-    public CharacterStrokeTarget strokeTargetPrefab;
+    public CharacterStroke strokeTargetPrefab;
     public List<Tuple<BeatManager.Beat, BeatManager.Beat>> Beats { get; private set; } = null;
 
     public void Init(Character character, Vector3 CharacterSize, List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats)
@@ -42,20 +41,15 @@ public class CharacterTarget : MonoBehaviour
         this.CharacterSize = CharacterSize;
     }
 
-    private void Update()
-    {
-
-    }
-
     public void CreateNextStroke()
     {
         if (strokeCounter < Beats.Count)
         {
-            CharacterStrokeTarget strokeTarget = Instantiate(
+            CharacterStroke strokeTarget = Instantiate(
                 strokeTargetPrefab,
                 transform.position,
                 Quaternion.identity,
-                transform).GetComponent<CharacterStrokeTarget>();
+                transform).GetComponent<CharacterStroke>();
             strokeTarget.Init(
                 Beats[strokeCounter].Item1,
                 Beats[strokeCounter].Item2,
@@ -68,7 +62,7 @@ public class CharacterTarget : MonoBehaviour
         }
     }
 
-    public void UpdateStrokes(CharacterStrokeTarget strokeTarget)
+    public void UpdateStrokes(CharacterStroke strokeTarget)
     {
         if (Completed)
         {
@@ -95,30 +89,8 @@ public class CharacterTarget : MonoBehaviour
     {
         // Box enclosing the character
         DrawBox(transform.TransformPoint(CharacterCenter), transform.rotation, CharacterSize, new Color(0, 1, 0, 0.5f));
-
         // draw debug strokes
         DrawStroke();
-
-
-        DrawKeyPoints();
-
-    }
-
-    private void DrawKeyPoints()
-    {
-        var config = GameManager.Instance.TargetSpawner.WritingConfig;
-        foreach(var sp in Strokes)
-        {
-            for (int i = 0; i < sp.refStroke.keyPointPositions.Count; i++)
-            {
-                float radius = CharacterSize.magnitude / 200.0f;
-                Gizmos.color = Color.gray;
-                var refPnt = transform.TransformPoint(new Vector3(sp.refStroke.keyPointPositions[i].x, sp.refStroke.keyPointPositions[i].y, CharacterCenter.z));
-                Gizmos.DrawSphere(refPnt, radius); // 
-                Gizmos.color = new Color(0, 0, 0, 0.1f);
-                Gizmos.DrawSphere(refPnt, config.compThresh);
-            }
-        }
     }
 
     private void DrawStroke()

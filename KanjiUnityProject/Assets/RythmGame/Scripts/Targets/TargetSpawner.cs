@@ -90,7 +90,7 @@ public class TargetSpawner : MonoBehaviour
     }
 
 
-    private float spawnTargetEvery = 6f;
+    private float spawnTargetEvery = 8f;
     private float spawnTargetCounter = 3f;
     void Update()
     {

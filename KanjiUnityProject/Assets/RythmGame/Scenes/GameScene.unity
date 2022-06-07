@@ -1180,10 +1180,9 @@ MonoBehaviour:
   CharacterSize: {x: 30, y: 30, z: 1}
   writingConfig:
     compThresh: 1.13
-    lineWidth: 1
-    targetScale: 1.2
-    keyPointScale: 1.5
-    followCircleScale: 1.4
+    lineWidth: 1.59
+    keyPointScale: 0.48
+    followTargetScale: 0.9
     targetZOffset: -0.2
     keyPointDistance: 0.15
   overrideChar: 12356
