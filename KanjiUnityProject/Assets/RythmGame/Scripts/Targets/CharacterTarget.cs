@@ -17,13 +17,14 @@ public class CharacterTarget : MonoBehaviour
     /// </summary>
     public Vector3 CharacterSize { get; set; }
     /// <summary>
-    /// Center of che chan
+    /// Center of the character, as opposed to the position of this game object
     /// </summary>
     public Vector3 CharacterCenter { get { return new Vector3(0.5f * CharacterSize.x, 0.5f * CharacterSize.y, 0.5f * CharacterSize.z); } }
 
     // state
     public List<CharacterStroke> Strokes = new List<CharacterStroke>();
     public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } }
+    public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } }
     private int strokeCounter = 0;
 
     // character data
@@ -32,32 +33,39 @@ public class CharacterTarget : MonoBehaviour
     // refs
     public CharacterStroke strokeTargetPrefab;
     public List<Tuple<BeatManager.Beat, BeatManager.Beat>> Beats { get; private set; } = null;
+    private CharacterStrokeConfig config;
 
-    public void Init(Character character, Vector3 CharacterSize, List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats)
+    // effects
+    [SerializeField]
+    private Effect characterPassEffect;
+
+    public void Init(Character character, Vector3 CharacterSize, List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats, CharacterStrokeConfig config)
     {
         Assert.IsFalse(beats.Count == character.drawData.strokes.Count * 2);
         Beats = beats;
         Character = character;
         this.CharacterSize = CharacterSize;
+        this.config = config;
     }
 
     public void CreateNextStroke()
     {
         if (strokeCounter < Beats.Count)
         {
-            CharacterStroke strokeTarget = Instantiate(
+            CharacterStroke characterStroke = Instantiate(
                 strokeTargetPrefab,
                 transform.position,
                 Quaternion.identity,
                 transform).GetComponent<CharacterStroke>();
-            strokeTarget.Init(
+            characterStroke.Init(
                 Beats[strokeCounter].Item1,
                 Beats[strokeCounter].Item2,
                 CharacterSize,
                 strokeCounter,
-                this);
-            Strokes.Add(strokeTarget);
-            strokeTarget.OnStrokeCompleted += UpdateStrokes;
+                this,
+                config);
+            Strokes.Add(characterStroke);
+            characterStroke.OnStrokeCompleted += UpdateStrokes;
             strokeCounter++;
         }
     }
@@ -66,6 +74,12 @@ public class CharacterTarget : MonoBehaviour
     {
         if (Completed)
         {
+            if (Pass)
+            {
+                var c = Instantiate(characterPassEffect, transform.position, Quaternion.identity).GetComponent<CharacterPassedEffect>();
+                c.Init(CharacterSize, this, config, Color.green);
+            }
+
             AppEvents.OnCharacterCompleted?.Invoke(this);
             gameObject.SetActive(false);
             Destroy(gameObject, 3);

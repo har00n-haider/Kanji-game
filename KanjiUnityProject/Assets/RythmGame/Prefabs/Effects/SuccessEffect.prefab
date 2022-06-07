@@ -158,3 +158,4 @@ MonoBehaviour:
   visualEffect: {fileID: 8667159328547039571}
   audioEffectName: success
   effectLifetime: 4
+  volume: 1

@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Strokes: []
   strokeTargetPrefab: {fileID: 7812228889364411207, guid: dfa131fdb539bf5419bd1ff987592210, type: 3}
+  characterPassEffect: {fileID: 8667159329183705160, guid: ec5295f002432fb4a8b51900e7fd43e9, type: 3}

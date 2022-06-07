@@ -2122,8 +2122,9 @@ MonoBehaviour:
   BeatManager: {fileID: 1394353260}
   fail: {fileID: 8300000, guid: 7c237aa361275464798f7e752125dc80, type: 3}
   select: {fileID: 8300000, guid: b681cb6d3807b244ca0a575b123c8b59, type: 3}
+  select2: {fileID: 8300000, guid: d2a843a348cc76542a8e86e1e0f2e2f8, type: 3}
   success: {fileID: 8300000, guid: 1c2d265ec7e1cdc45b1a00b98dea9ba4, type: 3}
-  keyPointCollect: {fileID: 8300000, guid: 7e0e8e891746a9b4e89dc20a96ef13ba, type: 3}
+  blip: {fileID: 8300000, guid: 7e0e8e891746a9b4e89dc20a96ef13ba, type: 3}
 --- !u!4 &1770974223
 Transform:
   m_ObjectHideFlags: 0

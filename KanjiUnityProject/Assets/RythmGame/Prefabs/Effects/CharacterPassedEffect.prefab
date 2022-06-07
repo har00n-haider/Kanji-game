@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8667159329183705163}
   - component: {fileID: 8667159329183705160}
+  - component: {fileID: 179411072319760109}
   m_Layer: 0
-  m_Name: KeyPointCollectedEffect
+  m_Name: CharacterPassedEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,6 +46,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 0}
-  audioEffectName: blip
+  audioEffectName: success
   effectLifetime: 4
   volume: 1
+  customEffect: {fileID: 179411072319760109}
+--- !u!114 &179411072319760109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667159329183705162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1382fdbdf4b0d494287592320066091f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strokePrefab: {fileID: 589471808923671836, guid: 236f8d827bf447346984e396f4b5247c, type: 3}

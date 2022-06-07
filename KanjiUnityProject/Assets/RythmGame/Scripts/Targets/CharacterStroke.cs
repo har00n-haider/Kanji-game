@@ -72,7 +72,15 @@ public class CharacterStroke : MonoBehaviour
     [SerializeField]
     private Effect keyPointCollectEffect;
     [SerializeField]
-    private Effect successEffect;
+    private Effect strokePassedEffect;
+
+    // colors
+    [SerializeField]
+    private Color failColor;
+    [SerializeField]
+    private Color successColor;
+    [SerializeField]
+    private Color initialColor;
 
     // stroke data 
     public ReferenceStroke refStroke = null;
@@ -80,6 +88,7 @@ public class CharacterStroke : MonoBehaviour
     private List<SphereCollider> keyPointsColliders = new();
 
     // results
+    public bool Pass { get; set; } = false;
     public bool Completed { get; set; } = false;
     public List<float?> keyPointDeltas = new List<float?>();
     private bool? startBeatHit = null;
@@ -96,13 +105,9 @@ public class CharacterStroke : MonoBehaviour
     // events
     public event Action<CharacterStroke> OnStrokeCompleted;
 
-    void Awake()
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, int strokeId, CharacterTarget charTarget, CharacterStrokeConfig config)
     {
-        config = GameManager.Instance.TargetSpawner.WritingConfig;
-    }
-
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, int strokeId, CharacterTarget charTarget)
-    {
+        this.config = config;
         this.strokeId = strokeId;
         this.charTarget = charTarget;
         this.StartBeat = startBeat;
@@ -127,6 +132,9 @@ public class CharacterStroke : MonoBehaviour
         referenceStrokeLine.SetPositions(refStroke.points.ConvertAll((p) => new Vector3(p.x, p.y, charTarget.CharacterCenter.z)).ToArray());
         referenceStrokeLine.startWidth = config.lineWidth;
         referenceStrokeLine.endWidth = config.lineWidth;
+        referenceStrokeLine.startColor = initialColor;
+        referenceStrokeLine.endColor = initialColor;
+
 
         // add the keypoints
         foreach (Vector2 p in refStroke.keyPointPositions)
@@ -153,7 +161,7 @@ public class CharacterStroke : MonoBehaviour
         {
             if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(followTarget.BeatTimeStamp))
             {
-                Instantiate(successEffect, followTarget.transform.position, Quaternion.identity);
+                Instantiate(strokePassedEffect, followTarget.transform.position, Quaternion.identity);
                 startBeatHit = true;
             }
             else
@@ -188,7 +196,7 @@ public class CharacterStroke : MonoBehaviour
         {
             if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndBeat.timestamp))
             {
-                Instantiate(successEffect, followTarget.transform.position, Quaternion.identity);
+                Instantiate(strokePassedEffect, followTarget.transform.position, Quaternion.identity);
                 endBeatHit = true;
             }
             else
@@ -214,14 +222,33 @@ public class CharacterStroke : MonoBehaviour
 
     private void Finish()
     {
+        Evaluate();
         Completed = true;
         OnStrokeCompleted?.Invoke(this);
     }
 
-    public void CheckAgainstKeyPoint()
+    private void Evaluate()
+    {
+        // HACK: use a struct to capture the key point data correctly
+        Pass = startBeatHit.HasValue && startBeatHit.Value == true && 
+            keyPointsColliders.Count(c => !c.gameObject.activeInHierarchy) > 1;
+
+        if (Pass) 
+        {
+            referenceStrokeLine.startColor = successColor;
+            referenceStrokeLine.endColor = successColor;
+        }
+        else
+        {
+            referenceStrokeLine.startColor = failColor;
+            referenceStrokeLine.endColor = failColor;
+        }
+    }
+
+    private void CheckAgainstKeyPoint()
     {
         Collider[] colliders = Physics.OverlapSphere(followTarget.transform.position, followTarget.Collider.radius);
-        foreach(SphereCollider s in keyPointsColliders)
+        foreach (SphereCollider s in keyPointsColliders)
         {
             bool canTrigger = s.gameObject.activeInHierarchy && colliders.Contains(s);
             if (canTrigger)

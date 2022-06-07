@@ -14,8 +14,9 @@ public class GameAudio : MonoBehaviour
     private Dictionary<string, AudioClip> audioClipMap = new Dictionary<string, AudioClip>();
     public AudioClip fail;
     public AudioClip select;
+    public AudioClip select2;
     public AudioClip success;
-    public AudioClip keyPointCollect;
+    public AudioClip blip;
     
     void Awake()
     {
@@ -29,7 +30,8 @@ public class GameAudio : MonoBehaviour
         audioClipMap["success"] = success;
         audioClipMap["fail"] = fail;
         audioClipMap["selected"] = select;
-        audioClipMap["keyPointCollect"] = keyPointCollect;
+        audioClipMap["selected2"] = select2;
+        audioClipMap["blip"] = blip;
     }
 
     /// <summary>

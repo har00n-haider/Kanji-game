@@ -148,7 +148,7 @@ public class TargetSpawner : MonoBehaviour
         }
         Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (CharacterSize / 2);
         CharacterTarget characterTarget = Instantiate(characterTargetPrefab, position, Quaternion.identity);
-        characterTarget.Init(character, CharacterSize, beats);
+        characterTarget.Init(character, CharacterSize, beats, writingConfig);
         kanawritingGroups.Add(characterTarget);
     }
 
