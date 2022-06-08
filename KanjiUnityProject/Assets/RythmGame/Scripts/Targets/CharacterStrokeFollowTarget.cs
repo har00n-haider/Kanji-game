@@ -14,8 +14,8 @@ public class CharacterStrokeFollowTarget : MonoBehaviour
     private double hangAboutTime;
     public double BeatTimeStamp { get { return beat.timestamp; } }
     private double startTimeStamp = 0;
-    private BeatManager.Beat beat;
-    public BeatManager.Beat Beat { get { return beat; } }
+    private Beat beat;
+    public Beat Beat { get { return beat; } }
 
     // beat circle
     [SerializeField]
@@ -43,7 +43,7 @@ public class CharacterStrokeFollowTarget : MonoBehaviour
     public SphereCollider Collider { get { return modelCollider; } }
 
 
-    public void Init(BeatManager.Beat beat, CharacterConfig config)
+    public void Init(Beat beat, CharacterConfig config)
     {
         this.beat = beat;
         modelCollider = model.GetComponent<SphereCollider>();

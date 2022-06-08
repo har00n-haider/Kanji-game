@@ -7,10 +7,10 @@ using System.Linq;
 
 
 /// <summary>
-/// Configuration for the characters targets behave and visualized in game
+/// Configuration for the how character targets behave and are visualized in game
 /// </summary>
 [Serializable]
-public class CharacterConfig
+public struct CharacterConfig
 {
     [Tooltip("Thickness of the stroke")]
     public float lineWidth;
@@ -54,7 +54,7 @@ public class TargetSpawner : MonoBehaviour
     public class KanaReadingGroup
     {
         public bool kanaToRomaji = false; // test can be two way 
-        public BeatManager.Beat groupBeat;
+        public Beat groupBeat;
         public ReadTarget question = null;
         public List<ReadTarget> answers = new List<ReadTarget>();
     }
@@ -75,7 +75,7 @@ public class TargetSpawner : MonoBehaviour
     // =========================== Empty targets=========================== 
     public class EmptyTargetEntry
     {
-        public BeatManager.Beat beat;
+        public Beat beat;
         public bool spawned = false;
     }
     [Header("Empty target group")]
@@ -123,13 +123,13 @@ public class TargetSpawner : MonoBehaviour
         if(characterTargets.Count == 0)
         {
             // first character target
-            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(4, BeatManager.Beat.BeatType.Beat));
+            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(4, Beat.BeatType.Beat));
         }
 
         while(characterTargets.Count > 0 && characterTargets.Count < maxNoCharacterTargetsToGenerate)
         {
             // Generate a beat 2 beats after the last one 
-            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, characterTargets.Last().EndBeat));
+            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(2, Beat.BeatType.Beat, characterTargets.Last().EndBeat));
         }
 
 
@@ -142,14 +142,14 @@ public class TargetSpawner : MonoBehaviour
     #region Draw targets
 
 
-    private void CreateDrawTarget(BeatManager.Beat startBeat)
+    private void CreateDrawTarget(Beat startBeat)
     {
         Character character = writingConfig.overrideChar != ' ' ?
             GameManager.Instance.Database.GetCharacter(writingConfig.overrideChar) :
             GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
 
         // generate the beats for the entire character
-        List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats = new();
+        List<Tuple<Beat, Beat>> beats = new();
         int beatIdx = -1;
 
         float beatThreshold1 = 150f;
@@ -170,9 +170,9 @@ public class TargetSpawner : MonoBehaviour
                 endBeatOffset += 2;
             }
             beatIdx = endBeatOffset;
-            beats.Add(new Tuple<BeatManager.Beat, BeatManager.Beat>(
-                beatManager.GetNextBeatTimeStamp(startBeatOffset, BeatManager.Beat.BeatType.Beat, startBeat),
-                beatManager.GetNextBeatTimeStamp(endBeatOffset, BeatManager.Beat.BeatType.Beat, startBeat)
+            beats.Add(new Tuple<Beat, Beat>(
+                beatManager.GetNextBeatTimeStamp(startBeatOffset, Beat.BeatType.Beat, startBeat),
+                beatManager.GetNextBeatTimeStamp(endBeatOffset, Beat.BeatType.Beat, startBeat)
             ));                            
         }
         Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
@@ -211,7 +211,7 @@ public class TargetSpawner : MonoBehaviour
         // fill up the groups with assigned beats 
         while (emptyTargetBeats.Count < MaxNoOfEmptyTargets)
         {
-            BeatManager.Beat refBeat = null;
+            Beat refBeat = null;
             // try to get a reference beat from the last group
             if (emptyTargetBeats.Count > 0)
             {
@@ -219,7 +219,7 @@ public class TargetSpawner : MonoBehaviour
             }
             emptyTargetBeats.Add(new EmptyTargetEntry()
             {
-                beat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, refBeat),
+                beat = beatManager.GetNextBeatTimeStamp(1, Beat.BeatType.Beat, refBeat),
             });
         }
         
@@ -243,7 +243,7 @@ public class TargetSpawner : MonoBehaviour
     
     }
 
-    private void UpdateEmptyTargetList(BeatManager.Beat beat) 
+    private void UpdateEmptyTargetList(Beat beat) 
     {
         //Debug.Log("Calling " + "UpdateEmptyTargetList");
         emptyTargetBeats.Remove( emptyTargetBeats.Find(et => et.beat == beat));
@@ -263,7 +263,7 @@ public class TargetSpawner : MonoBehaviour
         // fill up the groups with assigned beats 
         while (groups.Count < MaxNoOfGroups)
         {
-            BeatManager.Beat refBeat = null;
+            Beat refBeat = null;
             // try to get a reference beat from the last group
             if (groups.Count > 0)
             {
@@ -272,7 +272,7 @@ public class TargetSpawner : MonoBehaviour
             // make a new group some distance from this one
             KanaReadingGroup group = new KanaReadingGroup()
             {
-                groupBeat = beatManager.GetNextBeatTimeStamp(2, BeatManager.Beat.BeatType.Beat, refBeat),
+                groupBeat = beatManager.GetNextBeatTimeStamp(2, Beat.BeatType.Beat, refBeat),
                 kanaToRomaji = tapTargetQuestionToggle
             };
             tapTargetQuestionToggle = !tapTargetQuestionToggle;
@@ -310,7 +310,7 @@ public class TargetSpawner : MonoBehaviour
         KanaReadingGroup group = questionTarget.group;
 
         // answers
-        var ansBeat = beatManager.GetNextBeatTimeStamp(1, BeatManager.Beat.BeatType.Beat, group.groupBeat);
+        var ansBeat = beatManager.GetNextBeatTimeStamp(1, Beat.BeatType.Beat, group.groupBeat);
         int correctAnswer = UnityEngine.Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
@@ -335,7 +335,7 @@ public class TargetSpawner : MonoBehaviour
 
     private ReadTarget SpawnOne(
         Vector3 position, 
-        BeatManager.Beat beat, 
+        Beat beat, 
         Character Character, 
         ReadTarget.Type type, 
         KanaReadingGroup group) 
@@ -357,7 +357,7 @@ public class TargetSpawner : MonoBehaviour
     #endregion 
 
 
-    private bool IsBeatWithinSpawnRange(BeatManager.Beat beat)
+    private bool IsBeatWithinSpawnRange(Beat beat)
     {
         return beatManager.TimeToBeat(beat) < spawnToBeatTimeOffset;
     }

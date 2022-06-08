@@ -39,8 +39,8 @@ public class ReadTarget : MonoBehaviour
     private double hangAboutTime;
     public double BeatTimeStamp { get { return beat.timestamp;} }
     private double startTimeStamp = 0;
-    private BeatManager.Beat beat;
-    public BeatManager.Beat Beat { get { return beat; } }
+    private Beat beat;
+    public Beat Beat { get { return beat; } }
 
     // Effects
     [SerializeField]
@@ -79,7 +79,7 @@ public class ReadTarget : MonoBehaviour
     {
     }
 
-    public void Init(Type type, Character character, TargetSpawner.KanaReadingGroup group, BeatManager.Beat beat)  
+    public void Init(Type type, Character character, TargetSpawner.KanaReadingGroup group, Beat beat)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;

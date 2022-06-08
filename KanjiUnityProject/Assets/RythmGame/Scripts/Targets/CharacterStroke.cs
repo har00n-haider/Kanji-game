@@ -85,13 +85,13 @@ public class CharacterStroke : MonoBehaviour
     private int strokeId;
 
     // beats
-    public BeatManager.Beat StartBeat = null;
-    public BeatManager.Beat EndBeat = null;
+    public Beat StartBeat = null;
+    public Beat EndBeat = null;
 
     // events
     public event Action<CharacterStroke> OnStrokeCompleted;
 
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 characterSize, int strokeId, CharacterTarget charTarget, CharacterConfig config)
+    public void Init(Beat startBeat, Beat endBeat, Vector2 characterSize, int strokeId, CharacterTarget charTarget, CharacterConfig config)
     {
         this.strokeId = strokeId;
         this.charTarget = charTarget;

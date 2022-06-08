@@ -46,10 +46,10 @@ public class CharacterTarget : MonoBehaviour
 
     // refs
     public CharacterStroke strokeTargetPrefab;
-    public List<Tuple<BeatManager.Beat, BeatManager.Beat>> Beats { get; private set; } = null;
+    public List<Tuple<Beat, Beat>> Beats { get; private set; } = null;
     private CharacterConfig config;
-    public BeatManager.Beat StartBeat { get { return Beats.First().Item1; } }
-    public BeatManager.Beat EndBeat { get { return Beats.Last().Item2; } }
+    public Beat StartBeat { get { return Beats.First().Item1; } }
+    public Beat EndBeat { get { return Beats.Last().Item2; } }
     [SerializeField]
     private TextMeshPro backgroundText;
 
@@ -57,7 +57,7 @@ public class CharacterTarget : MonoBehaviour
     [SerializeField]
     private Effect characterPassEffect;
 
-    public void Init(Character character, List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats, CharacterConfig config)
+    public void Init(Character character, List<Tuple<Beat, Beat>> beats, CharacterConfig config)
     {
         Assert.IsFalse(beats.Count == character.drawData.strokes.Count * 2);
         Beats = beats;

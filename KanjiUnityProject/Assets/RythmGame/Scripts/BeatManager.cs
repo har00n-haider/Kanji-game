@@ -2,28 +2,34 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public class Beat
+{
+    public enum BeatType
+    {
+        Beat,
+        Bar
+    }
+
+    public Beat(BeatType type, double timestamp, int beatId)
+    {
+        this.type = type;
+        this.timestamp = timestamp;
+        this.beatId = beatId;
+    }
+
+    public BeatType type;
+    public double timestamp;
+    public int beatId; // also the index into beat array
+}
+
+
+/// <summary>
+/// Responsible for playing the songs and keep track of beats
+/// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class BeatManager : MonoBehaviour
 {
-    public class Beat
-    {
-        public enum BeatType
-        {
-            Beat,
-            Bar
-        }
 
-        public Beat(BeatType type, double timestamp, int beatId)
-        {
-            this.type = type;
-            this.timestamp = timestamp;
-            this.beatId = beatId;
-        }
-
-        public BeatType type;
-        public double timestamp;
-        public int beatId; // also the index into beat array
-    }
 
     [SerializeField]
     private float bpm;

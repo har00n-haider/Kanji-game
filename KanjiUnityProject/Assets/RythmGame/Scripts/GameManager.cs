@@ -74,13 +74,13 @@ public class GameManager : MonoBehaviour
 
     public void UpdateBeat()
     {
-        BeatManager.Beat beat = GameAudio.BeatManager.NextBeat;
+        Beat beat = GameAudio.BeatManager.NextBeat;
         bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
-        if (onBeat && beat.type == BeatManager.Beat.BeatType.Bar)
+        if (onBeat && beat.type == Beat.BeatType.Bar)
         {
             circle.color = BarFlickercColor;
         }
-        else if (onBeat && beat.type == BeatManager.Beat.BeatType.Beat)
+        else if (onBeat && beat.type == Beat.BeatType.Beat)
         {
             circle.color = BeatFlickercColor;
         }

@@ -20,8 +20,8 @@ public class EmptyTarget : MonoBehaviour
     private double hangAboutTime;
     public double BeatTimeStamp { get { return beat.timestamp;} }
     private double startTimeStamp = 0;
-    private BeatManager.Beat beat;
-    public BeatManager.Beat Beat { get { return beat; } }
+    private Beat beat;
+    public Beat Beat { get { return beat; } }
 
     // Effects
     [SerializeField]
@@ -46,14 +46,14 @@ public class EmptyTarget : MonoBehaviour
     private Color modelColor;
 
     // lifetime
-    Action<BeatManager.Beat> onDestroyCallback;
+    Action<Beat> onDestroyCallback;
 
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void Init(BeatManager.Beat beat, Action<BeatManager.Beat> onDestroyCallback)  
+    public void Init(Beat beat, Action<Beat> onDestroyCallback)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;
