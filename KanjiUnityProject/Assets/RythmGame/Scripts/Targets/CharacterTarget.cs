@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Manabu.Core;
 using System;
 using System.Linq;
+using TMPro;
 
 /// <summary>
 ///  Contains all the information required to create and manage a group of 
@@ -29,6 +30,7 @@ public class CharacterTarget : MonoBehaviour
     private bool playedPassEffect = false;
     private bool timedDeactivate = false;
     private float timedDeactivateTimer = 0.0f;
+    public bool StrokesVisible { get; private set; } = false;
 
     // character data
     public Character Character { get; private set; } = null;
@@ -39,6 +41,8 @@ public class CharacterTarget : MonoBehaviour
     private CharacterStrokeConfig config;
     public BeatManager.Beat StartBeat { get { return Beats.First().Item1; } }
     public BeatManager.Beat EndBeat { get { return Beats.Last().Item2; } }
+    [SerializeField]
+    private TextMeshPro backgroundText;
 
     // effects
     [SerializeField]
@@ -52,16 +56,26 @@ public class CharacterTarget : MonoBehaviour
         this.CharacterSize = CharacterSize;
         this.config = config;
         name = "CharacterTarget - " + character.literal;
+        backgroundText.text = character.romaji.ToUpper();
+        backgroundText.gameObject.SetActive(false);
     }
 
     private void Update()
     {
+        float yOffset = 0.3f * CharacterSize.y;
+        backgroundText.transform.localPosition = new Vector3(CharacterCenter.x, CharacterCenter.y + yOffset, CharacterSize.z);
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTimeCharacter) gameObject.SetActive(false);
     }
 
     public void CreateNextStroke()
     {
+        if (!StrokesVisible)
+        {
+            StrokesVisible = true;
+            backgroundText.gameObject.SetActive(true);
+        }
+
         if (strokeCounter < Beats.Count)
         {
             CharacterStroke characterStroke = Instantiate(
