@@ -13,12 +13,12 @@ public class CharacterPassedEffect : CustomEffect
 
     private Vector2 size;
     private CharacterTarget charTarget;
-    private CharacterStrokeConfig config;
+    private CharacterConfig config;
     private Color color;
     private float initialWidth;
     private List<LineRenderer> strokes = new();
 
-    public void Init(Vector2 size, CharacterTarget charTarget, CharacterStrokeConfig config, Color initialColor)
+    public void Init(Vector2 size, CharacterTarget charTarget, CharacterConfig config, Color initialColor)
     {
         this.size = size;
         this.charTarget = charTarget;

@@ -19,7 +19,7 @@ public class ReferenceStroke
     public int nextKeyPointIdx = 0;
     public Vector2? nextKeyPoint { get { return nextKeyPointIdx >= keyPointPositions.Count ? null : keyPointPositions[nextKeyPointIdx]; } }
 
-    public ReferenceStroke(Vector2 scale, Stroke stroke, CharacterStrokeConfig config)
+    public ReferenceStroke(Vector2 scale, Stroke stroke, CharacterConfig config)
     {
         this.stroke = stroke;
         points.AddRange(stroke.points);
@@ -40,20 +40,6 @@ public class ReferenceStroke
     {
         if (nextKeyPointIdx < keyPointPositions.Count) nextKeyPointIdx++;
     }
-}
-
-[Serializable]
-public class CharacterStrokeConfig
-{
-    [Header("Stroke evaluation")]
-    public float compThresh = 0.03f;
-    [Header("Stroke visuals")]
-    public float lineWidth = 2;
-    public float keyPointScale = 1.0f;
-    public float followTargetScale = 1.0f;
-    public float targetZOffset = 0f;
-    public float keyPointDistance = 0.02f;
-    public float hangaboutTimeCharacter = 0.09f;
 }
 
 /// <summary>
@@ -85,7 +71,7 @@ public class CharacterStroke : MonoBehaviour
 
     // stroke data 
     public ReferenceStroke refStroke = null;
-    private CharacterStrokeConfig config;
+    private CharacterConfig config;
     private List<SphereCollider> keyPointsColliders = new();
 
     // results
@@ -106,7 +92,7 @@ public class CharacterStroke : MonoBehaviour
     // events
     public event Action<CharacterStroke> OnStrokeCompleted;
 
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, int strokeId, CharacterTarget charTarget, CharacterStrokeConfig config)
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, int strokeId, CharacterTarget charTarget, CharacterConfig config)
     {
         this.config = config;
         this.strokeId = strokeId;

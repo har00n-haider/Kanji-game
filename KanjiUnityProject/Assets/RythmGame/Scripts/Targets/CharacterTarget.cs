@@ -9,6 +9,14 @@ using TMPro;
 /// <summary>
 ///  Contains all the information required to create and manage a group of 
 ///  stroke targets representing a character. 
+///  
+/// 
+///  Note on the Coordinate systems:
+///  
+/// 
+/// 
+/// 
+/// 
 /// </summary>
 public class CharacterTarget : MonoBehaviour
 {
@@ -38,7 +46,7 @@ public class CharacterTarget : MonoBehaviour
     // refs
     public CharacterStroke strokeTargetPrefab;
     public List<Tuple<BeatManager.Beat, BeatManager.Beat>> Beats { get; private set; } = null;
-    private CharacterStrokeConfig config;
+    private CharacterConfig config;
     public BeatManager.Beat StartBeat { get { return Beats.First().Item1; } }
     public BeatManager.Beat EndBeat { get { return Beats.Last().Item2; } }
     [SerializeField]
@@ -48,12 +56,12 @@ public class CharacterTarget : MonoBehaviour
     [SerializeField]
     private Effect characterPassEffect;
 
-    public void Init(Character character, Vector3 CharacterSize, List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats, CharacterStrokeConfig config)
+    public void Init(Character character, List<Tuple<BeatManager.Beat, BeatManager.Beat>> beats, CharacterConfig config)
     {
         Assert.IsFalse(beats.Count == character.drawData.strokes.Count * 2);
         Beats = beats;
         Character = character;
-        this.CharacterSize = CharacterSize;
+        this.CharacterSize = config.CharacterSize;
         this.config = config;
         name = "CharacterTarget - " + character.literal;
         backgroundText.text = character.romaji.ToUpper();

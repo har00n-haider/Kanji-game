@@ -6,6 +6,27 @@ using System;
 using System.Linq;
 
 
+/// <summary>
+/// Configuration for the characters targets behave and visualized in game
+/// </summary>
+[Serializable]
+public class CharacterConfig
+{
+    [Tooltip("Thickness of the stroke")]
+    public float lineWidth = 2;
+    public float keyPointScale = 1.0f;
+    public float followTargetScale = 1.0f;
+    public float targetZOffset = 0f;
+    [Tooltip("Distance between key points on a stroke. Determines the number of points in a stroke. Not scaled?")]
+    public float keyPointDistance = 0.02f;
+    [Tooltip("how long after the last stroke is completed, does the character stick around on in game")]
+    public float hangaboutTimeCharacter = 0.09f;
+    [Tooltip("The scaling applied to the character stroke line points as the are by deafault between 0 - 1 (not the game object)")]
+    public Vector3 CharacterSize;
+    [Tooltip("Use this to override all generated characters to be this based on this")]
+    public char overrideChar = ' ';
+}
+
 // TODO: split broadly into to two activities:
 // - generating and assigning beats to data objects that hold information required to spawn interactable targets (e.g. groups below)
 // - instantiating the required targets when required
@@ -16,11 +37,9 @@ public class TargetSpawner : MonoBehaviour
     public CharacterTarget characterTargetPrefab;
     private List<CharacterTarget> characterTargets = new List<CharacterTarget>();
     private int maxNoCharacterTargetsToGenerate = 5;
-    public Vector3 CharacterSize;
-    public CharacterStrokeConfig WritingConfig { get { return writingConfig; } }
+    public CharacterConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
-    private CharacterStrokeConfig writingConfig;
-    public char overrideChar = ' ';
+    private CharacterConfig writingConfig;
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -119,8 +138,8 @@ public class TargetSpawner : MonoBehaviour
 
     private void CreateDrawTarget(BeatManager.Beat startBeat)
     {
-        Character character = overrideChar != ' ' ?
-            GameManager.Instance.Database.GetCharacter(overrideChar) :
+        Character character = writingConfig.overrideChar != ' ' ?
+            GameManager.Instance.Database.GetCharacter(writingConfig.overrideChar) :
             GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
 
         // generate the beats for the entire character
@@ -150,9 +169,9 @@ public class TargetSpawner : MonoBehaviour
                 beatManager.GetNextBeatTimeStamp(endBeatOffset, BeatManager.Beat.BeatType.Beat, startBeat)
             ));                            
         }
-        Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (CharacterSize / 2);
+        Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
         CharacterTarget characterTarget = Instantiate(characterTargetPrefab, position, Quaternion.identity);
-        characterTarget.Init(character, CharacterSize, beats, writingConfig);
+        characterTarget.Init(character, beats, writingConfig);
         characterTargets.Add(characterTarget);
     }
 
