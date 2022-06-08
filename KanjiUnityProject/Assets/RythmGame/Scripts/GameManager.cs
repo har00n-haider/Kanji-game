@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
     private Color BarFlickercColor;
     [SerializeField]
     private Color BeatFlickercColor;
+    [SerializeField]
+    private Color HalfBeatFlickercColor;
 
     // Awake() is called before Start.
     void Awake()
@@ -76,13 +78,20 @@ public class GameManager : MonoBehaviour
     {
         Beat beat = GameAudio.BeatManager.NextBeat;
         bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
-        if (onBeat && beat.type == Beat.BeatType.Bar)
+        if(onBeat)
         {
-            circle.color = BarFlickercColor;
-        }
-        else if (onBeat && beat.type == Beat.BeatType.Beat)
-        {
-            circle.color = BeatFlickercColor;
+            switch (beat.type)
+            {
+                case Beat.BeatType.HalfBeat:
+                    circle.color = HalfBeatFlickercColor;
+                    break;
+                case Beat.BeatType.Beat:
+                    circle.color = BeatFlickercColor;
+                    break;
+                case Beat.BeatType.Bar:
+                    circle.color = BarFlickercColor;
+                    break;
+            }
         }
         else
         {

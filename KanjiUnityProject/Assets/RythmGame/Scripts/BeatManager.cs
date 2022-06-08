@@ -6,8 +6,9 @@ public class Beat
 {
     public enum BeatType
     {
-        Beat,
-        Bar
+        HalfBeat, // Eigth Note for 4 | 4
+        Beat,     // Quarter Note for 4 | 4
+        Bar       // Where the bar start/end is, i.e. after 4 Beats for 4 | 4
     }
 
     public Beat(BeatType type, double timestamp, int beatId)
@@ -29,30 +30,39 @@ public class Beat
 [RequireComponent(typeof(AudioSource))]
 public class BeatManager : MonoBehaviour
 {
-
-
+    // configuration
     [SerializeField]
     private float bpm;
+    public float BeatPeriod { get { return 60.0f / bpm; } }
+    public float HalfBeatPeriod { get { return 30.0f / bpm; } }
     [SerializeField]
-    private int numBeatsPerBar;
-    public int NumBeatsPerBar { get { return numBeatsPerBar; } }
+    private int timeSignatureHi;
     [SerializeField]
-    private AudioClip songClip;
+    private int timeSignatureLo;
+    public int NumHalfBeatsPerBar { get { return timeSignatureHi * 2; }}
     [SerializeField]
     private float beatHitAllowance;
-
     public float BeatHitAllowance { get { return beatHitAllowance; } }
-    public float BeatPeriod { get { return 60.0f / bpm; } }
+    // max delay that it might take to load the sample. this may involve opening
+    // buffering a streamed file and should therefore take any worst-case delay into account.
+    public double preloadTimeDelta;
+    public bool enableMetronome;
+    public float metronomeVolume;
+    public int metronomeBaseBpmMultiple;
+
+    // refs
+    [SerializeField]
+    private AudioClip songClip;
+    private AudioSource audioSource;
+    [SerializeField]
+    private Metronome metronome;
+
+    // state
     public bool IsSongPlaying { get { return running; } }
     public Beat NextBeat { get { return beatMap[nextBeatIntIdx];}}
-
-    private AudioSource audioSource;
     private double startTime;
     private bool running = false;
 
-    // max delay that it might take to load the sample. this may involve opening
-    // buffering a streamed file and should therefore take any worst-case delay into account.
-    private double preloadTimeDelta = 1; 
 
     private List<Beat> beatMap = new List<Beat>();
     private int nextBeatIntIdx = 0; // internal tracknig
@@ -67,10 +77,15 @@ public class BeatManager : MonoBehaviour
         audioSource.PlayScheduled(startTime);
         GenerateBeatMap();
         running = true;
-    }
 
-    void Start()
-    {
+        if(enableMetronome)
+        {
+            metronome.Init(bpm * metronomeBaseBpmMultiple, 
+                timeSignatureHi, 
+                timeSignatureLo, 
+                startTime, 
+                metronomeVolume);
+        }
     }
 
     void Update()
@@ -86,23 +101,26 @@ public class BeatManager : MonoBehaviour
         if (AudioSettings.dspTime > NextBeat.timestamp)
         {
             nextBeatIntIdx++;
-            //GameManager.Instance.ToggleColor();
         }
     }
 
     private void GenerateBeatMap() 
     {
-        // generate entry for every beat
-        // TODO: do for length of song
-        for (int i = 0; i < 1000; i++)
+        int noOfHalfBeatsInSong = (int)(songClip.length * (bpm * 60)) * 2; 
+        for (int halfBeatCtr = 0; halfBeatCtr < noOfHalfBeatsInSong; halfBeatCtr++)
         {
-            if (i % 4 == 0)
+            // we can only have mutually exclusive beat types at the moment
+            if( halfBeatCtr % timeSignatureHi == 0)
             {
-                beatMap.Add(new Beat(Beat.BeatType.Bar, startTime + i * BeatPeriod, i));
+                beatMap.Add(new Beat(Beat.BeatType.Bar, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
+            }
+            else if (halfBeatCtr % 2 == 0)
+            {
+                beatMap.Add(new Beat(Beat.BeatType.Beat, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
             }
             else
             {
-                beatMap.Add(new Beat(Beat.BeatType.Beat, startTime + i * BeatPeriod, i));
+                beatMap.Add(new Beat(Beat.BeatType.HalfBeat, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
             }
         }
     }
@@ -116,24 +134,15 @@ public class BeatManager : MonoBehaviour
     }
 
     // relative to the next beat by default
-    public Beat GetNextBeatTimeStamp(int beatsToSkip = 0, Beat.BeatType type = Beat.BeatType.Beat, Beat referenceBeat = null) 
+    public Beat GetNextHalfBeat(int beatsToSkip = 0, Beat referenceBeat = null) 
     {
         Beat b = referenceBeat == null ? beatMap[nextBeatIntIdx] : referenceBeat;
         int beatIdx = b.beatId;
-        // latch on to a the required type (bar is still a beat)
-        if(type != Beat.BeatType.Beat)
-        {
-            while(b.type != type)
-            {
-                beatIdx++;
-                b = beatMap[beatIdx];
-            }
-        }
         // skip if required
         while(beatsToSkip != 0)
         {
-            // skipe the required amount depending on type 
-            beatIdx += type == Beat.BeatType.Bar ? numBeatsPerBar : 1;
+            // skip the required amount depending on type 
+            beatIdx++;
             b = beatMap[beatIdx];
             beatsToSkip--;
         }

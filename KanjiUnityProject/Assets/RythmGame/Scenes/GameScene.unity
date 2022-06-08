@@ -1004,7 +1004,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1331250786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1017,10 +1017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61f9eb87f3b664c849d86914ed8a581b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpm: 140
-  gain: 0.5
-  timeSignatureHi: 4
-  timeSignatureLo: 4
 --- !u!82 &1331250787
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1129,7 +1125,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1770974223}
+  m_Father: {fileID: 1394353262}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1372679955
@@ -1226,9 +1222,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bpm: 65
-  numBeatsPerBar: 4
-  songClip: {fileID: 8300000, guid: 2d8ed2cd0c5cc6b45b2feb67e98d8683, type: 3}
+  timeSignatureHi: 4
+  timeSignatureLo: 4
   beatHitAllowance: 0.2
+  preloadTimeDelta: 0.5
+  enableMetronome: 0
+  metronomeVolume: 0.2
+  metronomeBaseBpmMultiple: 2
+  songClip: {fileID: 8300000, guid: 2d8ed2cd0c5cc6b45b2feb67e98d8683, type: 3}
+  metronome: {fileID: 1331250786}
 --- !u!82 &1394353261
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1336,9 +1338,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1331250788}
   m_Father: {fileID: 1770974223}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1402287289
 GameObject:
@@ -1560,6 +1563,7 @@ MonoBehaviour:
   circle: {fileID: 1163877319}
   BarFlickercColor: {r: 0.8980392, g: 0.33652204, b: 0.11372546, a: 1}
   BeatFlickercColor: {r: 0, g: 1, b: 0.10793543, a: 1}
+  HalfBeatFlickercColor: {r: 0, g: 0.6636034, b: 0.8584906, a: 1}
 --- !u!4 &1510406027
 Transform:
   m_ObjectHideFlags: 0
@@ -2141,7 +2145,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1331250788}
   - {fileID: 1394353262}
   m_Father: {fileID: 1510406027}
   m_RootOrder: 1

@@ -123,13 +123,12 @@ public class TargetSpawner : MonoBehaviour
         if(characterTargets.Count == 0)
         {
             // first character target
-            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(4, Beat.BeatType.Beat));
+            CreateDrawTarget(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar * 2));
         }
 
         while(characterTargets.Count > 0 && characterTargets.Count < maxNoCharacterTargetsToGenerate)
         {
-            // Generate a beat 2 beats after the last one 
-            CreateDrawTarget(beatManager.GetNextBeatTimeStamp(2, Beat.BeatType.Beat, characterTargets.Last().EndBeat));
+            CreateDrawTarget(beatManager.GetNextHalfBeat(4, characterTargets.Last().EndBeat));
         }
 
 
@@ -163,16 +162,16 @@ public class TargetSpawner : MonoBehaviour
             float length = character.drawData.strokes[i].unscaledLength;
             if (length < beatThreshold1)
             {
-                endBeatOffset += 1;
+                endBeatOffset += 2;
             }
             else if (length > beatThreshold1)
             {
-                endBeatOffset += 2;
+                endBeatOffset += 4;
             }
             beatIdx = endBeatOffset;
             beats.Add(new Tuple<Beat, Beat>(
-                beatManager.GetNextBeatTimeStamp(startBeatOffset, Beat.BeatType.Beat, startBeat),
-                beatManager.GetNextBeatTimeStamp(endBeatOffset, Beat.BeatType.Beat, startBeat)
+                beatManager.GetNextHalfBeat(startBeatOffset, startBeat),
+                beatManager.GetNextHalfBeat(endBeatOffset, startBeat)
             ));                            
         }
         Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
@@ -219,7 +218,7 @@ public class TargetSpawner : MonoBehaviour
             }
             emptyTargetBeats.Add(new EmptyTargetEntry()
             {
-                beat = beatManager.GetNextBeatTimeStamp(1, Beat.BeatType.Beat, refBeat),
+                beat = beatManager.GetNextHalfBeat(1, refBeat),
             });
         }
         
@@ -272,7 +271,7 @@ public class TargetSpawner : MonoBehaviour
             // make a new group some distance from this one
             KanaReadingGroup group = new KanaReadingGroup()
             {
-                groupBeat = beatManager.GetNextBeatTimeStamp(2, Beat.BeatType.Beat, refBeat),
+                groupBeat = beatManager.GetNextHalfBeat(2, refBeat),
                 kanaToRomaji = tapTargetQuestionToggle
             };
             tapTargetQuestionToggle = !tapTargetQuestionToggle;
@@ -310,7 +309,7 @@ public class TargetSpawner : MonoBehaviour
         KanaReadingGroup group = questionTarget.group;
 
         // answers
-        var ansBeat = beatManager.GetNextBeatTimeStamp(1, Beat.BeatType.Beat, group.groupBeat);
+        var ansBeat = beatManager.GetNextHalfBeat(1, group.groupBeat);
         int correctAnswer = UnityEngine.Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
