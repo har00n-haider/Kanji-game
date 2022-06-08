@@ -23,7 +23,7 @@ public class ReferenceStroke
     {
         this.stroke = stroke;
         points.AddRange(stroke.points);
-        keyPointPositions = SVGUtils.GetKeyPointsForVectorStroke(stroke.vectorPaths, config.keyPointDistance);
+        keyPointPositions = SVGUtils.GetKeyPointsForVectorStroke(stroke, config.keyPointDistance);
         length = SVGUtils.GetLengthForPnts(points);
         // points are 0 - 1, need to scale up to fit the collider
         for (int i = 0; i < points.Count; i++)

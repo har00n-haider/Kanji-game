@@ -40,6 +40,7 @@ public class CharacterTarget : MonoBehaviour
     private bool timedDeactivate = false;
     private float timedDeactivateTimer = 0.0f;
     public bool StrokesVisible { get; private set; } = false;
+    public bool AllStrokesVisible  { get { return strokeCounter == Beats.Count; } }
 
     // character data
     public Character Character { get; private set; } = null;
@@ -75,6 +76,11 @@ public class CharacterTarget : MonoBehaviour
         backgroundText.transform.localPosition = new Vector3(CharacterCenter.x, CharacterCenter.y + yOffset, CharacterSize.z);
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTimeCharacter) gameObject.SetActive(false);
+
+        if (strokeCounter < Beats.Count && IsBeatWithinSpawnRange(Beats[strokeCounter].Item1))
+        {
+           CreateNextStroke();
+        }        
     }
 
     public void CreateNextStroke()
@@ -129,6 +135,11 @@ public class CharacterTarget : MonoBehaviour
         Vector3 planePoint = transform.TransformPoint(CharacterCenter);
         Vector3 planeDir = -transform.forward;
         return new Plane(planeDir.normalized, planePoint);
+    }
+
+    private bool IsBeatWithinSpawnRange(Beat beat)
+    {
+        return GameManager.Instance.GameAudio.BeatManager.TimeToBeat(beat) < GameManager.Instance.GameAudio.BeatManager.HalfBeatPeriod;
     }
 
 

@@ -30,17 +30,20 @@ namespace Manabu.Core
             foreach (XmlNode pathElem in pathElems)
             {
                 string pathStr = pathElem.Attributes.GetNamedItem("d").Value;
-                List<CubicBezier> vectorPaths = GetVectorStroke(pathStr);
+
+                // TODO: put this is a constructor
                 Stroke rawStroke = new();
                 rawStroke.orderNo = int.Parse(pathElem.Attributes.GetNamedItem("id").Value.Split('-')[1].Replace("s", ""));
-                rawStroke.points = SVGUtils.GetPointsForVectorStroke(vectorPaths, pntsInStroke);
-                rawStroke.unscaledLength = SVGUtils.GetLengthForPnts(rawStroke.points);
-                rawStroke.vectorPaths = vectorPaths;
-                
-                // HACK: Hardcoded for now as it doesn't seem that these values change in the
-                // source kanji svg files
-                rawStroke.points = SVGUtils.NormalizeAndConvertPointsToUnityCoords(rawStroke.points, 109, 109);
+                rawStroke.vectorPaths = GetVectorStroke(pathStr);
+                // HACK: Hardcoded scaling for now as it doesn't seem that these values change in the source kanji svg files
                 rawStroke.vectorPaths = SVGUtils.NormalizeAndConvertCurvesToUnityCoords(rawStroke.vectorPaths, 109, 109);
+                foreach (var c in rawStroke.vectorPaths)
+                {
+                    c.estimatedLength = SVGUtils.GetLengthOfCubicBezier(c);
+                    rawStroke.unscaledLength += c.estimatedLength;
+                }
+                rawStroke.points = SVGUtils.GetPointsForVectorStroke(rawStroke, pntsInStroke);
+
                 strokes.Add(rawStroke);
             }
 

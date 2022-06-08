@@ -51,7 +51,7 @@ namespace Manabu.Core
         public List<Vector2> points = new List<Vector2>();
         public List<CubicBezier> vectorPaths = new();
         public float unscaledLength;
-        public Vector2 GetPointOnStroke(float t){ return SVGUtils.GetPointOnVectorStroke(vectorPaths, t); }
+        public Vector2 GetPointOnStroke(float t){ return SVGUtils.GetPointOnVectorStroke(this, t); }
     }
 
     public enum CharacterType

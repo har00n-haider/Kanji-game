@@ -14,6 +14,7 @@ namespace Manabu.Core
         public Vector2 p2 = new Vector2();
         public Vector2 p3 = new Vector2();
         public Vector2 p4 = new Vector2();
+        public float estimatedLength;
     }
 
     public static class SVGUtils
@@ -31,7 +32,7 @@ namespace Manabu.Core
             return r;
         }
 
-        private static float GetLengthOfCubicBezier(CubicBezier cB, float res = 0.01f)
+        public static float GetLengthOfCubicBezier(CubicBezier cB, float res = 0.01f)
         {
             float length = 0;
             Vector2 curPnt = cB.p1;
@@ -50,43 +51,31 @@ namespace Manabu.Core
             public float totLength;
         };
 
-        public static Vector2 GetPointOnVectorStroke(List<CubicBezier> vectorPaths, float t)
+        public static Vector2 GetPointOnVectorStroke(Stroke stroke, float t)
         {
             Vector2 result = Vector2.zero;
-            // populate lengths across the entire stroke
-            // PERF: should probably do this once when the curves are set
-            PathInfo vectorPathInfo = new PathInfo
-            {
-                lengths = new float[vectorPaths.Count],
-                totLength = 0f
-            };
-            for (int i = 0; i < vectorPaths.Count; i++)
-            {
-                vectorPathInfo.lengths[i] = GetLengthOfCubicBezier(vectorPaths[i]);
-                vectorPathInfo.totLength += vectorPathInfo.lengths[i];
-            }
             // find relevant path, adapt t for it, then find point
-            float tStrokeDistance = t * vectorPathInfo.totLength;
+            float tStrokeDistance = t * stroke.unscaledLength;
             int j = 0;
-            while(j < vectorPaths.Count - 1 && tStrokeDistance > vectorPathInfo.lengths[j])
+            while(j < stroke.vectorPaths.Count - 1 && tStrokeDistance > stroke.vectorPaths[j].estimatedLength)
             {
-                tStrokeDistance -= vectorPathInfo.lengths[j];
+                tStrokeDistance -= stroke.vectorPaths[j].estimatedLength;
                 j++;
             }
-            float tPathDistance = tStrokeDistance / vectorPathInfo.lengths[j];
+            float tPathDistance = tStrokeDistance / stroke.vectorPaths[j].estimatedLength;
             tPathDistance = Mathf.Clamp(tPathDistance, 0, 1);
-            result = GetPntOnCubicBezier(tPathDistance, vectorPaths[j]);
+            result = GetPntOnCubicBezier(tPathDistance, stroke.vectorPaths[j]);
             return result;
         }
 
-        public static List<Vector2> GetPointsForVectorStroke(List<CubicBezier> vectorPaths, int pntsInStroke)
+        public static List<Vector2> GetPointsForVectorStroke(Stroke stroke, int pntsInStroke)
         {
             // get the points across the whole vector path
             List<Vector2> pnts = new List<Vector2>();
             for (int i = 0; i <= pntsInStroke; i++)
             {
                 float tStroke = i / (float)pntsInStroke; // should go from 0 - 1
-                pnts.Add(GetPointOnVectorStroke(vectorPaths, tStroke));
+                pnts.Add(GetPointOnVectorStroke(stroke, tStroke));
             }
             //Debug.Break();
             return pnts;
@@ -114,17 +103,16 @@ namespace Manabu.Core
         
         }
 
-        // TODO: use interpolation between points to get a more consistent ref points
-        public static List<Vector2> GetKeyPointsForVectorStroke(List<CubicBezier> vectorPaths, float segmentLength)
+        public static List<Vector2> GetKeyPointsForVectorStroke(Stroke stroke, float segmentLength)
         {
-            float totalLength = GetLengthForVectorStroke(vectorPaths);
+            float totalLength = stroke.unscaledLength;
             List<Vector2> keyPoints = new();
             float currentLength = totalLength;
             if (currentLength <= 0) return keyPoints;
             while(currentLength >= 0)
             {
                 float t = currentLength / totalLength;
-                keyPoints.Insert(0, GetPointOnVectorStroke(vectorPaths, t));
+                keyPoints.Insert(0, GetPointOnVectorStroke(stroke, t));
                 currentLength -= segmentLength;
             }
             return keyPoints;

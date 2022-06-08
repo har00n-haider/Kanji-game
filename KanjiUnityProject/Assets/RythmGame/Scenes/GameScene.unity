@@ -1186,6 +1186,10 @@ MonoBehaviour:
     followTargetBeatCircleLineWidth: 0.2
     followTargetRangeCircleLineWidth: 0.15
     followTargetColliderRadius: 1.59
+    speedEasy: 0.6
+    speedNormal: 0.8
+    speedHard: 1.2
+    speedInsane: 1.5
   MaxNoOfGroups: 3
   kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   MaxNoOfEmptyTargets: 5

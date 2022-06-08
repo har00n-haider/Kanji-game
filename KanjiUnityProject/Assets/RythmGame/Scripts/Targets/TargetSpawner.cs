@@ -31,6 +31,20 @@ public struct CharacterConfig
     public float followTargetBeatCircleLineWidth;
     public float followTargetRangeCircleLineWidth;
     public float followTargetColliderRadius;
+
+    public float speedEasy;
+    public float speedNormal;
+    public float speedHard;
+    public float speedInsane;
+
+}
+
+public enum Difficulty
+{
+    Easy,
+    Normal,
+    Hard,
+    Insane
 }
 
 // TODO: split broadly into to two activities:
@@ -41,11 +55,20 @@ public class TargetSpawner : MonoBehaviour
    // =========================== Writing group =========================== 
     [Header("Writing group")]
     public CharacterTarget characterTargetPrefab;
-    private List<CharacterTarget> characterTargets = new List<CharacterTarget>();
+    private List<CharacterTargetSpawnData> characterTargetsData = new List<CharacterTargetSpawnData>();
     private int maxNoCharacterTargetsToGenerate = 5;
     public CharacterConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
     private CharacterConfig writingConfig;
+
+    public struct CharacterTargetSpawnData
+    {
+        public Vector3 position;
+        public List<Tuple<Beat, Beat>> beats;
+        public Character character;
+        public Beat StartBeat { get { return beats.First().Item1; } }
+        public Beat EndBeat { get { return beats.Last().Item2; } }
+    }
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -113,35 +136,33 @@ public class TargetSpawner : MonoBehaviour
 
     private void Start()
     {
-        spawnToBeatTimeOffset = beatManager.BeatPeriod * 1.5;
+        spawnToBeatTimeOffset = beatManager.HalfBeatPeriod;
+
+        GenerateTargetData();
     }
 
 
     void Update()
     {
-
-        if(characterTargets.Count == 0)
-        {
-            // first character target
-            CreateDrawTarget(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar * 2));
-        }
-
-        while(characterTargets.Count > 0 && characterTargets.Count < maxNoCharacterTargetsToGenerate)
-        {
-            CreateDrawTarget(beatManager.GetNextHalfBeat(4, characterTargets.Last().EndBeat));
-        }
-
-
-
         SpawnNextStrokeTarget();
     }
 
-
+    void GenerateTargetData()
+    {
+        // generate draw data
+        for (int i = 0; i < 13; i++)
+        {
+            if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar), Difficulty.Easy);
+            else if (i > 0 && i <= 3) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Normal);
+            else if (i > 3 && i <= 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Hard);
+            else if (i > 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Insane);
+        }
+    }
 
     #region Draw targets
 
 
-    private void CreateDrawTarget(Beat startBeat)
+    private void CreateDrawTargetData(Beat startBeat, Difficulty difficulty)
     {
         Character character = writingConfig.overrideChar != ' ' ?
             GameManager.Instance.Database.GetCharacter(writingConfig.overrideChar) :
@@ -151,54 +172,63 @@ public class TargetSpawner : MonoBehaviour
         List<Tuple<Beat, Beat>> beats = new();
         int beatIdx = -1;
 
-        float beatThreshold1 = 150f;
-        //float beatThreshold2 = 2.6f;
-        //float beatThreshold3 = 3.8f;
-
         for (int i = 0; i < character.drawData.strokes.Count; i++)
         {
             int startBeatOffset = ++beatIdx;
             int endBeatOffset = startBeatOffset;
+
+            // figure out how many beats you would need at the difficulty 
             float length = character.drawData.strokes[i].unscaledLength;
-            if (length < beatThreshold1)
+            float speed = 0.0f;
+            switch (difficulty)
             {
-                endBeatOffset += 2;
+                case Difficulty.Easy:
+                    speed = writingConfig.speedEasy;
+                    break;
+                case Difficulty.Normal:
+                    speed = writingConfig.speedNormal;
+                    break;
+                case Difficulty.Hard:
+                    speed = writingConfig.speedHard;
+                    break;
+                case Difficulty.Insane:
+                    speed = writingConfig.speedInsane;
+                    break;
             }
-            else if (length > beatThreshold1)
-            {
-                endBeatOffset += 4;
-            }
+            int beatsToComplete = (int) MathF.Ceiling((length / speed) / beatManager.HalfBeatPeriod);
+            endBeatOffset += beatsToComplete;
+
             beatIdx = endBeatOffset;
             beats.Add(new Tuple<Beat, Beat>(
                 beatManager.GetNextHalfBeat(startBeatOffset, startBeat),
                 beatManager.GetNextHalfBeat(endBeatOffset, startBeat)
             ));                            
         }
-        Vector3 position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
-        CharacterTarget characterTarget = Instantiate(characterTargetPrefab, position, Quaternion.identity);
-        characterTarget.Init(character, beats, writingConfig);
-        characterTargets.Add(characterTarget);
+
+        CharacterTargetSpawnData csd = new();
+        csd.position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
+        csd.beats = beats;
+        csd.character = character;
+        characterTargetsData.Add(csd);
     }
 
     private void SpawnNextStrokeTarget()
     {
-        // check if any of the groups can be spawned
-        foreach(CharacterTarget ct in characterTargets)
+        if (characterTargetsData.Count <= 0) return;
+        
+        var csd = characterTargetsData.First();
+        if (IsBeatWithinSpawnRange(csd.StartBeat))
         {
-            foreach(var beatPair in ct.Beats)
-            {
-                if (IsBeatWithinSpawnRange(beatPair.Item1))
-                {
-                    ct.CreateNextStroke();
-                }
-            }
-        } 
+            CharacterTarget characterTarget = Instantiate(characterTargetPrefab, csd.position, Quaternion.identity);
+            characterTarget.Init(csd.character, csd.beats, writingConfig);
+            characterTargetsData.Remove(csd);
+        }
     }
 
     private void UpdateCharacterGroups(CharacterTarget target)
     {
         //Debug.Log("character " + target.Character.literal + " completed, passed: " + target.Pass );
-        characterTargets.Remove(target);
+        //characterTargets.Remove(target);
     }
 
     #endregion
@@ -354,7 +384,6 @@ public class TargetSpawner : MonoBehaviour
     }
 
     #endregion 
-
 
     private bool IsBeatWithinSpawnRange(Beat beat)
     {
