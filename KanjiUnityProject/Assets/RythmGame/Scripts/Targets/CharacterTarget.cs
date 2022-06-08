@@ -10,12 +10,13 @@ using TMPro;
 ///  Contains all the information required to create and manage a group of 
 ///  stroke targets representing a character. 
 ///  
-/// 
-///  Note on the Coordinate systems:
+///  All positions and transforms under this character should be local 
+///  to this game objects coordinate system. This includes:
 ///  
-/// 
-/// 
-/// 
+///  - line points for all the strokes
+///  - keyPoints for all the strokes
+///  - follow target position
+///  - 
 /// 
 /// </summary>
 public class CharacterTarget : MonoBehaviour

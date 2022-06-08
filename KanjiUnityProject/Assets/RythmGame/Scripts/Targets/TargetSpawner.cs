@@ -13,18 +13,24 @@ using System.Linq;
 public class CharacterConfig
 {
     [Tooltip("Thickness of the stroke")]
-    public float lineWidth = 2;
-    public float keyPointScale = 1.0f;
-    public float followTargetScale = 1.0f;
-    public float targetZOffset = 0f;
+    public float lineWidth;
+    public float keyPointScale;
+    public float followTargetScale;
+    public float targetZOffset;
     [Tooltip("Distance between key points on a stroke. Determines the number of points in a stroke. Not scaled?")]
-    public float keyPointDistance = 0.02f;
+    public float keyPointDistance;
     [Tooltip("how long after the last stroke is completed, does the character stick around on in game")]
-    public float hangaboutTimeCharacter = 0.09f;
+    public float hangaboutTimeCharacter;
     [Tooltip("The scaling applied to the character stroke line points as the are by deafault between 0 - 1 (not the game object)")]
     public Vector3 CharacterSize;
     [Tooltip("Use this to override all generated characters to be this based on this")]
-    public char overrideChar = ' ';
+    public char overrideChar;
+
+    [Header("Follow target - The thing you have to follow along the stroke")]
+    public float followTargetBeatCircleRadiusBegin;
+    public float followTargetBeatCircleLineWidth;
+    public float followTargetRangeCircleLineWidth;
+    public float followTargetColliderRadius;
 }
 
 // TODO: split broadly into to two activities:

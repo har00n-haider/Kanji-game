@@ -19,7 +19,7 @@ public class ReferenceStroke
     public int nextKeyPointIdx = 0;
     public Vector2? nextKeyPoint { get { return nextKeyPointIdx >= keyPointPositions.Count ? null : keyPointPositions[nextKeyPointIdx]; } }
 
-    public ReferenceStroke(Vector2 scale, Stroke stroke, CharacterConfig config)
+    public ReferenceStroke(Vector2 characterSize, Stroke stroke, CharacterConfig config)
     {
         this.stroke = stroke;
         points.AddRange(stroke.points);
@@ -28,11 +28,11 @@ public class ReferenceStroke
         // points are 0 - 1, need to scale up to fit the collider
         for (int i = 0; i < points.Count; i++)
         {
-            points[i] = Vector2.Scale(points[i], scale);
+            points[i] = Vector2.Scale(points[i], characterSize);
         }
         for (int i = 0; i < keyPointPositions.Count; i++)
         {
-            keyPointPositions[i] = Vector2.Scale(keyPointPositions[i], scale);
+            keyPointPositions[i] = Vector2.Scale(keyPointPositions[i], characterSize);
         }
     }
 
@@ -71,7 +71,6 @@ public class CharacterStroke : MonoBehaviour
 
     // stroke data 
     public ReferenceStroke refStroke = null;
-    private CharacterConfig config;
     private List<SphereCollider> keyPointsColliders = new();
 
     // results
@@ -92,25 +91,15 @@ public class CharacterStroke : MonoBehaviour
     // events
     public event Action<CharacterStroke> OnStrokeCompleted;
 
-    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 size, int strokeId, CharacterTarget charTarget, CharacterConfig config)
+    public void Init(BeatManager.Beat startBeat, BeatManager.Beat endBeat, Vector2 characterSize, int strokeId, CharacterTarget charTarget, CharacterConfig config)
     {
-        this.config = config;
         this.strokeId = strokeId;
         this.charTarget = charTarget;
         this.StartBeat = startBeat;
         this.EndBeat = endBeat;
 
         // generate strokes
-        refStroke = new ReferenceStroke(size, charTarget.Character.drawData.strokes[strokeId], config);
-
-        // set the beats for the target, taking care to transform to world pos
-        Func<Vector3, Vector3> getWorldPos = (p) =>
-        {
-            p.z = charTarget.CharacterCenter.z + config.targetZOffset;
-            return transform.TransformPoint(p);
-        };
-        Vector3 startPoint = getWorldPos(refStroke.points.First());
-        Vector3 endPosition = getWorldPos(refStroke.points.Last());
+        refStroke = new ReferenceStroke(characterSize, charTarget.Character.drawData.strokes[strokeId], config);
 
         // setup the line renderer to display a line connecting them
         // everything else is set in the component in the editor
@@ -121,7 +110,6 @@ public class CharacterStroke : MonoBehaviour
         referenceStrokeLine.endWidth = config.lineWidth;
         referenceStrokeLine.startColor = initialColor;
         referenceStrokeLine.endColor = initialColor;
-
 
         // add the keypoints
         foreach (Vector2 p in refStroke.keyPointPositions)
@@ -138,7 +126,7 @@ public class CharacterStroke : MonoBehaviour
 
         // setup the follow circle
         followTarget.transform.localScale = Vector3.Scale(followTarget.transform.localScale, new Vector3(config.followTargetScale, config.followTargetScale, 1));
-        followTarget.Init(startBeat, null);
+        followTarget.Init(startBeat, config);
     }
 
     private void Update()
