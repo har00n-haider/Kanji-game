@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1317498361565220375}
   - component: {fileID: 5510246025265613173}
   m_Layer: 0
-  m_Name: EmptyTarget
+  m_Name: BasicTarget
   m_TagString: HitTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -125,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 3594361684890509052}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 0.1, z: 2}
+  m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6093515144543164089}
@@ -270,7 +270,6 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1

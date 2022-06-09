@@ -6,6 +6,18 @@ using System;
 using System.Linq;
 using TMPro;
 
+
+public struct CharacterTargetSpawnData
+{
+    public Vector3 position;
+    public List<Tuple<Beat, Beat>> beats;
+    public Character character;
+    public Difficulty difficulty;
+    public Beat StartBeat { get { return beats.First().Item1; } }
+    public Beat EndBeat { get { return beats.Last().Item2; } }
+    public bool spawned;
+}
+
 /// <summary>
 ///  Contains all the information required to create and manage a group of 
 ///  stroke targets representing a character. 

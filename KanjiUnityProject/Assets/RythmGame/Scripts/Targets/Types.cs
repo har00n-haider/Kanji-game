@@ -8,7 +8,7 @@ namespace RythmGame
 {
     public enum Result 
     {
-        Miss,
-        Hit
+        Miss = 0,
+        Hit = 1
     }
 }

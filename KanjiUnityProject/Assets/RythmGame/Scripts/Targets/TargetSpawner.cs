@@ -12,6 +12,7 @@ using System.Linq;
 [Serializable]
 public struct CharacterConfig
 {
+    [Header("Stroke target settings")]
     [Tooltip("Thickness of the stroke")]
     public float lineWidth;
     public float keyPointScale;
@@ -38,13 +39,21 @@ public struct CharacterConfig
     public float speedHard;
     public float speedInsane;
 
-    [Header("Difficulty - stroke visibility")]
+    [Header("Difficulty - visibility")]
     public float strokeVisibilityEasy;
     public float strokeVisibilityNormal;
     public float strokeVisibilityHard;
     public float strokeVisibilityInsane;
     public float strokeVisibilityFadeWidth;
+}
 
+/// <summary>
+/// Configuration for the how basic targets behave and are visualized in game
+/// </summary>
+[Serializable]
+public struct BasicTargetConfig
+{
+    public float targetScale;
 }
 
 public enum Difficulty
@@ -55,29 +64,26 @@ public enum Difficulty
     Insane
 }
 
-public struct CharacterTargetSpawnData
-{
-    public Vector3 position;
-    public List<Tuple<Beat, Beat>> beats;
-    public Character character;
-    public Difficulty difficulty;
-    public Beat StartBeat { get { return beats.First().Item1; } }
-    public Beat EndBeat { get { return beats.Last().Item2; } }
-}
-
 // TODO: split broadly into to two activities:
 // - generating and assigning beats to data objects that hold information required to spawn interactable targets (e.g. groups below)
 // - instantiating the required targets when required
 public class TargetSpawner : MonoBehaviour
 {
    // =========================== Writing group =========================== 
-    [Header("Writing group")]
+    [Header("Character target")]
     public CharacterTarget characterTargetPrefab;
     private List<CharacterTargetSpawnData> characterTargetsData = new List<CharacterTargetSpawnData>();
-    private int maxNoCharacterTargetsToGenerate = 5;
-    public CharacterConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
-    private CharacterConfig writingConfig;
+    private CharacterConfig characterConfig;
+
+    // =========================== Empty targets=========================== 
+    [Header("Basic target")]
+    [SerializeField]
+    private GameObject emptyTargetPrefab;
+    private List<BasitTargetData> basitTargetData = new List<BasitTargetData>();
+    [SerializeField]
+    private BasicTargetConfig basicTargetConfig;
+
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -104,19 +110,7 @@ public class TargetSpawner : MonoBehaviour
     private List<KanaReadingGroup> groups = new List<KanaReadingGroup>();
 
 
-    // =========================== Empty targets=========================== 
-    public class EmptyTargetEntry
-    {
-        public Beat beat;
-        public bool spawned = false;
-    }
-    [Header("Empty target group")]
-    // Empty target variables
-    [SerializeField]
-    private int MaxNoOfEmptyTargets;
-    [SerializeField]
-    private GameObject emptyTargetPrefab;
-    private List<EmptyTargetEntry> emptyTargetBeats = new List<EmptyTargetEntry>();
+    // =========================== Spawner settings =========================== 
 
     // Spawing variables
     [Header("Spawning variables")]
@@ -131,50 +125,57 @@ public class TargetSpawner : MonoBehaviour
     {
         AppEvents.OnSelected += SpawnAnwsers;
         AppEvents.OnGroupCleared += UpdateKanaReadingGroups;
-        AppEvents.OnCharacterCompleted += UpdateCharacterGroups;
-
     }
 
     private void OnDestroy()
     {
         AppEvents.OnSelected -= SpawnAnwsers;
         AppEvents.OnGroupCleared -= UpdateKanaReadingGroups;
-        AppEvents.OnCharacterCompleted -= UpdateCharacterGroups;
-
     }
 
     private void Start()
     {
         spawnToBeatTimeOffset = beatManager.HalfBeatPeriod;
-
         GenerateTargetData();
     }
 
 
     void Update()
     {
-        SpawnNextStrokeTarget();
+        SpawnStrokeTarget();
+        SpawnBasicTarget();
     }
 
     void GenerateTargetData()
     {
-        // generate draw data
-        for (int i = 0; i < 13; i++)
+        // empty targets
+        for (int i = 0; i < 10; i++)
         {
-            if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar), Difficulty.Easy);
-            else if (i > 0 && i <= 3) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Normal);
-            else if (i > 3 && i <= 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Hard);
-            else if (i > 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Insane);
+            Beat refBeat = null;
+            // try to get a reference beat from the last group
+            if (basitTargetData.Count > 0)
+            {
+                refBeat = basitTargetData[basitTargetData.Count - 1].beat;
+            }
+            CreateBasicTargetData(beatManager.GetNextHalfBeat(2, refBeat), GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
         }
+
+        //// generate draw data
+        //for (int i = 0; i < 13; i++)
+        //{
+        //    if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar), Difficulty.Easy);
+        //    else if (i > 0 && i <= 3) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Normal);
+        //    else if (i > 3 && i <= 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Hard);
+        //    else if (i > 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Insane);
+        //}
     }
 
     #region Draw targets
 
-
     private void CreateDrawTargetData(Beat startBeat, Difficulty difficulty)
     {
-        Character character = writingConfig.overrideChar != ' ' ?
-            GameManager.Instance.Database.GetCharacter(writingConfig.overrideChar) :
+        Character character = characterConfig.overrideChar != ' ' ?
+            GameManager.Instance.Database.GetCharacter(characterConfig.overrideChar) :
             GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
 
         // generate the beats for the entire character
@@ -192,16 +193,16 @@ public class TargetSpawner : MonoBehaviour
             switch (difficulty)
             {
                 case Difficulty.Easy:
-                    speed = writingConfig.speedEasy;
+                    speed = characterConfig.speedEasy;
                     break;
                 case Difficulty.Normal:
-                    speed = writingConfig.speedNormal;
+                    speed = characterConfig.speedNormal;
                     break;
                 case Difficulty.Hard:
-                    speed = writingConfig.speedHard;
+                    speed = characterConfig.speedHard;
                     break;
                 case Difficulty.Insane:
-                    speed = writingConfig.speedInsane;
+                    speed = characterConfig.speedInsane;
                     break;
             }
             int beatsToComplete = (int) MathF.Ceiling((length / speed) / beatManager.HalfBeatPeriod);
@@ -215,14 +216,14 @@ public class TargetSpawner : MonoBehaviour
         }
 
         CharacterTargetSpawnData csd = new();
-        csd.position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
+        csd.position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (characterConfig.CharacterSize / 2);
         csd.beats = beats;
         csd.character = character;
         csd.difficulty = difficulty;
         characterTargetsData.Add(csd);
     }
 
-    private void SpawnNextStrokeTarget()
+    private void SpawnStrokeTarget()
     {
         if (characterTargetsData.Count <= 0) return;
         
@@ -230,63 +231,43 @@ public class TargetSpawner : MonoBehaviour
         if (IsBeatWithinSpawnRange(csd.StartBeat))
         {
             CharacterTarget characterTarget = Instantiate(characterTargetPrefab, csd.position, Quaternion.identity);
-            characterTarget.Init(csd, writingConfig);
+            characterTarget.Init(csd, characterConfig);
             characterTargetsData.Remove(csd);
         }
-    }
-
-    private void UpdateCharacterGroups(CharacterTarget target)
-    {
-        //Debug.Log("character " + target.Character.literal + " completed, passed: " + target.Pass );
-        //characterTargets.Remove(target);
     }
 
     #endregion
 
     #region Empty targets
 
-    private void CreateEmptyTargets()
+    private void CreateBasicTargetData(Beat beat, Vector3 position)
     {
-        // fill up the groups with assigned beats 
-        while (emptyTargetBeats.Count < MaxNoOfEmptyTargets)
+        basitTargetData.Add(new BasitTargetData()
         {
-            Beat refBeat = null;
-            // try to get a reference beat from the last group
-            if (emptyTargetBeats.Count > 0)
-            {
-                refBeat = emptyTargetBeats[emptyTargetBeats.Count - 1].beat;
-            }
-            emptyTargetBeats.Add(new EmptyTargetEntry()
-            {
-                beat = beatManager.GetNextHalfBeat(1, refBeat),
-            });
-        }
-        
+            beat = beat,
+            position = position
+        });
+    }
+
+    private void SpawnBasicTarget()
+    {
         // check if any of the groups can be spawned
-        foreach(EmptyTargetEntry et in emptyTargetBeats)
+        foreach(BasitTargetData et in basitTargetData)
         {
             bool withinSpawnRange = beatManager.TimeToBeat(et.beat) < spawnToBeatTimeOffset;
             if (withinSpawnRange && !et.spawned)
             {
-                EmptyTarget e = Instantiate(
+                BasicTarget e = Instantiate(
                     emptyTargetPrefab,
-                    GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
+                    et.position,
                     Quaternion.identity,
-                    transform).GetComponent<EmptyTarget>();
-                e.Init(et.beat, UpdateEmptyTargetList);
+                    transform).GetComponent<BasicTarget>();
+                e.Init(et.beat, basicTargetConfig);
                 et.spawned = true;
             }   
         }
-
-        Debug.Log("no of beats: " + emptyTargetBeats.Count );
-    
     }
 
-    private void UpdateEmptyTargetList(Beat beat) 
-    {
-        //Debug.Log("Calling " + "UpdateEmptyTargetList");
-        emptyTargetBeats.Remove( emptyTargetBeats.Find(et => et.beat == beat));
-    }
 
     #endregion
 

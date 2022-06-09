@@ -7,7 +7,14 @@ using Manabu.Core;
 using RythmGame;
 using System;
 
-public class EmptyTarget : MonoBehaviour
+public class BasitTargetData
+{
+    public Beat beat;
+    public Vector3 position;
+    public bool spawned = false;
+}
+
+public class BasicTarget : MonoBehaviour
 {
 
     [SerializeField]
@@ -45,15 +52,12 @@ public class EmptyTarget : MonoBehaviour
     private CapsuleCollider modelCollider;
     private Color modelColor;
 
-    // lifetime
-    Action<Beat> onDestroyCallback;
-
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void Init(Beat beat, Action<Beat> onDestroyCallback)  
+    public void Init(Beat beat, BasicTargetConfig config)  
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;
@@ -62,10 +66,10 @@ public class EmptyTarget : MonoBehaviour
         beatCircleLine.endWidth = beatCircleLineWidth;  
         beatCircleLine.startWidth = beatCircleLineWidth;
         this.beat = beat;
-        this.onDestroyCallback = onDestroyCallback;
         modelColor = targetColor;
         modelCollider = model.GetComponent<CapsuleCollider>();
         radiusEnd = modelCollider.radius;
+        transform.localScale = transform.localScale * config.targetScale;
     }
 
     void Update()
@@ -73,20 +77,32 @@ public class EmptyTarget : MonoBehaviour
         bool thresholdPassed = AudioSettings.dspTime >
             beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
         if (thresholdPassed) HandleBeatResult(Result.Miss);
+
         UpdateBeatCircle();
         UpdateBeatWindowColor();
+
+        CheckInput();
     }
 
-
-    public bool HitCheck()
+    private void CheckInput()
     {
-        if (this == null) return false;
-        Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
-        return modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue);
+        if (this == null) return;
+
+        if(GameInput.GetButton1Down())
+        {
+            Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
+            if(modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue))
+            {
+                HandleBeatResult(Result.Hit);
+            }
+            else
+            {
+                HandleBeatResult(Result.Miss);
+            };
+        }
     }
 
-
-    public void HandleBeatResult(Result hitResult)
+    private void HandleBeatResult(Result hitResult)
     {
         if(this == null) return;
 
@@ -100,7 +116,6 @@ public class EmptyTarget : MonoBehaviour
                 break;
         }
         Destroy(gameObject);
-        onDestroyCallback?.Invoke(beat);
     }
 
     private void UpdateBeatCircle() 
