@@ -79,7 +79,6 @@ public class BasicTarget : MonoBehaviour
         if (thresholdPassed) HandleBeatResult(Result.Miss);
 
         UpdateBeatCircle();
-        UpdateBeatWindowColor();
 
         CheckInput();
     }

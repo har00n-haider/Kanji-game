@@ -39,7 +39,7 @@ public class BeatManager : MonoBehaviour
     private int timeSignatureHi;
     [SerializeField]
     private int timeSignatureLo;
-    public int NumHalfBeatsPerBar { get { return timeSignatureHi * 2; }}
+    public int NumHalfBeatsPerBar { get { return timeSignatureHi * 2; } }
     [SerializeField]
     private float beatHitAllowance;
     public float BeatHitAllowance { get { return beatHitAllowance; } }
@@ -59,7 +59,7 @@ public class BeatManager : MonoBehaviour
 
     // state
     public bool IsSongPlaying { get { return running; } }
-    public Beat NextBeat { get { return beatMap[nextBeatIntIdx];}}
+    public Beat NextBeat { get { return beatMap[nextBeatIntIdx]; } }
     private double startTime;
     private bool running = false;
 
@@ -78,12 +78,12 @@ public class BeatManager : MonoBehaviour
         GenerateBeatMap();
         running = true;
 
-        if(enableMetronome)
+        if (enableMetronome)
         {
-            metronome.Init(bpm * metronomeBaseBpmMultiple, 
-                timeSignatureHi, 
-                timeSignatureLo, 
-                startTime, 
+            metronome.Init(bpm * metronomeBaseBpmMultiple,
+                timeSignatureHi,
+                timeSignatureLo,
+                startTime,
                 metronomeVolume);
         }
     }
@@ -95,7 +95,7 @@ public class BeatManager : MonoBehaviour
         UpdateNextBeat();
     }
 
-    private void UpdateNextBeat() 
+    private void UpdateNextBeat()
     {
         // update beat time
         if (AudioSettings.dspTime > NextBeat.timestamp)
@@ -104,13 +104,13 @@ public class BeatManager : MonoBehaviour
         }
     }
 
-    private void GenerateBeatMap() 
+    private void GenerateBeatMap()
     {
-        int noOfHalfBeatsInSong = (int)(songClip.length * (bpm * 60)) * 2; 
+        int noOfHalfBeatsInSong = (int)(songClip.length * (bpm * 60)) * 2;
         for (int halfBeatCtr = 0; halfBeatCtr < noOfHalfBeatsInSong; halfBeatCtr++)
         {
             // we can only have mutually exclusive beat types at the moment
-            if( halfBeatCtr % timeSignatureHi == 0)
+            if (halfBeatCtr % timeSignatureHi == 0)
             {
                 beatMap.Add(new Beat(Beat.BeatType.Bar, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
             }
@@ -124,22 +124,22 @@ public class BeatManager : MonoBehaviour
             }
         }
     }
-    
+
 
     public bool CheckIfOnBeat(double beatTimeStamp)
     {
         double delta = beatTimeStamp - AudioSettings.dspTime;
-        bool  result = Mathf.Abs((float)delta) < beatHitAllowance;
+        bool result = Mathf.Abs((float)delta) < beatHitAllowance;
         return result;
     }
 
     // relative to the next beat by default
-    public Beat GetNextHalfBeat(int beatsToSkip = 0, Beat referenceBeat = null) 
+    public Beat GetNextHalfBeat(int beatsToSkip = 0, Beat referenceBeat = null)
     {
         Beat b = referenceBeat == null ? beatMap[nextBeatIntIdx] : referenceBeat;
         int beatIdx = b.beatId;
         // skip if required
-        while(beatsToSkip != 0)
+        while (beatsToSkip != 0)
         {
             // skip the required amount depending on type 
             beatIdx++;
@@ -149,9 +149,14 @@ public class BeatManager : MonoBehaviour
         return b.Clone();
     }
 
-    public float TimeToBeat(Beat beat)
+    private float TimeToBeat(Beat beat)
     {
         return (float)(beat.timestamp - AudioSettings.dspTime);
+    }
+
+    public bool IsBeatWithinRange(Beat beat, float range)
+    {
+        return TimeToBeat(beat) < range;
     }
 
 }

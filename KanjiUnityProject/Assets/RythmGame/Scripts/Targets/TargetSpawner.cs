@@ -116,7 +116,8 @@ public class TargetSpawner : MonoBehaviour
     [Header("Spawning variables")]
     [SerializeField]
     private BoxCollider spawnVolume;
-    private double spawnToBeatTimeOffset;
+    [SerializeField]
+    private float spawnToBeatTimeOffset;
     private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
 
 
@@ -135,7 +136,6 @@ public class TargetSpawner : MonoBehaviour
 
     private void Start()
     {
-        spawnToBeatTimeOffset = beatManager.HalfBeatPeriod;
         GenerateTargetData();
     }
 
@@ -157,7 +157,7 @@ public class TargetSpawner : MonoBehaviour
             {
                 refBeat = basitTargetData[basitTargetData.Count - 1].beat;
             }
-            CreateBasicTargetData(beatManager.GetNextHalfBeat(2, refBeat), GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
+            CreateBasicTargetData(beatManager.GetNextHalfBeat(4, refBeat), GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
         }
 
         //// generate draw data
@@ -228,7 +228,7 @@ public class TargetSpawner : MonoBehaviour
         if (characterTargetsData.Count <= 0) return;
         
         var csd = characterTargetsData.First();
-        if (IsBeatWithinSpawnRange(csd.StartBeat))
+        if (beatManager.IsBeatWithinRange(csd.StartBeat, spawnToBeatTimeOffset))
         {
             CharacterTarget characterTarget = Instantiate(characterTargetPrefab, csd.position, Quaternion.identity);
             characterTarget.Init(csd, characterConfig);
@@ -252,18 +252,17 @@ public class TargetSpawner : MonoBehaviour
     private void SpawnBasicTarget()
     {
         // check if any of the groups can be spawned
-        foreach(BasitTargetData et in basitTargetData)
+        foreach(BasitTargetData bd in basitTargetData)
         {
-            bool withinSpawnRange = beatManager.TimeToBeat(et.beat) < spawnToBeatTimeOffset;
-            if (withinSpawnRange && !et.spawned)
+            if (beatManager.IsBeatWithinRange(bd.beat, spawnToBeatTimeOffset) && !bd.spawned)
             {
-                BasicTarget e = Instantiate(
+                BasicTarget b = Instantiate(
                     emptyTargetPrefab,
-                    et.position,
+                    bd.position,
                     Quaternion.identity,
                     transform).GetComponent<BasicTarget>();
-                e.Init(et.beat, basicTargetConfig);
-                et.spawned = true;
+                b.Init(bd.beat, basicTargetConfig);
+                bd.spawned = true;
             }   
         }
     }
@@ -302,7 +301,7 @@ public class TargetSpawner : MonoBehaviour
         // check if any of the groups can be spawned
         foreach(KanaReadingGroup g in groups)
         {
-            if (g.question == null && IsBeatWithinSpawnRange(g.groupBeat))
+            if (g.question == null && beatManager.IsBeatWithinRange(g.groupBeat, spawnToBeatTimeOffset))
             {
                 SpawnQuestion(g);
             }   
@@ -376,8 +375,4 @@ public class TargetSpawner : MonoBehaviour
 
     #endregion 
 
-    private bool IsBeatWithinSpawnRange(Beat beat)
-    {
-        return beatManager.TimeToBeat(beat) < spawnToBeatTimeOffset;
-    }
 }

@@ -1173,33 +1173,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterTargetPrefab: {fileID: 8045162609554504462, guid: c27d4b9990dadd24eac41dac04974ac4, type: 3}
-  writingConfig:
-    lineWidth: 2.2
-    keyPointScale: 0.57
-    followTargetScale: 2.2
-    targetZOffset: -0.2
-    keyPointDistance: 0.24
-    hangaboutTimeCharacter: 0.2
-    CharacterSize: {x: 30, y: 30, z: 1}
-    overrideChar: 32
-    followTargetBeatCircleRadiusBegin: 4
-    followTargetBeatCircleLineWidth: 0.2
-    followTargetRangeCircleLineWidth: 0.15
-    followTargetColliderRadius: 1.59
-    speedEasy: 0.6
-    speedNormal: 0.8
-    speedHard: 1.2
-    speedInsane: 1.5
-    strokeVisibilityEasy: 1
-    strokeVisibilityNormal: 0.8
-    strokeVisibilityHard: 0.5
-    strokeVisibilityInsane: 0.2
-    strokeVisibilityFadeWidth: 0.08
+  characterConfig:
+    lineWidth: 0
+    keyPointScale: 0
+    followTargetScale: 0
+    targetZOffset: 0
+    keyPointDistance: 0
+    hangaboutTimeCharacter: 0
+    CharacterSize: {x: 0, y: 0, z: 0}
+    overrideChar: 0
+    followTargetBeatCircleRadiusBegin: 0
+    followTargetBeatCircleLineWidth: 0
+    followTargetRangeCircleLineWidth: 0
+    followTargetColliderRadius: 0
+    speedEasy: 0
+    speedNormal: 0
+    speedHard: 0
+    speedInsane: 0
+    strokeVisibilityEasy: 0
+    strokeVisibilityNormal: 0
+    strokeVisibilityHard: 0
+    strokeVisibilityInsane: 0
+    strokeVisibilityFadeWidth: 0
+  emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
+  basicTargetConfig:
+    targetScale: 2
   MaxNoOfGroups: 3
   kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
-  MaxNoOfEmptyTargets: 5
-  emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
   spawnVolume: {fileID: 1590424059}
+  spawnToBeatTimeOffset: 0.5
 --- !u!1 &1394353259
 GameObject:
   m_ObjectHideFlags: 0

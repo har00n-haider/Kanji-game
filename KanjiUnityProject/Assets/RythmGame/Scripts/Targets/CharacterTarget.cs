@@ -67,6 +67,8 @@ public class CharacterTarget : MonoBehaviour
     public Beat EndBeat { get { return Beats.Last().Item2; } }
     [SerializeField]
     private TextMeshPro backgroundText;
+    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+
 
     // effects
     [SerializeField]
@@ -92,7 +94,8 @@ public class CharacterTarget : MonoBehaviour
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTimeCharacter) gameObject.SetActive(false);
 
-        if (strokeCounter < Beats.Count && IsBeatWithinSpawnRange(Beats[strokeCounter].Item1))
+        if (strokeCounter < Beats.Count && 
+            beatManager.IsBeatWithinRange(Beats[strokeCounter].Item1, beatManager.HalfBeatPeriod))
         {
            CreateNextStroke();
         }        
@@ -152,12 +155,6 @@ public class CharacterTarget : MonoBehaviour
         Vector3 planeDir = -transform.forward;
         return new Plane(planeDir.normalized, planePoint);
     }
-
-    private bool IsBeatWithinSpawnRange(Beat beat)
-    {
-        return GameManager.Instance.GameAudio.BeatManager.TimeToBeat(beat) < GameManager.Instance.GameAudio.BeatManager.HalfBeatPeriod;
-    }
-
 
 
 #if UNITY_EDITOR
