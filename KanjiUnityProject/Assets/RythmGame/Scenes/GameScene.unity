@@ -1190,6 +1190,11 @@ MonoBehaviour:
     speedNormal: 0.8
     speedHard: 1.2
     speedInsane: 1.5
+    strokeVisibilityEasy: 1
+    strokeVisibilityNormal: 0.8
+    strokeVisibilityHard: 0.5
+    strokeVisibilityInsane: 0.2
+    strokeVisibilityFadeWidth: 0.08
   MaxNoOfGroups: 3
   kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   MaxNoOfEmptyTargets: 5

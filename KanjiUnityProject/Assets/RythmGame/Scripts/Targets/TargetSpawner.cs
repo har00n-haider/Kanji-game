@@ -32,10 +32,18 @@ public struct CharacterConfig
     public float followTargetRangeCircleLineWidth;
     public float followTargetColliderRadius;
 
+    [Header("Difficulty - speed")]
     public float speedEasy;
     public float speedNormal;
     public float speedHard;
     public float speedInsane;
+
+    [Header("Difficulty - stroke visibility")]
+    public float strokeVisibilityEasy;
+    public float strokeVisibilityNormal;
+    public float strokeVisibilityHard;
+    public float strokeVisibilityInsane;
+    public float strokeVisibilityFadeWidth;
 
 }
 
@@ -45,6 +53,16 @@ public enum Difficulty
     Normal,
     Hard,
     Insane
+}
+
+public struct CharacterTargetSpawnData
+{
+    public Vector3 position;
+    public List<Tuple<Beat, Beat>> beats;
+    public Character character;
+    public Difficulty difficulty;
+    public Beat StartBeat { get { return beats.First().Item1; } }
+    public Beat EndBeat { get { return beats.Last().Item2; } }
 }
 
 // TODO: split broadly into to two activities:
@@ -60,15 +78,6 @@ public class TargetSpawner : MonoBehaviour
     public CharacterConfig WritingConfig { get { return writingConfig; } }
     [SerializeField]
     private CharacterConfig writingConfig;
-
-    public struct CharacterTargetSpawnData
-    {
-        public Vector3 position;
-        public List<Tuple<Beat, Beat>> beats;
-        public Character character;
-        public Beat StartBeat { get { return beats.First().Item1; } }
-        public Beat EndBeat { get { return beats.Last().Item2; } }
-    }
 
     // =========================== Reading group =========================== 
     /// <summary>
@@ -209,6 +218,7 @@ public class TargetSpawner : MonoBehaviour
         csd.position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (writingConfig.CharacterSize / 2);
         csd.beats = beats;
         csd.character = character;
+        csd.difficulty = difficulty;
         characterTargetsData.Add(csd);
     }
 
@@ -220,7 +230,7 @@ public class TargetSpawner : MonoBehaviour
         if (IsBeatWithinSpawnRange(csd.StartBeat))
         {
             CharacterTarget characterTarget = Instantiate(characterTargetPrefab, csd.position, Quaternion.identity);
-            characterTarget.Init(csd.character, csd.beats, writingConfig);
+            characterTarget.Init(csd, writingConfig);
             characterTargetsData.Remove(csd);
         }
     }

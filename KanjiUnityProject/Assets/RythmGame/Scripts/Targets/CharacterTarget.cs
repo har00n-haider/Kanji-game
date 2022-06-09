@@ -41,6 +41,8 @@ public class CharacterTarget : MonoBehaviour
     private float timedDeactivateTimer = 0.0f;
     public bool StrokesVisible { get; private set; } = false;
     public bool AllStrokesVisible  { get { return strokeCounter == Beats.Count; } }
+    [SerializeField]
+    private Difficulty difficulty;
 
     // character data
     public Character Character { get; private set; } = null;
@@ -58,16 +60,17 @@ public class CharacterTarget : MonoBehaviour
     [SerializeField]
     private Effect characterPassEffect;
 
-    public void Init(Character character, List<Tuple<Beat, Beat>> beats, CharacterConfig config)
+    public void Init(CharacterTargetSpawnData csd, CharacterConfig config)
     {
-        Assert.IsFalse(beats.Count == character.drawData.strokes.Count * 2);
-        Beats = beats;
-        Character = character;
+        Assert.IsFalse(csd.beats.Count == csd.character.drawData.strokes.Count * 2);
+        Beats = csd.beats;
+        Character = csd.character;
         this.CharacterSize = config.CharacterSize;
         this.config = config;
-        name = "CharacterTarget - " + character.literal;
-        backgroundText.text = character.romaji.ToUpper();
+        name = "CharacterTarget - " + csd.character.literal;
+        backgroundText.text = csd.character.romaji.ToUpper();
         backgroundText.gameObject.SetActive(false);
+        this.difficulty = csd.difficulty;
     }
 
     private void Update()
@@ -104,7 +107,8 @@ public class CharacterTarget : MonoBehaviour
                 CharacterSize,
                 strokeCounter,
                 this,
-                config);
+                config,
+                difficulty);
             Strokes.Add(characterStroke);
             characterStroke.OnStrokeCompleted += UpdateStrokes;
             strokeCounter++;

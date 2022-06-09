@@ -91,7 +91,7 @@ public class CharacterStroke : MonoBehaviour
     // events
     public event Action<CharacterStroke> OnStrokeCompleted;
 
-    public void Init(Beat startBeat, Beat endBeat, Vector2 characterSize, int strokeId, CharacterTarget charTarget, CharacterConfig config)
+    public void Init(Beat startBeat, Beat endBeat, Vector2 characterSize, int strokeId, CharacterTarget charTarget, CharacterConfig config, Difficulty difficulty)
     {
         this.strokeId = strokeId;
         this.charTarget = charTarget;
@@ -110,6 +110,31 @@ public class CharacterStroke : MonoBehaviour
         referenceStrokeLine.endWidth = config.lineWidth;
         referenceStrokeLine.startColor = initialColor;
         referenceStrokeLine.endColor = initialColor;
+        // Set the fading on the stroke at a relevent level for the difficulty
+        float fadeHalfWidth = config.strokeVisibilityFadeWidth/2;
+        float alphaCenter = 0.0f;
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                alphaCenter = config.strokeVisibilityEasy;
+                fadeHalfWidth = 0.0f;// special case as we want to turn off fading here
+                break;
+            case Difficulty.Normal:
+                alphaCenter = config.strokeVisibilityNormal;
+                break;
+            case Difficulty.Hard:
+                alphaCenter = config.strokeVisibilityHard;
+                break;
+            case Difficulty.Insane:
+                alphaCenter = config.strokeVisibilityInsane;
+                break;
+        }
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(initialColor, 0.0f), new GradientColorKey(initialColor, 1.0f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(1.0f, alphaCenter - fadeHalfWidth), new GradientAlphaKey(0.0f, alphaCenter + fadeHalfWidth) }
+        );
+        referenceStrokeLine.colorGradient = gradient;
 
         // add the keypoints
         foreach (Vector2 p in refStroke.keyPointPositions)
