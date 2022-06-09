@@ -44,7 +44,7 @@ namespace Manabu.Core
         {
             Character character = new Character();
             if (!kanjiDataBaseLoaded) return character;
-            System.Random r = new System.Random(DateTime.Now.Millisecond);
+            System.Random r = new System.Random();
             int idx = 0;
             switch (type)
             {

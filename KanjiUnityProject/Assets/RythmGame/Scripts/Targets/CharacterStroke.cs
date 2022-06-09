@@ -217,6 +217,7 @@ public class CharacterStroke : MonoBehaviour
         followTarget.transform.localPosition = newPos;
         if (t >= 1)
         {
+            followTarget.gameObject.SetActive(false);
             Finish();
         }
     }

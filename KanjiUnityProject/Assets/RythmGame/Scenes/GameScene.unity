@@ -1178,7 +1178,7 @@ MonoBehaviour:
     keyPointScale: 0.57
     followTargetScale: 2.2
     targetZOffset: -0.2
-    keyPointDistance: 0.15
+    keyPointDistance: 0.24
     hangaboutTimeCharacter: 0.2
     CharacterSize: {x: 30, y: 30, z: 1}
     overrideChar: 32
