@@ -32,7 +32,7 @@ public class CharacterTarget : MonoBehaviour
     public Vector3 CharacterCenter { get { return new Vector3(0.5f * CharacterSize.x, 0.5f * CharacterSize.y, 0.5f * CharacterSize.z); } }
 
     // state
-    public List<CharacterStroke> Strokes = new List<CharacterStroke>();
+    public List<CharacterStrokeTarget> Strokes = new List<CharacterStrokeTarget>();
     public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } }
     public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } }
     private int strokeCounter = 0;
@@ -48,7 +48,7 @@ public class CharacterTarget : MonoBehaviour
     public Character Character { get; private set; } = null;
 
     // refs
-    public CharacterStroke strokeTargetPrefab;
+    public CharacterStrokeTarget strokeTargetPrefab;
     public List<Tuple<Beat, Beat>> Beats { get; private set; } = null;
     private CharacterConfig config;
     public Beat StartBeat { get { return Beats.First().Item1; } }
@@ -96,11 +96,11 @@ public class CharacterTarget : MonoBehaviour
 
         if (strokeCounter < Beats.Count)
         {
-            CharacterStroke characterStroke = Instantiate(
+            CharacterStrokeTarget characterStroke = Instantiate(
                 strokeTargetPrefab,
                 transform.position,
                 Quaternion.identity,
-                transform).GetComponent<CharacterStroke>();
+                transform).GetComponent<CharacterStrokeTarget>();
             characterStroke.Init(
                 Beats[strokeCounter].Item1,
                 Beats[strokeCounter].Item2,
@@ -115,7 +115,7 @@ public class CharacterTarget : MonoBehaviour
         }
     }
 
-    public void UpdateStrokes(CharacterStroke strokeTarget)
+    public void UpdateStrokes(CharacterStrokeTarget strokeTarget)
     {
         if (Completed)
         {

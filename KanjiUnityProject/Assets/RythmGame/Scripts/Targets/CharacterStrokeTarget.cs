@@ -43,9 +43,9 @@ public class ReferenceStroke
 }
 
 /// <summary>
-/// Goes on prefab representing a singe stroke
+/// Goes on prefab representing a single stroke
 /// </summary>
-public class CharacterStroke : MonoBehaviour
+public class CharacterStrokeTarget : MonoBehaviour
 {
     // draw line
     [SerializeField]
@@ -89,7 +89,7 @@ public class CharacterStroke : MonoBehaviour
     public Beat EndBeat = null;
 
     // events
-    public event Action<CharacterStroke> OnStrokeCompleted;
+    public event Action<CharacterStrokeTarget> OnStrokeCompleted;
 
     public void Init(Beat startBeat, Beat endBeat, Vector2 characterSize, int strokeId, CharacterTarget charTarget, CharacterConfig config, Difficulty difficulty)
     {
