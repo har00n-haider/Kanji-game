@@ -23,7 +23,6 @@ public class BasicTarget : MonoBehaviour
     private Color targetColor;
 
     // timing
-    [SerializeField]
     private double hangAboutTime;
     public double BeatTimeStamp { get { return beat.timestamp;} }
     private double startTimeStamp = 0;
@@ -52,6 +51,10 @@ public class BasicTarget : MonoBehaviour
     private CapsuleCollider modelCollider;
     private Color modelColor;
 
+    //refs
+    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+    private BasicTargetConfig config;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -70,13 +73,17 @@ public class BasicTarget : MonoBehaviour
         modelCollider = model.GetComponent<CapsuleCollider>();
         radiusEnd = modelCollider.radius;
         transform.localScale = transform.localScale * config.targetScale;
+        hangAboutTime = config.hangaboutTime;
+        this.config = config;
     }
 
     void Update()
     {
-        bool thresholdPassed = AudioSettings.dspTime >
-            beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
-        if (thresholdPassed) HandleBeatResult(BeatResult.Miss);
+        if (beatManager.IsBeatMissed(beat, config.beatMissedThreshold))
+        {
+            HandleBeatResult(BeatResult.Miss);
+        };
+
 
         UpdateBeatCircle();
 

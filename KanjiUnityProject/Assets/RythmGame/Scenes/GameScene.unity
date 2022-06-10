@@ -1174,33 +1174,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterTargetPrefab: {fileID: 8045162609554504462, guid: c27d4b9990dadd24eac41dac04974ac4, type: 3}
   characterConfig:
-    lineWidth: 0
-    keyPointScale: 0
-    followTargetScale: 0
-    targetZOffset: 0
-    keyPointDistance: 0
-    hangaboutTime: 0
-    CharacterSize: {x: 0, y: 0, z: 0}
-    overrideChar: 0
-    followTargetBeatCircleRadiusBegin: 0
-    followTargetBeatCircleLineWidth: 0
-    followTargetRangeCircleLineWidth: 0
-    followTargetColliderRadius: 0
-    speedEasy: 0
-    speedNormal: 0
-    speedHard: 0
-    speedInsane: 0
-    strokeVisibilityEasy: 0
-    strokeVisibilityNormal: 0
-    strokeVisibilityHard: 0
-    strokeVisibilityInsane: 0
-    strokeVisibilityFadeWidth: 0
+    lineWidth: 2.2
+    keyPointScale: 0.57
+    followTargetScale: 2.2
+    targetZOffset: -0.2
+    keyPointDistance: 0.15
+    hangaboutTime: 0.2
+    CharacterSize: {x: 30, y: 30, z: 1}
+    overrideChar: 32
+    followTargetBeatCircleRadiusBegin: 4
+    followTargetBeatCircleLineWidth: 0.2
+    followTargetRangeCircleLineWidth: 0.15
+    followTargetColliderRadius: 1.59
+    speedEasy: 0.6
+    speedNormal: 0.8
+    speedHard: 1.2
+    speedInsane: 1.5
+    strokeVisibilityEasy: 1
+    strokeVisibilityNormal: 0.8
+    strokeVisibilityHard: 0.5
+    strokeVisibilityInsane: 0.3
+    strokeVisibilityFadeWidth: 0.02
   emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
   basicTargetConfig:
-    lineWidth: 0
-    targetScale: 2
+    lineWidth: 0.23
+    targetScale: 2.4
     hangaboutTime: 0.2
-    beatCircleRadiusBegin: 0
+    beatCircleRadiusBegin: 3.34
+    beatMissedThreshold: 0.2
   readTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   readTargetConfig:
     lineWidth: 0.23

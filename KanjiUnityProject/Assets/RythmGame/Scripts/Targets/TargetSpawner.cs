@@ -5,6 +5,7 @@ using Manabu.Core;
 using System;
 using System.Linq;
 
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// Configuration for the how character targets behave and are visualized in game
@@ -57,6 +58,7 @@ public struct BasicTargetConfig
     public float targetScale;
     public float hangaboutTime;
     public float beatCircleRadiusBegin;
+    public float beatMissedThreshold; // How long to stay alive if missed
 }
 
 /// <summary>
@@ -147,13 +149,13 @@ public class TargetSpawner : MonoBehaviour
     {
 
         // Reading targets
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 10; i++)
         {
             Beat refBeat = null;
             // try to get a reference beat from the last group
             if (readTargetsData.Count > 0)
             {
-                refBeat = readTargetsData[readTargetsData.Count - 1].questionBeat;
+                refBeat = readTargetsData.Last().questionBeat;
             }
             // make a new group some distance from this one
             Beat qB = beatManager.GetNextHalfBeat(4, refBeat);
@@ -161,32 +163,40 @@ public class TargetSpawner : MonoBehaviour
             CreateReadTargetData(GameManager.Instance.Database.GetRandomCharacter(), 
                 qB,
                 aB,
-                UnityEngine.Random.value >= 0.5f,
+                Random.Range(0,2) == 1,
                 GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
         }
 
+        // empty targets
+        for (int i = 0; i < 10; i++)
+        {
+            Beat refBeat = null;
+            if (i == 0 && readTargetsData.Count > 0) refBeat = beatManager.GetNextHalfBeat(3, readTargetsData.Last().questionBeat);
+            // try to get a reference beat from the last group
+            else if (basicTargetsData.Count > 0)
+            {
+                refBeat = basicTargetsData.Last().beat;
+            }
+            CreateBasicTargetData(beatManager.GetNextHalfBeat(2, refBeat), 
+                GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
+        }
 
+        // character targets
+        for (int i = 0; i < 5; i++)
+        {
+            Beat refBeat = null;
+            if (i == 0 && basicTargetsData.Count > 0) refBeat = beatManager.GetNextHalfBeat(3, basicTargetsData.Last().beat);
+            // try to get a reference beat from the last group
+            else if (characterTargetsData.Count > 0)
+            {
+                refBeat = characterTargetsData.Last().EndBeat;
+            }
 
-        //// empty targets
-        //for (int i = 0; i < 10; i++)
-        //{
-        //    Beat refBeat = null;
-        //    // try to get a reference beat from the last group
-        //    if (basitTargetData.Count > 0)
-        //    {
-        //        refBeat = basitTargetData[basitTargetData.Count - 1].beat;
-        //    }
-        //    CreateBasicTargetData(beatManager.GetNextHalfBeat(4, refBeat), GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
-        //}
-
-        //// character targets
-        //for (int i = 0; i < 13; i++)
-        //{
-        //    if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar), Difficulty.Easy);
-        //    else if (i > 0 && i <= 3) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Normal);
-        //    else if (i > 3 && i <= 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Hard);
-        //    else if (i > 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, characterTargetsData.Last().EndBeat), Difficulty.Insane);
-        //}
+            if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Easy);
+            else if (i > 0 && i <= 3) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Normal);
+            else if (i > 3 && i <= 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Hard);
+            else if (i > 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Insane);
+        }
     }
 
     #region Draw targets
@@ -302,6 +312,7 @@ public class TargetSpawner : MonoBehaviour
         readTargetData.answers = new List<Character>();
         readTargetData.spawned = false;
         readTargetData.position = position;
+        readTargetData.kanaToRomaji = kanaToRomaji;
         int correctAnswer = UnityEngine.Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
