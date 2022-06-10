@@ -7,7 +7,7 @@ using System.Linq;
 using TMPro;
 
 
-public struct CharacterTargetSpawnData
+public class CharacterTargetSpawnData
 {
     public Vector3 position;
     public List<Tuple<Beat, Beat>> beats;
@@ -92,7 +92,7 @@ public class CharacterTarget : MonoBehaviour
         float yOffset = 0.3f * CharacterSize.y;
         backgroundText.transform.localPosition = new Vector3(CharacterCenter.x, CharacterCenter.y + yOffset, CharacterSize.z);
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
-        if (timedDeactivateTimer > config.hangaboutTimeCharacter) gameObject.SetActive(false);
+        if (timedDeactivateTimer > config.hangaboutTime) gameObject.SetActive(false);
 
         if (strokeCounter < Beats.Count && 
             beatManager.IsBeatWithinRange(Beats[strokeCounter].Item1, beatManager.HalfBeatPeriod))

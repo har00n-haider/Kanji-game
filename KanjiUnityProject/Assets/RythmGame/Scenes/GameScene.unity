@@ -1179,7 +1179,7 @@ MonoBehaviour:
     followTargetScale: 0
     targetZOffset: 0
     keyPointDistance: 0
-    hangaboutTimeCharacter: 0
+    hangaboutTime: 0
     CharacterSize: {x: 0, y: 0, z: 0}
     overrideChar: 0
     followTargetBeatCircleRadiusBegin: 0
@@ -1197,11 +1197,19 @@ MonoBehaviour:
     strokeVisibilityFadeWidth: 0
   emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
   basicTargetConfig:
+    lineWidth: 0
     targetScale: 2
-  MaxNoOfGroups: 3
-  kanaReadingTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
+    hangaboutTime: 0.2
+    beatCircleRadiusBegin: 0
+  readTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
+  readTargetConfig:
+    lineWidth: 0.23
+    targetScale: 2.61
+    hangaboutTime: 0.2
+    beatCircleRadiusBegin: 3.34
+    beatMissedThreshold: 0.2
   spawnVolume: {fileID: 1590424059}
-  spawnToBeatTimeOffset: 0.5
+  spawnToBeatTimeOffset: 0.8
 --- !u!1 &1394353259
 GameObject:
   m_ObjectHideFlags: 0

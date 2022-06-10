@@ -159,7 +159,7 @@ public class CharacterStrokeTarget : MonoBehaviour
         // check first beat
         if (!startBeatHit.HasValue && GameInput.GetButton1Down() && followTarget.HitCheck())
         {
-            if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(followTarget.BeatTimeStamp))
+            if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(followTarget.Beat))
             {
                 Instantiate(strokePassedEffect, followTarget.transform.position, Quaternion.identity);
                 startBeatHit = true;
@@ -195,7 +195,7 @@ public class CharacterStrokeTarget : MonoBehaviour
         // Check the final beat
         if (!endBeatHit.HasValue && GameInput.GetButton1Up() && followTarget.HitCheck())
         {
-            if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndBeat.timestamp))
+            if (GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(EndBeat))
             {
                 Instantiate(strokePassedEffect, followTarget.transform.position, Quaternion.identity);
                 endBeatHit = true;

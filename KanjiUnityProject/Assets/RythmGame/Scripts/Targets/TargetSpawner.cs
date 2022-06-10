@@ -21,7 +21,7 @@ public struct CharacterConfig
     [Tooltip("Distance between key points on a stroke. Determines the number of points in a stroke. Not scaled?")]
     public float keyPointDistance;
     [Tooltip("how long after the last stroke is completed, does the character stick around on in game")]
-    public float hangaboutTimeCharacter;
+    public float hangaboutTime;
     [Tooltip("The scaling applied to the character stroke line points as the are by deafault between 0 - 1 (not the game object)")]
     public Vector3 CharacterSize;
     [Tooltip("Use this to override all generated characters to be this based on this")]
@@ -53,8 +53,25 @@ public struct CharacterConfig
 [Serializable]
 public struct BasicTargetConfig
 {
+    public float lineWidth;
     public float targetScale;
+    public float hangaboutTime;
+    public float beatCircleRadiusBegin;
 }
+
+/// <summary>
+/// Configuration for the how read targets behave and are visualized in game
+/// </summary>
+[Serializable]
+public struct ReadTargetConfig
+{
+    public float lineWidth;
+    public float targetScale;
+    public float hangaboutTime;
+    public float beatCircleRadiusBegin;
+    public float beatMissedThreshold; // How long to stay alive if missed
+}
+
 
 public enum Difficulty
 {
@@ -80,35 +97,18 @@ public class TargetSpawner : MonoBehaviour
     [Header("Basic target")]
     [SerializeField]
     private GameObject emptyTargetPrefab;
-    private List<BasitTargetData> basitTargetData = new List<BasitTargetData>();
+    private List<BasicTargetSpawnData> basicTargetsData = new List<BasicTargetSpawnData>();
     [SerializeField]
     private BasicTargetConfig basicTargetConfig;
 
-
     // =========================== Reading group =========================== 
-    /// <summary>
-    /// Question and answers group for simple MCQ style kana test for reading
-    /// </summary>
-    public class KanaReadingGroup
-    {
-        public bool kanaToRomaji = false; // test can be two way 
-        public Beat groupBeat;
-        public ReadTarget question = null;
-        public List<ReadTarget> answers = new List<ReadTarget>();
-    }
+
     [Header("Reading group")]
     [SerializeField]
-    private int MaxNoOfGroups;
+    private GameObject readTargetPrefab;
     [SerializeField]
-    private GameObject kanaReadingTargetPrefab;
-    private bool tapTargetQuestionToggle = false;
-    // vectors for answers
-    Vector3 up      = new Vector3( 0,  1, 0)            * distanceFromQuestion;
-    Vector3 left    = new Vector3(-1, -1, 0).normalized * distanceFromQuestion;
-    Vector3 right   = new Vector3( 1, -1, 0).normalized * distanceFromQuestion;
-    readonly static float distanceFromQuestion = 4.2f;
-    private List<KanaReadingGroup> groups = new List<KanaReadingGroup>();
-
+    private ReadTargetConfig readTargetConfig;
+    private List<ReadTargetSpawnData> readTargetsData = new List<ReadTargetSpawnData>();
 
     // =========================== Spawner settings =========================== 
 
@@ -124,14 +124,10 @@ public class TargetSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        AppEvents.OnSelected += SpawnAnwsers;
-        AppEvents.OnGroupCleared += UpdateKanaReadingGroups;
     }
 
     private void OnDestroy()
     {
-        AppEvents.OnSelected -= SpawnAnwsers;
-        AppEvents.OnGroupCleared -= UpdateKanaReadingGroups;
     }
 
     private void Start()
@@ -144,23 +140,46 @@ public class TargetSpawner : MonoBehaviour
     {
         SpawnStrokeTarget();
         SpawnBasicTarget();
+        SpawnReadTarget();
     }
 
     void GenerateTargetData()
     {
-        // empty targets
-        for (int i = 0; i < 10; i++)
+
+        // Reading targets
+        for (int i = 0; i < 20; i++)
         {
             Beat refBeat = null;
             // try to get a reference beat from the last group
-            if (basitTargetData.Count > 0)
+            if (readTargetsData.Count > 0)
             {
-                refBeat = basitTargetData[basitTargetData.Count - 1].beat;
+                refBeat = readTargetsData[readTargetsData.Count - 1].questionBeat;
             }
-            CreateBasicTargetData(beatManager.GetNextHalfBeat(4, refBeat), GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
+            // make a new group some distance from this one
+            Beat qB = beatManager.GetNextHalfBeat(4, refBeat);
+            Beat aB = beatManager.GetNextHalfBeat(2, qB);
+            CreateReadTargetData(GameManager.Instance.Database.GetRandomCharacter(), 
+                qB,
+                aB,
+                UnityEngine.Random.value >= 0.5f,
+                GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
         }
 
-        //// generate draw data
+
+
+        //// empty targets
+        //for (int i = 0; i < 10; i++)
+        //{
+        //    Beat refBeat = null;
+        //    // try to get a reference beat from the last group
+        //    if (basitTargetData.Count > 0)
+        //    {
+        //        refBeat = basitTargetData[basitTargetData.Count - 1].beat;
+        //    }
+        //    CreateBasicTargetData(beatManager.GetNextHalfBeat(4, refBeat), GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
+        //}
+
+        //// character targets
         //for (int i = 0; i < 13; i++)
         //{
         //    if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(beatManager.NumHalfBeatsPerBar), Difficulty.Easy);
@@ -220,6 +239,7 @@ public class TargetSpawner : MonoBehaviour
         csd.beats = beats;
         csd.character = character;
         csd.difficulty = difficulty;
+        csd.spawned = false;
         characterTargetsData.Add(csd);
     }
 
@@ -242,17 +262,18 @@ public class TargetSpawner : MonoBehaviour
 
     private void CreateBasicTargetData(Beat beat, Vector3 position)
     {
-        basitTargetData.Add(new BasitTargetData()
+        basicTargetsData.Add(new BasicTargetSpawnData()
         {
             beat = beat,
-            position = position
-        });
+            position = position,
+            spawned = false
+        }); ;
     }
 
     private void SpawnBasicTarget()
     {
         // check if any of the groups can be spawned
-        foreach(BasitTargetData bd in basitTargetData)
+        foreach(BasicTargetSpawnData bd in basicTargetsData)
         {
             if (beatManager.IsBeatWithinRange(bd.beat, spawnToBeatTimeOffset) && !bd.spawned)
             {
@@ -272,71 +293,18 @@ public class TargetSpawner : MonoBehaviour
 
     #region Reading group
     
-    //TODO: switch to using events between the question and answer so that the question directly spawns answers when it 
-    // is selected. 
-
-
-    private void CreateReadingGroupns()
+    private void CreateReadTargetData(Character questionChar, Beat questionBeat, Beat answerBeat, bool kanaToRomaji, Vector3 position)
     {
-
-        // fill up the groups with assigned beats 
-        while (groups.Count < MaxNoOfGroups)
-        {
-            Beat refBeat = null;
-            // try to get a reference beat from the last group
-            if (groups.Count > 0)
-            {
-                refBeat = groups[groups.Count - 1].groupBeat;
-            }
-            // make a new group some distance from this one
-            KanaReadingGroup group = new KanaReadingGroup()
-            {
-                groupBeat = beatManager.GetNextHalfBeat(2, refBeat),
-                kanaToRomaji = tapTargetQuestionToggle
-            };
-            tapTargetQuestionToggle = !tapTargetQuestionToggle;
-            groups.Add(group);
-        }
-        
-        // check if any of the groups can be spawned
-        foreach(KanaReadingGroup g in groups)
-        {
-            if (g.question == null && beatManager.IsBeatWithinRange(g.groupBeat, spawnToBeatTimeOffset))
-            {
-                SpawnQuestion(g);
-            }   
-        }
-    
-    }
-
-    // TODO: move this to the group
-    private void SpawnQuestion(KanaReadingGroup group) 
-    {
-        // question
-        Character questionChar = GameManager.Instance.Database.GetRandomCharacter();
-        questionChar.DisplayType = group.kanaToRomaji? DisplayType.Hiragana : DisplayType.Romaji;
-        group.question = SpawnOne(
-            GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
-            group.groupBeat,
-            questionChar,
-            ReadTarget.Type.Question,
-            group);
-    }
-
-    private void SpawnAnwsers(ReadTarget questionTarget)
-    {
-        Character questionChar = questionTarget.prompt;
-        KanaReadingGroup group = questionTarget.group;
-
-        // answers
-        var ansBeat = beatManager.GetNextHalfBeat(1, group.groupBeat);
+        ReadTargetSpawnData readTargetData = new();
+        readTargetData.questionBeat = questionBeat;
+        readTargetData.answerBeat = answerBeat;
+        readTargetData.questionChar = questionChar;
+        readTargetData.answers = new List<Character>();
+        readTargetData.spawned = false;
+        readTargetData.position = position;
         int correctAnswer = UnityEngine.Random.Range(0, 3);
         for (int i = 0; i < 3; i++)
         {
-            Vector3 position = new Vector3();
-            if (i == 0) position = group.question.transform.position + up;
-            if (i == 1) position = group.question.transform.position + left;
-            if (i == 2) position = group.question.transform.position + right;
             Character p;
             if (i == correctAnswer)
             {
@@ -346,31 +314,28 @@ public class TargetSpawner : MonoBehaviour
             {
                 p = GameManager.Instance.Database.GetRandomCharacter(questionChar);
             }
-            p.DisplayType = !group.kanaToRomaji? DisplayType.Hiragana : DisplayType.Romaji;
-            group.answers.Add(SpawnOne(position, ansBeat, p, ReadTarget.Type.Answer, group));
+            p.DisplayType = !readTargetData.kanaToRomaji? DisplayType.Hiragana : DisplayType.Romaji;
+            readTargetData.answers.Add(p);
+        }
+        readTargetsData.Add(readTargetData);
+    }
+
+    private void SpawnReadTarget()
+    {
+        foreach (var rd in readTargetsData)
+        {
+            if (!rd.spawned && beatManager.IsBeatWithinRange(rd.questionBeat, spawnToBeatTimeOffset))
+            {
+                ReadTarget ht = Instantiate(
+                    readTargetPrefab,
+                    rd.position,
+                    Quaternion.identity,
+                    transform).GetComponent<ReadTarget>();
+                ht.Init(rd, readTargetConfig);
+                rd.spawned = true;
+            }   
         }
     
-    }
-
-    private ReadTarget SpawnOne(
-        Vector3 position, 
-        Beat beat, 
-        Character Character, 
-        ReadTarget.Type type, 
-        KanaReadingGroup group) 
-    {
-        ReadTarget ht = Instantiate(
-            kanaReadingTargetPrefab,
-            position,
-            Quaternion.identity,
-            transform).GetComponent<ReadTarget>();
-        ht.Init(type, Character, group, beat);
-        return ht;
-    }
-
-    private void UpdateKanaReadingGroups(KanaReadingGroup group) 
-    {
-        groups.Remove(group);
     }
 
     #endregion 

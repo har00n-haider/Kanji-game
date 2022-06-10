@@ -126,9 +126,9 @@ public class BeatManager : MonoBehaviour
     }
 
 
-    public bool CheckIfOnBeat(double beatTimeStamp)
+    public bool CheckIfOnBeat(Beat beat)
     {
-        double delta = beatTimeStamp - AudioSettings.dspTime;
+        double delta = beat.timestamp - AudioSettings.dspTime;
         bool result = Mathf.Abs((float)delta) < beatHitAllowance;
         return result;
     }
@@ -157,6 +157,11 @@ public class BeatManager : MonoBehaviour
     public bool IsBeatWithinRange(Beat beat, float range)
     {
         return TimeToBeat(beat) < range;
+    }
+
+    public bool IsBeatMissed(Beat beat, float threshold)
+    {
+        return AudioSettings.dspTime > beat.timestamp + threshold;
     }
 
 }

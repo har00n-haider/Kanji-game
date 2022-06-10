@@ -7,11 +7,11 @@ using Manabu.Core;
 using RythmGame;
 using System;
 
-public class BasitTargetData
+public class BasicTargetSpawnData
 {
     public Beat beat;
     public Vector3 position;
-    public bool spawned = false;
+    public bool spawned;
 }
 
 public class BasicTarget : MonoBehaviour
@@ -76,7 +76,7 @@ public class BasicTarget : MonoBehaviour
     {
         bool thresholdPassed = AudioSettings.dspTime >
             beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
-        if (thresholdPassed) HandleBeatResult(Result.Miss);
+        if (thresholdPassed) HandleBeatResult(BeatResult.Miss);
 
         UpdateBeatCircle();
 
@@ -92,25 +92,25 @@ public class BasicTarget : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
             if(modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue))
             {
-                HandleBeatResult(Result.Hit);
+                HandleBeatResult(BeatResult.Hit);
             }
             else
             {
-                HandleBeatResult(Result.Miss);
+                HandleBeatResult(BeatResult.Miss);
             };
         }
     }
 
-    private void HandleBeatResult(Result hitResult)
+    private void HandleBeatResult(BeatResult hitResult)
     {
         if(this == null) return;
 
         switch (hitResult)
         {
-            case Result.Hit:
+            case BeatResult.Hit:
                 Instantiate(succesEffect, transform.position, Quaternion.identity);
                 break;
-            case Result.Miss:
+            case BeatResult.Miss:
                 Instantiate(failEffect, transform.position, Quaternion.identity);
                 break;
         }
@@ -138,7 +138,7 @@ public class BasicTarget : MonoBehaviour
 
     private void UpdateBeatWindowColor()
     {
-        bool onBeat = GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
+        bool onBeat = GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(beat);
         if (onBeat )
         {
             SetModelColor(beatWindowColor);

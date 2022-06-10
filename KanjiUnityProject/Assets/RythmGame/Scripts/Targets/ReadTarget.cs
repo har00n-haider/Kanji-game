@@ -6,221 +6,92 @@ using System.Collections.Generic;
 using Manabu.Core;
 using RythmGame;
 
+
+/// <summary>
+/// Question and answers group for simple MCQ style kana test for reading
+/// </summary>
+public class ReadTargetSpawnData
+{
+    public bool kanaToRomaji;
+    public Beat questionBeat;
+    public Beat answerBeat;
+    public Vector3 position;
+    public Character questionChar;
+    public List<Character> answers;
+    public bool spawned;
+}
+
+
 public class ReadTarget : MonoBehaviour
 {
-    public enum Type
-    {
-        Question,
-        Answer
-    }
+    // refs
+    [SerializeField]
+    private ReadContainerTarget readContainerTargetPrefab;
 
-    public enum ResultAction
-    {
-        Success,
-        Failiure,
-        Nothing
-    }
-
-    [SerializeField]
-    private Color beatWindowColor;
-    [SerializeField]
-    private Color questionColor;
-    [SerializeField]
-    private Color answerColor;
-    [SerializeField]
-    private Color selectedColor;
-
-    // text
-    [SerializeField]
-    private TextMeshPro textMesh;
-
-    // timing
-    [SerializeField]
-    private double hangAboutTime;
-    public double BeatTimeStamp { get { return beat.timestamp;} }
-    private double startTimeStamp = 0;
-    private Beat beat;
-    public Beat Beat { get { return beat; } }
-
-    // Effects
-    [SerializeField]
-    private GameObject succesEffect;
-    [SerializeField]
-    private GameObject failEffect;
-    [SerializeField]
-    private GameObject selectedEffect;
-
-    // beat circle
-    [SerializeField]
-    private LineRenderer beatCircleLine;
-    private Vector3[] beatCirclePoints = new Vector3[40];
-    [SerializeField]
-    private float radiusBegin;
-    private float radiusEnd;
-    private float beatCircleLineWidth = 0.1f;
-
-    // model
-    [SerializeField]
-    private CapsuleCollider modelCollider;
-    [SerializeField]
-    private GameObject model;
-    private Renderer modelRenderer;
-    private Color modelColor;
-
-    // prompt stuff
-    public Character prompt;
-    public Type type;
-    public TargetSpawner.KanaReadingGroup group;
+    // state stuff
+    public Character character;
     public bool selected = false;
+    public ReadTargetSpawnData targetData;
+    private ReadTargetConfig config;
 
+    public ReadContainerTarget question;
+    public List<ReadContainerTarget> answers;
+
+    // hard coded positions
+    Vector3 up = new Vector3(0, 1, 0) * distanceFromQuestion;
+    Vector3 left = new Vector3(-1, -1, 0).normalized * distanceFromQuestion;
+    Vector3 right = new Vector3(1, -1, 0).normalized * distanceFromQuestion;
+    readonly static float distanceFromQuestion = 4.2f;
 
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void Init(Type type, Character character, TargetSpawner.KanaReadingGroup group, Beat beat)  
+    public void Init(ReadTargetSpawnData readTargetData, ReadTargetConfig readTargetConfig)
     {
-        startTimeStamp = AudioSettings.dspTime;
-        beatCircleLine.positionCount = beatCirclePoints.Length;
-        beatCircleLine.useWorldSpace = true;
-        beatCircleLine.numCapVertices = 10; 
-        beatCircleLine.endWidth = beatCircleLineWidth;  
-        beatCircleLine.startWidth = beatCircleLineWidth;
-        radiusEnd = modelCollider.radius;
+        targetData = readTargetData;
 
-        this.beat = beat;
-
-        // prompt stuff
-        textMesh.text = character.GetDisplayString();
-        this.prompt = character;
-        this.type = type;
-        this.group = group;
-        if(type == Type.Question)
-        {
-            modelColor = questionColor;
-        }
-        else
-        {
-            modelColor = answerColor;
-        }
+        // create the question target
+        question = Instantiate(readContainerTargetPrefab,
+            readTargetData.position,
+            Quaternion.identity,
+            transform);
+        question.Init(readTargetData.questionBeat,
+            this,
+            readTargetData.questionChar,
+            ReadContainerTarget.Type.Question,
+            readTargetConfig,
+            readTargetData,
+            HandleSelected
+        );
+        config = readTargetConfig;
     }
 
-
-    void Awake()
+    private void HandleSelected()
     {
-
-    }
-
-    void Update()
-    {
-        bool thresholdPassed = AudioSettings.dspTime >
-            beat.timestamp + GameManager.Instance.GameAudio.BeatManager.BeatHitAllowance * 1.2f;
-        if (thresholdPassed) HandleBeatResult(Result.Miss);
-
-        UpdateBeatCircle();
-        UpdateColor();
-    }
-
-    public void HandleBeatResult(Result hitResult)
-    {
-        if (hitResult == Result.Hit)
+        // create the answers
+        // TODO: make sure to use the same limit here as the number of answers
+        for (int i = 0; i < 3; i++)
         {
-            if (type == Type.Question && !selected)
-            {
-                modelColor = selectedColor;
-                Instantiate(selectedEffect, transform.position, Quaternion.identity);
-                AppEvents.OnSelected?.Invoke(this);
-                selected = true;
-            }
-            else if(type == Type.Answer && group.question.selected)
-            {
-                // check if the current answer is correct
-                bool promptResult = group.question.prompt.Check(prompt);
-                if (promptResult)
-                {
-                    group.question.HandlePromptResult(ResultAction.Success);
-                    HandlePromptResult(ResultAction.Success);
-                }
-                else
-                {
-                    group.question.HandlePromptResult(ResultAction.Failiure);
-                    HandlePromptResult(ResultAction.Failiure);
-                }
-                // clean up the rest of the answers
-                group.answers.Remove(this);
-                group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
-                AppEvents.OnGroupCleared?.Invoke(group);
-            }
-        }
-        else if (hitResult == Result.Miss)
-        {
-            if( type == Type.Question && !selected)
-            {
-                HandlePromptResult(ResultAction.Failiure);
-                AppEvents.OnGroupCleared?.Invoke(group);
-            }
-            else if(type == Type.Answer)
-            {
-                group.question.HandlePromptResult(ResultAction.Failiure);
-                HandlePromptResult(ResultAction.Failiure);
-                // clean up the rest of the answers
-                group.answers.Remove(this);
-                group.answers.ForEach(a => a.HandlePromptResult(ResultAction.Nothing));
-                AppEvents.OnGroupCleared?.Invoke(group);
-            }
-        }
-    }
-
-    public void HandlePromptResult(ResultAction action)
-    {
-        if(this == null) return;
-
-        switch (action)
-        {
-            case ResultAction.Success:
-                Instantiate(succesEffect, transform.position, Quaternion.identity);
-                break;
-            case ResultAction.Failiure:
-                Instantiate(failEffect, transform.position, Quaternion.identity);
-                break;
-            case ResultAction.Nothing:
-                break;
-        }
-        Destroy(gameObject);
-    }
-
-
-
-    private void UpdateBeatCircle() 
-    {
-        // decrease size of the beat circle based on time elapsed
-        float t = (float) MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime) ;
-        float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
-        GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
-        for (int i = 0; i < beatCirclePoints.Length; i++)
-        {
-            beatCircleLine.SetPosition(i, beatCirclePoints[i]);
-        }
-    }
-
-    private void SetModelColor(Color color)
-    {
-        if (modelRenderer == null) modelRenderer = model.GetComponent<Renderer>();
-        if (modelRenderer.material.color == color) return;
-        modelRenderer.material.color = color;
-    }
-
-    private void UpdateColor()
-    {
-        bool onBeat = GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
-        if (onBeat )
-        {
-            SetModelColor(beatWindowColor);
-        }
-        else
-        {
-            SetModelColor(modelColor);
+            Vector3 position = new Vector3();
+            if (i == 0) position = transform.position + up;
+            if (i == 1) position = transform.position + left;
+            if (i == 2) position = transform.position + right;
+            // create the answer targets
+            ReadContainerTarget answerTarget = Instantiate(readContainerTargetPrefab,
+                position,
+                Quaternion.identity,
+                transform);
+            answerTarget.Init(targetData.answerBeat,
+                this,
+                targetData.answers[i],
+                ReadContainerTarget.Type.Answer,
+                config,
+                targetData,
+                null
+            );
+            answers.Add(answerTarget);
         }
     }
 

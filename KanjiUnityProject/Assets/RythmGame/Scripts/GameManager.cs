@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     public void UpdateBeat()
     {
         Beat beat = GameAudio.BeatManager.NextBeat;
-        bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(beat.timestamp);
+        bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(beat);
         if(onBeat)
         {
             switch (beat.type)

@@ -57,9 +57,6 @@ public class AppEvents
     public static Action OnButtonPressed;
     public static Action OnButtonReleased;
 
-
-    public static Action<TargetSpawner.KanaReadingGroup> OnGroupCleared;
-
     public static Action<CharacterTarget> OnCharacterCompleted;
 
     public static Action OnStrokeCleared;

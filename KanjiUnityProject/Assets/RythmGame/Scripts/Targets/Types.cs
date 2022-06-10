@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace RythmGame
 {
-    public enum Result 
+    public enum BeatResult 
     {
         Miss = 0,
         Hit = 1
     }
+
+
 }
