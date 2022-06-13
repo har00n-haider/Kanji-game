@@ -94,8 +94,7 @@ public class CharacterTarget : MonoBehaviour
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTime) gameObject.SetActive(false);
 
-        if (strokeCounter < Beats.Count && 
-            beatManager.IsBeatWithinRange(Beats[strokeCounter].Item1, beatManager.HalfBeatPeriod))
+        if (strokeCounter < Beats.Count && beatManager.IsBeatWithinRange(Beats[strokeCounter].Item1, GameManager.Instance.TargetSpawner.spawnToBeatTimeOffset))
         {
            CreateNextStroke();
         }        
