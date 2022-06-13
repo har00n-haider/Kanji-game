@@ -40,9 +40,6 @@ public class BeatManager : MonoBehaviour
     [SerializeField]
     private int timeSignatureLo;
     public int NumHalfBeatsPerBar { get { return timeSignatureHi * 2; } }
-    [SerializeField]
-    private float beatHitAllowance;
-    public float BeatHitAllowance { get { return beatHitAllowance; } }
     // max delay that it might take to load the sample. this may involve opening
     // buffering a streamed file and should therefore take any worst-case delay into account.
     public double preloadTimeDelta;
@@ -125,11 +122,10 @@ public class BeatManager : MonoBehaviour
         }
     }
 
-
     public bool CheckIfOnBeat(Beat beat)
     {
         double delta = beat.timestamp - AudioSettings.dspTime;
-        bool result = Mathf.Abs((float)delta) < beatHitAllowance;
+        bool result = Mathf.Abs((float)delta) < GameManager.Instance.Settings.beatManagerConfig.beatHitAllowance;
         return result;
     }
 

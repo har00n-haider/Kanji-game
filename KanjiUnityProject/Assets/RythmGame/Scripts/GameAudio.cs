@@ -7,8 +7,9 @@ using UnityEngine.Assertions;
 
 public class GameAudio : MonoBehaviour
 {
-
+    [SerializeField]
     public BeatManager BeatManager;
+
 
     // audio clips
     private Dictionary<string, AudioClip> audioClipMap = new Dictionary<string, AudioClip>();
@@ -21,7 +22,6 @@ public class GameAudio : MonoBehaviour
     void Awake()
     {
         SubscribeToAppEvents();
-        BeatManager = GetComponentInChildren<BeatManager>();
     }
 
     void Start()

@@ -4,7 +4,6 @@ using UnityEngine.VFX;
 using TMPro;
 using System.Collections.Generic;
 using Manabu.Core;
-using RythmGame;
 
 
 /// <summary>

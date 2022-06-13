@@ -1186,7 +1186,7 @@ MonoBehaviour:
     followTargetBeatCircleLineWidth: 0.2
     followTargetRangeCircleLineWidth: 0.15
     followTargetColliderRadius: 1.59
-    speedEasy: 0.6
+    speedEasy: 0.3
     speedNormal: 0.8
     speedHard: 1.2
     speedInsane: 1.5
@@ -1210,7 +1210,7 @@ MonoBehaviour:
     beatCircleRadiusBegin: 3.34
     beatMissedThreshold: 0.2
   spawnVolume: {fileID: 1590424059}
-  spawnToBeatTimeOffset: 0.8
+  spawnToBeatTimeOffset: 1.55
 --- !u!1 &1394353259
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,7 +1244,7 @@ MonoBehaviour:
   bpm: 65
   timeSignatureHi: 4
   timeSignatureLo: 4
-  beatHitAllowance: 0.2
+  beatHitAllowance: 0.8
   preloadTimeDelta: 0.5
   enableMetronome: 0
   metronomeVolume: 0.2
@@ -1580,6 +1580,45 @@ MonoBehaviour:
   GameInput: {fileID: 1704009878}
   TargetSpawner: {fileID: 1372679958}
   databaseFile: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
+  Settings:
+    spawnerConfig:
+      spawnToBeatTimeOffset: 1.55
+    beatManagerConfig:
+      beatHitAllowance: 0.8
+    readTargetConfig:
+      lineWidth: 0.23
+      targetScale: 2.61
+      hangaboutTime: 0.2
+      beatCircleRadiusBegin: 3.34
+      beatMissedThreshold: 0.2
+    characterConfig:
+      lineWidth: 2.2
+      keyPointScale: 0.57
+      followTargetScale: 2.2
+      targetZOffset: -0.2
+      keyPointDistance: 0.15
+      hangaboutTime: 0.2
+      CharacterSize: {x: 30, y: 30, z: 1}
+      overrideChar: 32
+      followTargetBeatCircleRadiusBegin: 4
+      followTargetBeatCircleLineWidth: 0.2
+      followTargetRangeCircleLineWidth: 0.15
+      followTargetColliderRadius: 1.59
+      speedEasy: 0.3
+      speedNormal: 0.8
+      speedHard: 1.2
+      speedInsane: 1.5
+      strokeVisibilityEasy: 1
+      strokeVisibilityNormal: 0.8
+      strokeVisibilityHard: 0.5
+      strokeVisibilityInsane: 0.3
+      strokeVisibilityFadeWidth: 0.02
+    basicTargetConfig:
+      lineWidth: 0.23
+      targetScale: 2.4
+      hangaboutTime: 0.2
+      beatCircleRadiusBegin: 3.34
+      beatMissedThreshold: 0.2
   circle: {fileID: 1163877319}
   BarFlickercColor: {r: 0.8980392, g: 0.33652204, b: 0.11372546, a: 1}
   BeatFlickercColor: {r: 0, g: 1, b: 0.10793543, a: 1}

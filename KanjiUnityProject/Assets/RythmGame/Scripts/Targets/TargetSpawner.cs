@@ -7,130 +7,31 @@ using System.Linq;
 
 using Random = UnityEngine.Random;
 
-/// <summary>
-/// Configuration for the how character targets behave and are visualized in game
-/// </summary>
-[Serializable]
-public struct CharacterConfig
-{
-    [Header("Stroke target settings")]
-    [Tooltip("Thickness of the stroke")]
-    public float lineWidth;
-    public float keyPointScale;
-    public float followTargetScale;
-    public float targetZOffset;
-    [Tooltip("Distance between key points on a stroke. Determines the number of points in a stroke. Not scaled?")]
-    public float keyPointDistance;
-    [Tooltip("how long after the last stroke is completed, does the character stick around on in game")]
-    public float hangaboutTime;
-    [Tooltip("The scaling applied to the character stroke line points as the are by deafault between 0 - 1 (not the game object)")]
-    public Vector3 CharacterSize;
-    [Tooltip("Use this to override all generated characters to be this based on this")]
-    public char overrideChar;
-
-    [Header("Follow target - The thing you have to follow along the stroke")]
-    public float followTargetBeatCircleRadiusBegin;
-    public float followTargetBeatCircleLineWidth;
-    public float followTargetRangeCircleLineWidth;
-    public float followTargetColliderRadius;
-
-    [Header("Difficulty - speed")]
-    public float speedEasy;
-    public float speedNormal;
-    public float speedHard;
-    public float speedInsane;
-
-    [Header("Difficulty - visibility")]
-    public float strokeVisibilityEasy;
-    public float strokeVisibilityNormal;
-    public float strokeVisibilityHard;
-    public float strokeVisibilityInsane;
-    public float strokeVisibilityFadeWidth;
-}
-
-/// <summary>
-/// Configuration for the how basic targets behave and are visualized in game
-/// </summary>
-[Serializable]
-public struct BasicTargetConfig
-{
-    public float lineWidth;
-    public float targetScale;
-    public float hangaboutTime;
-    public float beatCircleRadiusBegin;
-    public float beatMissedThreshold; // How long to stay alive if missed
-}
-
-/// <summary>
-/// Configuration for the how read targets behave and are visualized in game
-/// </summary>
-[Serializable]
-public struct ReadTargetConfig
-{
-    public float lineWidth;
-    public float targetScale;
-    public float hangaboutTime;
-    public float beatCircleRadiusBegin;
-    public float beatMissedThreshold; // How long to stay alive if missed
-}
-
-
-public enum Difficulty
-{
-    Easy,
-    Normal,
-    Hard,
-    Insane
-}
-
 // TODO: split broadly into to two activities:
 // - generating and assigning beats to data objects that hold information required to spawn interactable targets (e.g. groups below)
 // - instantiating the required targets when required
 public class TargetSpawner : MonoBehaviour
 {
    // =========================== Writing group =========================== 
-    [Header("Character target")]
     public CharacterTarget characterTargetPrefab;
     private List<CharacterTargetSpawnData> characterTargetsData = new List<CharacterTargetSpawnData>();
-    [SerializeField]
-    private CharacterConfig characterConfig;
-
     // =========================== Empty targets=========================== 
-    [Header("Basic target")]
     [SerializeField]
     private GameObject emptyTargetPrefab;
     private List<BasicTargetSpawnData> basicTargetsData = new List<BasicTargetSpawnData>();
-    [SerializeField]
-    private BasicTargetConfig basicTargetConfig;
-
     // =========================== Reading group =========================== 
-
-    [Header("Reading group")]
     [SerializeField]
     private GameObject readTargetPrefab;
-    [SerializeField]
-    private ReadTargetConfig readTargetConfig;
     private List<ReadTargetSpawnData> readTargetsData = new List<ReadTargetSpawnData>();
-
     // =========================== Spawner settings =========================== 
-
     // Spawing variables
-    [Header("Spawning variables")]
     [SerializeField]
     private BoxCollider spawnVolume;
-    [SerializeField]
-    private float spawnToBeatTimeOffset;
+
+    // refs
     private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+    private GameSettings settings { get { return GameManager.Instance.Settings; } }
 
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-    }
-
-    private void OnDestroy()
-    {
-    }
 
     private void Start()
     {
@@ -147,65 +48,49 @@ public class TargetSpawner : MonoBehaviour
 
     void GenerateTargetData()
     {
-
-        // Reading targets
-        for (int i = 0; i < 10; i++)
+        // starting beat
+        Beat refBeat = beatManager.GetNextHalfBeat(4, null);
+        for (int i = 0; i < 100; i++)
         {
-            Beat refBeat = null;
-            // try to get a reference beat from the last group
-            if (readTargetsData.Count > 0)
+            // Choose type
+            TargetType t = (TargetType) Random.Range(0, 3);
+            // choose number
+            int n = Random.Range(0, 5);
+            for (int j = 0; j < n; j++)
             {
-                refBeat = readTargetsData.Last().questionBeat;
+                refBeat = beatManager.GetNextHalfBeat(4, refBeat); // break between t all types
+                switch (t)
+                {
+                    case TargetType.Reading:
+                        // make a new group some distance from this one
+                        Beat qB = refBeat;
+                        Beat aB = beatManager.GetNextHalfBeat(4, qB);
+                        CreateReadTargetData( 
+                            qB,
+                            aB,
+                            Random.Range(0,2) == 1,
+                            GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds),
+                            CharacterType.katakana);
+                        refBeat = aB;
+                        break;
+                    case TargetType.Basic:
+                        CreateBasicTargetData(refBeat,GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
+                        break;
+                    case TargetType.Draw:
+                        refBeat = CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Easy, CharacterType.katakana);
+                        break;
+                }
             }
-            // make a new group some distance from this one
-            Beat qB = beatManager.GetNextHalfBeat(4, refBeat);
-            Beat aB = beatManager.GetNextHalfBeat(2, qB);
-            CreateReadTargetData(GameManager.Instance.Database.GetRandomCharacter(), 
-                qB,
-                aB,
-                Random.Range(0,2) == 1,
-                GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
-        }
-
-        // empty targets
-        for (int i = 0; i < 10; i++)
-        {
-            Beat refBeat = null;
-            if (i == 0 && readTargetsData.Count > 0) refBeat = beatManager.GetNextHalfBeat(3, readTargetsData.Last().questionBeat);
-            // try to get a reference beat from the last group
-            else if (basicTargetsData.Count > 0)
-            {
-                refBeat = basicTargetsData.Last().beat;
-            }
-            CreateBasicTargetData(beatManager.GetNextHalfBeat(2, refBeat), 
-                GeometryUtils.GetRandomPositionInBounds(spawnVolume.bounds));
-        }
-
-        // character targets
-        for (int i = 0; i < 5; i++)
-        {
-            Beat refBeat = null;
-            if (i == 0 && basicTargetsData.Count > 0) refBeat = beatManager.GetNextHalfBeat(3, basicTargetsData.Last().beat);
-            // try to get a reference beat from the last group
-            else if (characterTargetsData.Count > 0)
-            {
-                refBeat = characterTargetsData.Last().EndBeat;
-            }
-
-            if (i == 0) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Easy);
-            else if (i > 0 && i <= 3) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Normal);
-            else if (i > 3 && i <= 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Hard);
-            else if (i > 8) CreateDrawTargetData(beatManager.GetNextHalfBeat(4, refBeat), Difficulty.Insane);
         }
     }
 
     #region Draw targets
 
-    private void CreateDrawTargetData(Beat startBeat, Difficulty difficulty)
+    private Beat CreateDrawTargetData(Beat startBeat, Difficulty difficulty, CharacterType type)
     {
-        Character character = characterConfig.overrideChar != ' ' ?
-            GameManager.Instance.Database.GetCharacter(characterConfig.overrideChar) :
-            GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana);
+        Character character = settings.characterConfig.overrideChar != ' ' ?
+            GameManager.Instance.Database.GetCharacter(settings.characterConfig.overrideChar) :
+            GameManager.Instance.Database.GetRandomCharacter(null, type);
 
         // generate the beats for the entire character
         List<Tuple<Beat, Beat>> beats = new();
@@ -222,16 +107,16 @@ public class TargetSpawner : MonoBehaviour
             switch (difficulty)
             {
                 case Difficulty.Easy:
-                    speed = characterConfig.speedEasy;
+                    speed = settings.characterConfig.speedEasy;
                     break;
                 case Difficulty.Normal:
-                    speed = characterConfig.speedNormal;
+                    speed = settings.characterConfig.speedNormal;
                     break;
                 case Difficulty.Hard:
-                    speed = characterConfig.speedHard;
+                    speed = settings.characterConfig.speedHard;
                     break;
                 case Difficulty.Insane:
-                    speed = characterConfig.speedInsane;
+                    speed = settings.characterConfig.speedInsane;
                     break;
             }
             int beatsToComplete = (int) MathF.Ceiling((length / speed) / beatManager.HalfBeatPeriod);
@@ -245,12 +130,14 @@ public class TargetSpawner : MonoBehaviour
         }
 
         CharacterTargetSpawnData csd = new();
-        csd.position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (characterConfig.CharacterSize / 2);
+        csd.position = spawnVolume.transform.TransformPoint(spawnVolume.center) - (settings.characterConfig.CharacterSize / 2);
         csd.beats = beats;
         csd.character = character;
         csd.difficulty = difficulty;
         csd.spawned = false;
         characterTargetsData.Add(csd);
+
+        return beats.Last().Item2;
     }
 
     private void SpawnStrokeTarget()
@@ -258,10 +145,10 @@ public class TargetSpawner : MonoBehaviour
         if (characterTargetsData.Count <= 0) return;
         
         var csd = characterTargetsData.First();
-        if (beatManager.IsBeatWithinRange(csd.StartBeat, spawnToBeatTimeOffset))
+        if (beatManager.IsBeatWithinRange(csd.StartBeat, settings.spawnerConfig.spawnToBeatTimeOffset))
         {
             CharacterTarget characterTarget = Instantiate(characterTargetPrefab, csd.position, Quaternion.identity);
-            characterTarget.Init(csd, characterConfig);
+            characterTarget.Init(csd, settings.characterConfig);
             characterTargetsData.Remove(csd);
         }
     }
@@ -285,14 +172,14 @@ public class TargetSpawner : MonoBehaviour
         // check if any of the groups can be spawned
         foreach(BasicTargetSpawnData bd in basicTargetsData)
         {
-            if (beatManager.IsBeatWithinRange(bd.beat, spawnToBeatTimeOffset) && !bd.spawned)
+            if (beatManager.IsBeatWithinRange(bd.beat, settings.spawnerConfig.spawnToBeatTimeOffset) && !bd.spawned)
             {
                 BasicTarget b = Instantiate(
                     emptyTargetPrefab,
                     bd.position,
                     Quaternion.identity,
                     transform).GetComponent<BasicTarget>();
-                b.Init(bd.beat, basicTargetConfig);
+                b.Init(bd.beat, settings.basicTargetConfig);
                 bd.spawned = true;
             }   
         }
@@ -303,12 +190,12 @@ public class TargetSpawner : MonoBehaviour
 
     #region Reading group
     
-    private void CreateReadTargetData(Character questionChar, Beat questionBeat, Beat answerBeat, bool kanaToRomaji, Vector3 position)
+    private void CreateReadTargetData(Beat questionBeat, Beat answerBeat, bool kanaToRomaji, Vector3 position, CharacterType type)
     {
         ReadTargetSpawnData readTargetData = new();
         readTargetData.questionBeat = questionBeat;
         readTargetData.answerBeat = answerBeat;
-        readTargetData.questionChar = questionChar;
+        readTargetData.questionChar = GameManager.Instance.Database.GetRandomCharacter(null, type);
         readTargetData.answers = new List<Character>();
         readTargetData.spawned = false;
         readTargetData.position = position;
@@ -319,11 +206,11 @@ public class TargetSpawner : MonoBehaviour
             Character p;
             if (i == correctAnswer)
             {
-               p = Utils.Clone(questionChar);
+               p = Utils.Clone(readTargetData.questionChar);
             }
             else
             {
-                p = GameManager.Instance.Database.GetRandomCharacter(questionChar);
+                p = GameManager.Instance.Database.GetRandomCharacter(readTargetData.questionChar, type);
             }
             p.DisplayType = !readTargetData.kanaToRomaji? DisplayType.Hiragana : DisplayType.Romaji;
             readTargetData.answers.Add(p);
@@ -335,14 +222,14 @@ public class TargetSpawner : MonoBehaviour
     {
         foreach (var rd in readTargetsData)
         {
-            if (!rd.spawned && beatManager.IsBeatWithinRange(rd.questionBeat, spawnToBeatTimeOffset))
+            if (!rd.spawned && beatManager.IsBeatWithinRange(rd.questionBeat, settings.spawnerConfig.spawnToBeatTimeOffset))
             {
                 ReadTarget ht = Instantiate(
                     readTargetPrefab,
                     rd.position,
                     Quaternion.identity,
                     transform).GetComponent<ReadTarget>();
-                ht.Init(rd, readTargetConfig);
+                ht.Init(rd, settings.readTargetConfig);
                 rd.spawned = true;
             }   
         }

@@ -6,23 +6,29 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using Manabu.Core;
-using RythmGame;
+
 
 /// <summary>
 /// Singleton pattern managment object for the game
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    // refs
     public static GameManager Instance;
     public GameAudio GameAudio;
     public Database Database;
     public GameInput GameInput;
     public TargetSpawner TargetSpawner;
+
+
+    // configuration
+    [Header("----Game settings----")]
     [SerializeField]
     private TextAsset databaseFile;
+    public GameSettings Settings;
 
+    [Header("----Debug----")]
     public Image circle; // circle for checking the beat timing is correct
-
     [SerializeField]
     private Color BarFlickercColor;
     [SerializeField]
