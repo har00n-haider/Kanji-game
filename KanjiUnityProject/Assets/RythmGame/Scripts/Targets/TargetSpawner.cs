@@ -53,7 +53,8 @@ public class TargetSpawner : MonoBehaviour
         for (int i = 0; i < 100; i++)
         {
             // Choose type
-            TargetType t = (TargetType) Random.Range(0, 3);
+            //TargetType t = (TargetType) Random.Range(0, 3);
+            TargetType t = (TargetType.Basic) ;
             // choose number
             int n = Random.Range(0, 5);
             for (int j = 0; j < n; j++)

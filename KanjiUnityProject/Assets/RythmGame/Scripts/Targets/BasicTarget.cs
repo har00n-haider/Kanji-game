@@ -63,14 +63,14 @@ public class BasicTarget : MonoBehaviour
     {
         startTimeStamp = AudioSettings.dspTime;
         beatCircleLine.positionCount = beatCirclePoints.Length;
-        beatCircleLine.useWorldSpace = true;
+        beatCircleLine.useWorldSpace = false;
         beatCircleLine.numCapVertices = 10; 
         beatCircleLine.endWidth = beatCircleLineWidth;  
         beatCircleLine.startWidth = beatCircleLineWidth;
         this.beat = beat;
         modelColor = targetColor;
         modelCollider = model.GetComponent<CapsuleCollider>();
-        radiusEnd = modelCollider.radius;
+        radiusEnd = 0.5f;
         transform.localScale = transform.localScale * config.targetScale;
         hangAboutTime = config.hangaboutTime;
         this.config = config;
@@ -128,7 +128,7 @@ public class BasicTarget : MonoBehaviour
         // decrease size of the beat circle based on time elapsed
         float t = (float) MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime) ;
         float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
-        GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, transform.position);
+        GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, Vector3.zero);
         for (int i = 0; i < beatCirclePoints.Length; i++)
         {
             beatCircleLine.SetPosition(i, beatCirclePoints[i]);
