@@ -151,8 +151,8 @@ namespace Manabu.Core
                         if (CharacterConversionUtils.UnmodifiedHiragana.Contains(character.literal)) hiragana.Add(character);
                         break;
                     case CharacterType.katakana:
-                        //if(CharacterConversionUtils.UnmodifiedHiragana.Contains(CharacterConversionUtils.KatakanaToHiragana(character.literal))) katakana.Add(character);
-                        katakana.Add(character);
+                        //HACK: need to control what goes in the database, or filtering betterc
+                        if (CharacterConversionUtils.UnmodifiedKatakana.Contains(character.literal)) katakana.Add(character);
                         break;
                 }
             }

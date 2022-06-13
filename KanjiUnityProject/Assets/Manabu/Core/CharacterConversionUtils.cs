@@ -57,7 +57,7 @@ namespace Manabu.Core
             // find relevant path, adapt t for it, then find point
             float tStrokeDistance = t * stroke.unscaledLength;
             int j = 0;
-            while(j < stroke.vectorPaths.Count - 1 && tStrokeDistance > stroke.vectorPaths[j].estimatedLength)
+            while (j < stroke.vectorPaths.Count - 1 && tStrokeDistance > stroke.vectorPaths[j].estimatedLength)
             {
                 tStrokeDistance -= stroke.vectorPaths[j].estimatedLength;
                 j++;
@@ -100,7 +100,7 @@ namespace Manabu.Core
                 totalDist += GetLengthOfCubicBezier(vectorPaths[i]);
             }
             return totalDist;
-        
+
         }
 
         public static List<Vector2> GetKeyPointsForVectorStroke(Stroke stroke, float segmentLength)
@@ -109,7 +109,7 @@ namespace Manabu.Core
             List<Vector2> keyPoints = new();
             float currentLength = totalLength;
             if (currentLength <= 0) return keyPoints;
-            while(currentLength >= 0)
+            while (currentLength >= 0)
             {
                 float t = currentLength / totalLength;
                 keyPoints.Insert(0, GetPointOnVectorStroke(stroke, t));
@@ -130,7 +130,7 @@ namespace Manabu.Core
 
         public static List<CubicBezier> NormalizeAndConvertCurvesToUnityCoords(List<CubicBezier> curves, float svgHeight, float svgWidth)
         {
-            foreach(CubicBezier b in curves)
+            foreach (CubicBezier b in curves)
             {
                 b.p1 = NormalizeAndConvertPointToUnityCoords(b.p1, svgHeight, svgWidth);
                 b.p2 = NormalizeAndConvertPointToUnityCoords(b.p2, svgHeight, svgWidth);
@@ -360,6 +360,57 @@ namespace Manabu.Core
         'を',
         'ん',
         };
+
+        public static char[] UnmodifiedKatakana = new char[]
+        {
+        'ア',
+        'イ',
+        'ウ',
+        'エ',
+        'オ',
+        'カ',
+        'キ',
+        'ク',
+        'ケ',
+        'コ',
+        'サ',
+        'シ',
+        'ス',
+        'セ',
+        'ソ',
+        'タ',
+        'チ',
+        'ツ',
+        'テ',
+        'ト',
+        'ナ',
+        'ニ',
+        'ヌ',
+        'ネ',
+        'ノ',
+        'ハ',
+        'ヒ',
+        'フ',
+        'ヘ',
+        'ホ',
+        'マ',
+        'ミ',
+        'ム',
+        'メ',
+        'モ',
+        'ヤ',
+        'ユ',
+        'ヨ',
+        'ラ',
+        'リ',
+        'ル',
+        'レ',
+        'ロ',
+        'ワ',
+        'ヲ',
+        'ン'
+        };
+
 
         public static char HiraganaToKatakana(char hiragana)
         {
