@@ -4,23 +4,13 @@ using System.Collections.Generic;
 
 public class Beat
 {
-    public enum BeatType
+    public Beat(double timestamp, int beatId)
     {
-        HalfBeat, // Eigth Note for 4 | 4
-        Beat,     // Quarter Note for 4 | 4
-        Bar       // Where the bar start/end is, i.e. after 4 Beats for 4 | 4
-    }
-
-    public Beat(BeatType type, double timestamp, int beatId)
-    {
-        this.type = type;
         this.timestamp = timestamp;
         this.beatId = beatId;
     }
-
-    public BeatType type;
     public double timestamp;
-    public int beatId; // also the index into beat array
+    public int beatId;
 }
 
 
@@ -53,16 +43,14 @@ public class BeatManager : MonoBehaviour
     private AudioSource audioSource;
     [SerializeField]
     private Metronome metronome;
+    private BeatManagerConfig config { get { return GameManager.Instance.Settings.beatManagerConfig; } } 
 
     // state
     public bool IsSongPlaying { get { return running; } }
-    public Beat NextBeat { get { return beatMap[nextBeatIntIdx]; } }
+
     private double startTime;
+    public double timeIntoSong { get { return AudioSettings.dspTime - startTime; } }
     private bool running = false;
-
-
-    private List<Beat> beatMap = new List<Beat>();
-    private int nextBeatIntIdx = 0; // internal tracknig
 
     private void Awake()
     {
@@ -72,7 +60,6 @@ public class BeatManager : MonoBehaviour
         // setting up first event time
         startTime = AudioSettings.dspTime + preloadTimeDelta;
         audioSource.PlayScheduled(startTime);
-        GenerateBeatMap();
         running = true;
 
         if (enableMetronome)
@@ -88,76 +75,47 @@ public class BeatManager : MonoBehaviour
     void Update()
     {
         if (!running) return;
-
-        UpdateNextBeat();
     }
 
-    private void UpdateNextBeat()
+    public bool CheckIfOnSongBeat()
     {
-        // update beat time
-        if (AudioSettings.dspTime > NextBeat.timestamp)
-        {
-            nextBeatIntIdx++;
-        }
-    }
-
-    private void GenerateBeatMap()
-    {
-        int noOfHalfBeatsInSong = (int)(songClip.length * (bpm * 60)) * 2;
-        for (int halfBeatCtr = 0; halfBeatCtr < noOfHalfBeatsInSong; halfBeatCtr++)
-        {
-            // we can only have mutually exclusive beat types at the moment
-            if (halfBeatCtr % timeSignatureHi == 0)
-            {
-                beatMap.Add(new Beat(Beat.BeatType.Bar, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
-            }
-            else if (halfBeatCtr % 2 == 0)
-            {
-                beatMap.Add(new Beat(Beat.BeatType.Beat, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
-            }
-            else
-            {
-                beatMap.Add(new Beat(Beat.BeatType.HalfBeat, startTime + halfBeatCtr * HalfBeatPeriod, halfBeatCtr));
-            }
-        }
+        return timeIntoSong % BeatPeriod < config.beatHitAllowance;
     }
 
     public bool CheckIfOnBeat(Beat beat)
     {
-        double delta = beat.timestamp - AudioSettings.dspTime;
-        bool result = Mathf.Abs((float)delta) < GameManager.Instance.Settings.beatManagerConfig.beatHitAllowance;
+        double delta = beat.timestamp - timeIntoSong;
+        bool result = Mathf.Abs((float)delta) < config.beatHitAllowance;
         return result;
     }
 
+    // TODO: BRoken 
     // relative to the next beat by default
     public Beat GetNextHalfBeat(int beatsToSkip = 0, Beat referenceBeat = null)
     {
-        Beat b = referenceBeat == null ? beatMap[nextBeatIntIdx] : referenceBeat;
-        int beatIdx = b.beatId;
-        // skip if required
-        while (beatsToSkip != 0)
-        {
-            // skip the required amount depending on type 
-            beatIdx++;
-            b = beatMap[beatIdx];
-            beatsToSkip--;
-        }
+        Beat b = null;
+        //Beat b = referenceBeat == null ? beatMap[nextBeatIntIdx] : referenceBeat;
+        //int beatIdx = b.beatId;
+        //// skip if required
+        //while (beatsToSkip != 0)
+        //{
+        //    // skip the required amount depending on type 
+        //    beatIdx++;
+        //    b = beatMap[beatIdx];
+        //    beatsToSkip--;
+        //}
         return b.Clone();
-    }
-
-    private float TimeToBeat(Beat beat)
-    {
-        return (float)(beat.timestamp - AudioSettings.dspTime);
     }
 
     public bool IsBeatWithinRange(Beat beat, float range)
     {
-        return TimeToBeat(beat) < range;
+        double delta = beat.timestamp - timeIntoSong; 
+        return delta < 0 ? false : delta < range; // false if missed in any case
     }
 
-    public bool IsBeatMissed(Beat beat, float threshold)
+    public bool IsBeatMissed(Beat beat)
     {
-        return AudioSettings.dspTime > beat.timestamp + threshold;
+        return timeIntoSong > beat.timestamp + config.beatHitAllowance;
     }
 
 }

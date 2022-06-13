@@ -101,7 +101,7 @@ public class ReadContainerTarget : MonoBehaviour
         SetModelColor(type == Type.Answer ? answerColor : questionColor);
 
         transform.localScale = transform.localScale * config.targetScale;
-        startTimeStamp = AudioSettings.dspTime;
+        startTimeStamp = beatManager.timeIntoSong;
 
         if(type == Type.Answer) textMesh.text = readTargetData.kanaToRomaji ? character.romaji : character.literal.ToString();
         if(type == Type.Question) textMesh.text = !readTargetData.kanaToRomaji ? character.romaji : character.literal.ToString();
@@ -115,12 +115,6 @@ public class ReadContainerTarget : MonoBehaviour
 
     void Update()
     {
-
-        if (beatManager.IsBeatMissed(beat, config.beatMissedThreshold))
-        {
-            HandleBeatResult(BeatResult.Miss);
-        };
-
         UpdateBeatCircle();
         CheckInput();
     }
@@ -129,13 +123,20 @@ public class ReadContainerTarget : MonoBehaviour
     private void CheckInput()
     {
         if (this == null) return;
+
         if (GameInput.GetButton1Down())
         {
             Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
             if (modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue))
             {
-                var result = beatManager.CheckIfOnBeat(beat) ? BeatResult.Hit : BeatResult.Miss;
-                HandleBeatResult(result);
+                if (beatManager.CheckIfOnBeat(beat))
+                {
+                    HandleBeatResult(BeatResult.Hit);
+                }
+                else
+                {
+                    HandleBeatResult(BeatResult.Miss);
+                };
             }
         }
     }
@@ -194,12 +195,13 @@ public class ReadContainerTarget : MonoBehaviour
             Destroy(a.gameObject);
         }
         Destroy(readTarget.question.gameObject);
+        Destroy(readTarget.gameObject, 2);
     }
 
     private void UpdateBeatCircle()
     {
         // decrease size of the beat circle based on time elapsed
-        float t = (float)MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime);
+        float t = (float)MathUtils.InverseLerp(beat.timestamp, startTimeStamp, beatManager.timeIntoSong);
         float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
         GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, 
             radius, 

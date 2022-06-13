@@ -6,14 +6,7 @@ using System.Collections.Generic;
 using Manabu.Core;
 using System;
 
-public class BasicTargetSpawnData
-{
-    public Beat beat;
-    public Vector3 position;
-    public bool spawned;
-}
-
-public class BasicTarget : MonoBehaviour
+public class BasicTarget : MonoBehaviour, ITarget
 {
 
     [SerializeField]
@@ -23,7 +16,7 @@ public class BasicTarget : MonoBehaviour
 
     // timing
     private double hangAboutTime;
-    public double BeatTimeStamp { get { return beat.timestamp;} }
+    public double BeatTimeStamp { get { return beat.timestamp; } }
     private double startTimeStamp = 0;
     private Beat beat;
     public Beat Beat { get { return beat; } }
@@ -53,21 +46,22 @@ public class BasicTarget : MonoBehaviour
     //refs
     private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
     private BasicTargetConfig config;
+    public Action<ITarget> OnBeatResult { get; set; }
 
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void Init(Beat beat, BasicTargetConfig config)  
+    public void Init(BasicTargetSpawnData spawnData, BasicTargetConfig config)
     {
-        startTimeStamp = AudioSettings.dspTime;
+        startTimeStamp = beatManager.timeIntoSong;
         beatCircleLine.positionCount = beatCirclePoints.Length;
         beatCircleLine.useWorldSpace = false;
-        beatCircleLine.numCapVertices = 10; 
-        beatCircleLine.endWidth = beatCircleLineWidth;  
+        beatCircleLine.numCapVertices = 10;
+        beatCircleLine.endWidth = beatCircleLineWidth;
         beatCircleLine.startWidth = beatCircleLineWidth;
-        this.beat = beat;
+        beat = spawnData.beat;
         modelColor = targetColor;
         modelCollider = model.GetComponent<CapsuleCollider>();
         radiusEnd = 0.5f;
@@ -78,12 +72,6 @@ public class BasicTarget : MonoBehaviour
 
     void Update()
     {
-        if (beatManager.IsBeatMissed(beat, config.beatMissedThreshold))
-        {
-            HandleBeatResult(BeatResult.Miss);
-        };
-
-
         UpdateBeatCircle();
 
         CheckInput();
@@ -93,23 +81,26 @@ public class BasicTarget : MonoBehaviour
     {
         if (this == null) return;
 
-        if(GameInput.GetButton1Down())
+        if (GameInput.GetButton1Down())
         {
             Ray ray = Camera.main.ScreenPointToRay(GameInput.MousePosition());
-            if(modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue))
+            if (modelCollider.Raycast(ray, out RaycastHit hit, float.MaxValue))
             {
-                HandleBeatResult(BeatResult.Hit);
+                if (beatManager.CheckIfOnBeat(beat))
+                {
+                    HandleBeatResult(BeatResult.Hit);
+                }
+                else
+                {
+                    HandleBeatResult(BeatResult.Miss);
+                };
             }
-            else
-            {
-                HandleBeatResult(BeatResult.Miss);
-            };
         }
     }
 
-    private void HandleBeatResult(BeatResult hitResult)
+    public void HandleBeatResult(BeatResult hitResult)
     {
-        if(this == null) return;
+        if (this == null) return;
 
         switch (hitResult)
         {
@@ -121,12 +112,14 @@ public class BasicTarget : MonoBehaviour
                 break;
         }
         Destroy(gameObject);
+        OnBeatResult?.Invoke(this);
     }
 
-    private void UpdateBeatCircle() 
+    private void UpdateBeatCircle()
     {
         // decrease size of the beat circle based on time elapsed
-        float t = (float) MathUtils.InverseLerp(beat.timestamp, startTimeStamp, AudioSettings.dspTime) ;
+        float t = (float)MathUtils.InverseLerp(beat.timestamp, startTimeStamp, beatManager.timeIntoSong);
+        //Debug.Log( $" t: {t:0.00}, beat: {beat.timestamp:0.000}, start: {startTimeStamp:0.000}, current: {beatManager.timeIntoSong:0.00}");
         float radius = Mathf.Lerp(radiusEnd, radiusBegin, t);
         GeometryUtils.PopulateCirclePoints3DXY(ref beatCirclePoints, radius, Vector3.zero);
         for (int i = 0; i < beatCirclePoints.Length; i++)
@@ -142,17 +135,5 @@ public class BasicTarget : MonoBehaviour
         modelRenderer.material.color = color;
     }
 
-    private void UpdateBeatWindowColor()
-    {
-        bool onBeat = GameManager.Instance.GameAudio.BeatManager.CheckIfOnBeat(beat);
-        if (onBeat )
-        {
-            SetModelColor(beatWindowColor);
-        }
-        else
-        {
-            SetModelColor(modelColor);
-        }
-    }
 
 }

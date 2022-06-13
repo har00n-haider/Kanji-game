@@ -30,11 +30,7 @@ public class GameManager : MonoBehaviour
     [Header("----Debug----")]
     public Image circle; // circle for checking the beat timing is correct
     [SerializeField]
-    private Color BarFlickercColor;
-    [SerializeField]
     private Color BeatFlickercColor;
-    [SerializeField]
-    private Color HalfBeatFlickercColor;
 
     // Awake() is called before Start.
     void Awake()
@@ -82,22 +78,9 @@ public class GameManager : MonoBehaviour
 
     public void UpdateBeat()
     {
-        Beat beat = GameAudio.BeatManager.NextBeat;
-        bool onBeat = GameAudio.BeatManager.CheckIfOnBeat(beat);
-        if(onBeat)
+        if(GameAudio.BeatManager.CheckIfOnSongBeat())
         {
-            switch (beat.type)
-            {
-                case Beat.BeatType.HalfBeat:
-                    circle.color = HalfBeatFlickercColor;
-                    break;
-                case Beat.BeatType.Beat:
-                    circle.color = BeatFlickercColor;
-                    break;
-                case Beat.BeatType.Bar:
-                    circle.color = BarFlickercColor;
-                    break;
-            }
+            circle.color = BeatFlickercColor;
         }
         else
         {

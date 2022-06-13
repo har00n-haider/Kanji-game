@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Manabu.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-
 
 public enum BeatResult
 {
@@ -125,4 +125,105 @@ public enum TargetType
     Reading,
 }
 
+public class SpawnData
+{
+    public Beat beat;
+    public TargetType type;
+    public bool spawned = false;
+    public int id = -1;
+}
 
+public class BasicTargetSpawnData : SpawnData
+{
+    public BasicTargetSpawnData(
+        Beat beat,
+        Vector3 position
+    )
+    {
+        this.position = position;
+        this.beat = beat;
+        type = TargetType.Basic;
+    }
+    public Vector3 position;
+}
+
+/// <summary>
+/// Question and answers group for simple MCQ style kana test for reading
+/// </summary>
+public class ReadTargetSpawnData : SpawnData
+{
+    public ReadTargetSpawnData(
+        Vector3 position,
+        Beat questionBeat,
+        Beat answerBeat,
+        Character character,
+        bool kanaToRomaji
+    )
+    {
+        this.position = position;
+        this.questionBeat = beat = questionBeat;
+        this.answerBeat =  answerBeat;
+        this.character = character;
+        this.kanaToRomaji = kanaToRomaji;
+        type = TargetType.Reading;
+
+        int correctAnswer = UnityEngine.Random.Range(0, 3);
+        for (int i = 0; i < 3; i++)
+        {
+            Character p;
+            if (i == correctAnswer)
+            {
+                p = Utils.Clone(this.character);
+            }
+            else
+            {
+                p = GameManager.Instance.Database.GetRandomCharacter(this.character, character.type);
+            }
+            p.DisplayType = !kanaToRomaji ? DisplayType.Hiragana : DisplayType.Romaji;
+            answers.Add(p);
+        }
+    }
+
+    public bool kanaToRomaji;
+    public Beat questionBeat;
+    public Beat answerBeat;
+    public Vector3 position;
+    public Character character;
+    public List<Character> answers = new();
+}
+
+public class CharacterTargetSpawnData : SpawnData
+{
+
+    public CharacterTargetSpawnData(
+        Vector3 position,
+        List<Tuple<Beat, Beat>> beats,
+        Character character,
+        Difficulty difficulty,
+        int id
+    )
+    {
+        this.position = position;
+        this.beats = beats;
+        this.character = character;
+        this.difficulty = difficulty;
+        beat = StartBeat;
+        type = TargetType.Draw;
+        this.id = id;
+    }
+    public Vector3 position;
+    public List<Tuple<Beat, Beat>> beats;
+    public Character character;
+    public Difficulty difficulty;
+    public Beat StartBeat { get { return beats.First().Item1; } }
+    public Beat EndBeat { get { return beats.Last().Item2; } }
+}
+
+
+public interface ITarget
+{
+    //public int ID { get; }
+    public void HandleBeatResult(BeatResult hitResult);
+    public Action<ITarget> OnBeatResult { get; set; }
+    public Beat Beat { get;}
+}

@@ -4,24 +4,9 @@ using UnityEngine.VFX;
 using TMPro;
 using System.Collections.Generic;
 using Manabu.Core;
+using System;
 
-
-/// <summary>
-/// Question and answers group for simple MCQ style kana test for reading
-/// </summary>
-public class ReadTargetSpawnData
-{
-    public bool kanaToRomaji;
-    public Beat questionBeat;
-    public Beat answerBeat;
-    public Vector3 position;
-    public Character questionChar;
-    public List<Character> answers;
-    public bool spawned;
-}
-
-
-public class ReadTarget : MonoBehaviour
+public class ReadTarget : MonoBehaviour, ITarget
 {
     // refs
     [SerializeField]
@@ -42,6 +27,10 @@ public class ReadTarget : MonoBehaviour
     Vector3 right = new Vector3(1, -1, 0).normalized * distanceFromQuestion;
     readonly static float distanceFromQuestion = 4.2f;
 
+    public Action<ITarget> OnBeatResult { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public Beat Beat => targetData.questionBeat;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +47,7 @@ public class ReadTarget : MonoBehaviour
             transform);
         question.Init(readTargetData.questionBeat,
             this,
-            readTargetData.questionChar,
+            readTargetData.character,
             ReadContainerTarget.Type.Question,
             readTargetConfig,
             readTargetData,
@@ -94,4 +83,8 @@ public class ReadTarget : MonoBehaviour
         }
     }
 
+    public void HandleBeatResult(BeatResult hitResult)
+    {
+        throw new NotImplementedException();
+    }
 }
