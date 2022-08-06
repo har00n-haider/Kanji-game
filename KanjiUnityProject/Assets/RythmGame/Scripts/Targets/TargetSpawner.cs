@@ -26,6 +26,9 @@ public class TargetSpawner : MonoBehaviour
     private List<SpawnData> toBeSpawnedTargets = new();
     private List<ITarget> spawnedTargets = new();
 
+    [SerializeField]
+    private string beatmapPath;
+
     private void Start()
     {
         //GenerateTargetData();
@@ -34,15 +37,15 @@ public class TargetSpawner : MonoBehaviour
 
     void LoadTargetData()
     {
-        var hitObjects = OsuBeatMapImporter.ParseBeatMap(@"C:\Users\HHaider\AppData\Roaming\osu\exports\KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Peachtrees)\KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Peachtrees) [Easy].osu");
+        var hitObjects = OsuBeatMapImporter.ParseBeatMap(beatmapPath);
         for (int i = 1; i < hitObjects.Count; i+=2)
         {
             if (i > 0 && (i + 1) < hitObjects.Count)
             {
                 var hitObject1 = hitObjects[i];
                 var hitObject2 = hitObjects[i + 1];
-                Beat beat1 = new Beat((double)hitObject1.timeSeconds / 1000, 0);
-                Beat beat2 = new Beat((double)hitObject2.timeSeconds / 1000, 0);
+                Beat beat1 = new Beat((double)hitObject1.timeSeconds, 0);
+                Beat beat2 = new Beat((double)hitObject2.timeSeconds, 0);
                 Vector3 position = NormalisedToSpawnVolumePosition(hitObject1.position);
                 toBeSpawnedTargets.Add(new ReadTargetSpawnData(
                     position,

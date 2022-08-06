@@ -1176,6 +1176,9 @@ MonoBehaviour:
   emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
   readTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   spawnVolume: {fileID: 1590424059}
+  beatmapPath: C:\Users\haroo\AppData\Roaming\osu\exports\KYARY PAMYU PAMYU - Ninjya
+    Re Bang Bang (Peachtrees)\KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Peachtrees)
+    [Easy].osu
 --- !u!1 &1394353259
 GameObject:
   m_ObjectHideFlags: 0
@@ -2038,6 +2041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
