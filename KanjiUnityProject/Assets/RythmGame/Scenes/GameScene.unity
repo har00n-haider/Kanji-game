@@ -1176,9 +1176,8 @@ MonoBehaviour:
   emptyTargetPrefab: {fileID: 750478167555961153, guid: 7b09bf28a768db847aca09c6214ae754, type: 3}
   readTargetPrefab: {fileID: 750478167555961153, guid: f016d83dc1e5d6d4f99abcc435d1117a, type: 3}
   spawnVolume: {fileID: 1590424059}
-  beatmapPath: C:\Users\haroo\AppData\Roaming\osu\exports\KYARY PAMYU PAMYU - Ninjya
-    Re Bang Bang (Peachtrees)\KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Peachtrees)
-    [Easy].osu
+  beatmapPath: C:\Users\haroo\AppData\Local\osu!\Songs\KYARY PAMYU PAMYU - Ninjya
+    Re Bang Bang\KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Haroon) [Kana rythm test].osu
 --- !u!1 &1394353259
 GameObject:
   m_ObjectHideFlags: 0
@@ -1216,7 +1215,6 @@ MonoBehaviour:
   enableMetronome: 0
   metronomeVolume: 0.2
   metronomeBaseBpmMultiple: 2
-  songClip: {fileID: 8300000, guid: bde24316ae2db894dac9977ec3900e2e, type: 3}
   metronome: {fileID: 1331250786}
 --- !u!82 &1394353261
 AudioSource:
@@ -1327,8 +1325,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1331250788}
-  m_Father: {fileID: 1770974223}
-  m_RootOrder: 0
+  m_Father: {fileID: 1510406027}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1402287289
 GameObject:
@@ -1546,6 +1544,7 @@ MonoBehaviour:
   GameAudio: {fileID: 1770974222}
   GameInput: {fileID: 1704009878}
   TargetSpawner: {fileID: 1372679958}
+  BeatManager: {fileID: 1394353260}
   databaseFile: {fileID: 4900000, guid: 85d04369887330d4ca9a3a863e43b9ef, type: 3}
   Settings:
     spawnerConfig:
@@ -1588,6 +1587,8 @@ MonoBehaviour:
       beatMissedThreshold: 0.2
   circle: {fileID: 1163877319}
   BeatFlickercColor: {r: 0, g: 1, b: 0.10793543, a: 1}
+  beatmapPath: C:\Users\haroo\AppData\Local\osu!\Songs\KYARY PAMYU PAMYU - Ninjya
+    Re Bang Bang\KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Haroon) [Kana rythm test].osu
 --- !u!4 &1510406027
 Transform:
   m_ObjectHideFlags: 0
@@ -1602,6 +1603,7 @@ Transform:
   m_Children:
   - {fileID: 1704009879}
   - {fileID: 1770974223}
+  - {fileID: 1394353262}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2152,7 +2154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 213168694ce1a234c9fe1e3c79706c62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BeatManager: {fileID: 1394353260}
   fail: {fileID: 8300000, guid: 7c237aa361275464798f7e752125dc80, type: 3}
   select: {fileID: 8300000, guid: b681cb6d3807b244ca0a575b123c8b59, type: 3}
   select2: {fileID: 8300000, guid: d2a843a348cc76542a8e86e1e0f2e2f8, type: 3}
@@ -2169,8 +2170,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1394353262}
+  m_Children: []
   m_Father: {fileID: 1510406027}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
