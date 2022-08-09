@@ -1,9 +1,29 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
-public class OsuBeatMapImporter
+
+public class BeatMapData
+{
+    public List<HitObject> hitObjects = new();
+    /// <summary>
+    /// without extension
+    /// </summary>
+    public string songName;
+}
+
+
+
+public class HitObject
+{
+    public Vector2 position;
+    public float timeSeconds;
+    public OsuBeatMapParser.LegacyHitObjectType type;
+}
+
+public class OsuBeatMapParser
 {
     [Flags]
     public enum LegacyHitObjectType
@@ -16,22 +36,27 @@ public class OsuBeatMapImporter
         Hold = 1 << 7
     }
 
-    public class HitObject
-    {
-        public Vector2 position;
-        public float timeSeconds;
-        public LegacyHitObjectType type;
-    }
 
-
-    public static List<HitObject> ParseBeatMap(string path)
+    /// <summary>
+    /// https://osu.ppy.sh/wiki/en/Client/File_formats/Osu_%28file_format%29#hit-objects
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static BeatMapData Parse(string path)
     {
-        List<HitObject> hitObjects = new List<HitObject>();
+        BeatMapData data = new BeatMapData();
         int lineCount = 0;
         bool StartParsingHitObjects = false;
         // Read the file and display it line by line.  
         foreach (string line in System.IO.File.ReadLines(path))
         {
+            if (line.Contains("AudioFilename"))
+            {
+                string name = line.Split("AudioFilename:")[1].Trim();
+                data.songName = Path.GetFileNameWithoutExtension(name);
+                continue;
+            }
+
             if (line.Contains("[HitObjects]"))
             {
                 StartParsingHitObjects = true;
@@ -46,10 +71,10 @@ public class OsuBeatMapImporter
                 h.timeSeconds = float.Parse(x[2]) / 1000;
                 h.type = (LegacyHitObjectType)int.Parse(x[3]);
 
-                hitObjects.Add(h);
+                data.hitObjects.Add(h);
             }
             lineCount++;
         }
-        return hitObjects;
+        return data;
     }
 }

@@ -38,8 +38,6 @@ public class BeatManager : MonoBehaviour
     public int metronomeBaseBpmMultiple;
 
     // refs
-    [SerializeField]
-    private AudioClip songClip;
     private AudioSource audioSource;
     [SerializeField]
     private Metronome metronome;
@@ -55,6 +53,13 @@ public class BeatManager : MonoBehaviour
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+
+    }
+
+    public void Init(BeatMapData beatmapData) 
+    {
+        // load beatmap 
+        AudioClip songClip = Resources.Load<AudioClip>(beatmapData.songName);
         audioSource.clip = songClip;
 
         // setting up first event time

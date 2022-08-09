@@ -44,7 +44,7 @@ public class BasicTarget : MonoBehaviour, ITarget
     private Color modelColor;
 
     //refs
-    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+    private BeatManager beatManager { get { return GameManager.Instance.BeatManager; } }
     private BasicTargetConfig config;
     public Action<ITarget> OnBeatResult { get; set; }
 

@@ -7,10 +7,6 @@ using UnityEngine.Assertions;
 
 public class GameAudio : MonoBehaviour
 {
-    [SerializeField]
-    public BeatManager BeatManager;
-
-
     // audio clips
     private Dictionary<string, AudioClip> audioClipMap = new Dictionary<string, AudioClip>();
     public AudioClip fail;
@@ -33,6 +29,7 @@ public class GameAudio : MonoBehaviour
         audioClipMap["selected2"] = select2;
         audioClipMap["blip"] = blip;
     }
+
 
     /// <summary>
     /// On scene closing.

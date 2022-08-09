@@ -54,7 +54,7 @@ public class CharacterTarget : MonoBehaviour
     public Beat EndBeat { get { return Beats.Last().Item2; } }
     [SerializeField]
     private TextMeshPro backgroundText;
-    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+    private BeatManager beatManager { get { return GameManager.Instance.BeatManager; } }
 
 
     // effects

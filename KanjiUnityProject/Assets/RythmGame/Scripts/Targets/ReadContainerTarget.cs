@@ -73,7 +73,7 @@ public class ReadContainerTarget : MonoBehaviour
     [SerializeField]
     private Color selectedColor;
     private ReadTarget readTarget;
-    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+    private BeatManager beatManager { get { return GameManager.Instance.BeatManager; } }
     private ReadTargetConfig config;
 
     // Start is called before the first frame update

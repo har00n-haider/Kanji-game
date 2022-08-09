@@ -20,7 +20,7 @@ public class TargetSpawner : MonoBehaviour
     private GameObject readTargetPrefab;
     [SerializeField]
     private BoxCollider spawnVolume;
-    private BeatManager beatManager { get { return GameManager.Instance.GameAudio.BeatManager; } }
+    private BeatManager beatManager { get { return GameManager.Instance.BeatManager; } }
     private GameSettings settings { get { return GameManager.Instance.Settings; } }
 
     private List<SpawnData> toBeSpawnedTargets = new();
@@ -29,15 +29,14 @@ public class TargetSpawner : MonoBehaviour
     [SerializeField]
     private string beatmapPath;
 
-    private void Start()
+    public void Init(BeatMapData beatMapData)
     {
-        //GenerateTargetData();
-        LoadTargetData();
+        LoadTargetData(beatMapData);
     }
 
-    void LoadTargetData()
+    void LoadTargetData(BeatMapData beatMapData)
     {
-        var hitObjects = OsuBeatMapImporter.ParseBeatMap(beatmapPath);
+        var hitObjects = beatMapData.hitObjects;
         for (int i = 1; i < hitObjects.Count; i+=2)
         {
             if (i > 0 && (i + 1) < hitObjects.Count)
@@ -51,7 +50,7 @@ public class TargetSpawner : MonoBehaviour
                     position,
                     beat1,
                     beat2,
-                    GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.kanji),
+                    GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana),
                     Random.Range(0, 2) == 1
                 ));
             }
@@ -72,8 +71,6 @@ public class TargetSpawner : MonoBehaviour
 
         if (beatManager.IsBeatWithinRange(targetToSpawn.beat, settings.spawnerConfig.spawnToBeatTimeOffset))
         {
-            Debug.Log(targetToSpawn.id + "spawned");
-
             ITarget spawnedTarget = null;
             switch (targetToSpawn.type)
             {

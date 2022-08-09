@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     public Database Database;
     public GameInput GameInput;
     public TargetSpawner TargetSpawner;
+    public BeatManager BeatManager;
+
 
 
     // configuration
@@ -32,6 +34,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Color BeatFlickercColor;
 
+    [Header("----song/beatmap to load----")]
+    public string beatmapPath;
+
     // Awake() is called before Start.
     void Awake()
     {
@@ -39,6 +44,11 @@ public class GameManager : MonoBehaviour
         Database.Load(databaseFile);
         if (Instance == null) Instance = this;
         SubscribeToAppEvents();
+
+        // load in the first song
+        BeatMapData beatmapData = OsuBeatMapParser.Parse(beatmapPath);
+        BeatManager.Init(beatmapData);
+        TargetSpawner.Init(beatmapData);
     }
 
     // Start is called before the first frame update
@@ -78,7 +88,7 @@ public class GameManager : MonoBehaviour
 
     public void UpdateBeat()
     {
-        if(GameAudio.BeatManager.CheckIfOnSongBeat())
+        if(BeatManager.CheckIfOnSongBeat())
         {
             circle.color = BeatFlickercColor;
         }
