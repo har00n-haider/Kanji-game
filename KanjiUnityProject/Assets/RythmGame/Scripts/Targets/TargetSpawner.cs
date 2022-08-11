@@ -36,31 +36,13 @@ public class TargetSpawner : MonoBehaviour
 
     void LoadTargetData(BeatMapData beatMapData)
     {
-        var hitObjects = beatMapData.hitObjects;
-        for (int i = 1; i < hitObjects.Count; i+=2)
-        {
-            if (i > 0 && (i + 1) < hitObjects.Count)
-            {
-                var hitObject1 = hitObjects[i];
-                var hitObject2 = hitObjects[i + 1];
-                Beat beat1 = new Beat((double)hitObject1.timeSeconds, 0);
-                Beat beat2 = new Beat((double)hitObject2.timeSeconds, 0);
-                Vector3 position = NormalisedToSpawnVolumePosition(hitObject1.position);
-                toBeSpawnedTargets.Add(new ReadTargetSpawnData(
-                    position,
-                    beat1,
-                    beat2,
-                    GameManager.Instance.Database.GetRandomCharacter(null, CharacterType.hiragana),
-                    Random.Range(0, 2) == 1
-                ));
-            }
-        }
+        toBeSpawnedTargets = beatMapData.beatTargetData;
     }
 
     void Update()
     {
         SpawnTarget();
-        // CheckMissedTargets();
+        CheckMissedTargets();
     }
 
     private void SpawnTarget()
@@ -69,7 +51,7 @@ public class TargetSpawner : MonoBehaviour
         var targetToSpawn = toBeSpawnedTargets.FirstOrDefault(s => s.spawned == false);
         if (targetToSpawn == null) return;
 
-        if (beatManager.IsBeatWithinRange(targetToSpawn.beat, settings.spawnerConfig.spawnToBeatTimeOffset))
+        if (beatManager.IsBeatWithinRange(targetToSpawn.GetFirstBeat(), settings.spawnerConfig.spawnToBeatTimeOffset))
         {
             ITarget spawnedTarget = null;
             switch (targetToSpawn.type)
@@ -78,7 +60,7 @@ public class TargetSpawner : MonoBehaviour
                     BasicTargetSpawnData bd = targetToSpawn as BasicTargetSpawnData;
                     BasicTarget b = Instantiate(
                         emptyTargetPrefab,
-                        bd.position,
+                        NormalisedToSpawnVolumePosition(bd.normalisedPosition),
                         Quaternion.identity,
                         transform).GetComponent<BasicTarget>();
                     b.Init(bd, settings.basicTargetConfig);
@@ -87,14 +69,18 @@ public class TargetSpawner : MonoBehaviour
                     break;
                 case TargetType.Draw:
                     CharacterTargetSpawnData cd = targetToSpawn as CharacterTargetSpawnData;
-                    CharacterTarget characterTarget = Instantiate(characterTargetPrefab, cd.position, Quaternion.identity);
+                    CharacterTarget characterTarget = Instantiate(
+                        characterTargetPrefab,
+                        spawnVolume.transform.TransformPoint(spawnVolume.center) - (settings.characterConfig.CharacterSize / 2), 
+                        Quaternion.identity);
                     characterTarget.Init(cd, settings.characterConfig);
+                    targetToSpawn.spawned = true;
                     break;
                 case TargetType.Reading:
                     ReadTargetSpawnData rd = targetToSpawn as ReadTargetSpawnData;
                     ReadTarget rt = Instantiate(
                         readTargetPrefab,
-                        rd.position,
+                        NormalisedToSpawnVolumePosition(rd.normalisedPosition),
                         Quaternion.identity,
                         transform).GetComponent<ReadTarget>();
                     rt.Init(rd, settings.readTargetConfig);
@@ -131,7 +117,7 @@ public class TargetSpawner : MonoBehaviour
             GameManager.Instance.Database.GetRandomCharacter(null, type);
 
         // generate the beats for the entire character
-        List<Tuple<Beat, Beat>> beats = new();
+        List<Beat> beats = new();
         int beatIdx = -1;
 
         for (int i = 0; i < character.drawData.strokes.Count; i++)
@@ -161,21 +147,20 @@ public class TargetSpawner : MonoBehaviour
             endBeatOffset += beatsToComplete;
 
             beatIdx = endBeatOffset;
-            beats.Add(new Tuple<Beat, Beat>(
-                beatManager.GetNextHalfBeat(startBeatOffset, startBeat),
-                beatManager.GetNextHalfBeat(endBeatOffset, startBeat)
-            ));
+            beats.Add(beatManager.GetNextHalfBeat(startBeatOffset, startBeat));
+            beats.Add(beatManager.GetNextHalfBeat(endBeatOffset, startBeat));
         }
 
-        CharacterTargetSpawnData csd = new CharacterTargetSpawnData(
-            spawnVolume.transform.TransformPoint(spawnVolume.center) - (settings.characterConfig.CharacterSize / 2),
-            beats,
-            character,
-            difficulty,
-            id
-        );
+        CharacterTargetSpawnData csd = new CharacterTargetSpawnData 
+        {
+           normalisedPosition = spawnVolume.transform.TransformPoint(spawnVolume.center) - (settings.characterConfig.CharacterSize / 2),
+           beats = beats,
+           character = character,
+           difficulty = difficulty,
+           id = id,
+        };
         toBeSpawnedTargets.Add(csd);
-        return beats.Last().Item2;
+        return beats.Last();
     }
 
     private Vector3 NormalisedToSpawnVolumePosition(Vector2 normalisedSpawnVolumePos)

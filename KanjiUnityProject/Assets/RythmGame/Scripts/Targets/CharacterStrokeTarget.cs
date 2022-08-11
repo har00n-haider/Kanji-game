@@ -210,7 +210,7 @@ public class CharacterStrokeTarget : MonoBehaviour
 
     private void UpdateFollowCircle()
     {
-        float t = (float)MathUtils.InverseLerp(StartBeat.timestamp, EndBeat.timestamp, AudioSettings.dspTime);
+        float t = (float)MathUtils.InverseLerp(StartBeat.timestamp, EndBeat.timestamp, GameManager.Instance.BeatManager.timeIntoSong);
         Vector2 newPos = charTarget.Character.drawData.strokes[strokeId].GetPointOnStroke(t);
         newPos.Scale(charTarget.CharacterSize);
         followTarget.transform.localPosition = newPos;

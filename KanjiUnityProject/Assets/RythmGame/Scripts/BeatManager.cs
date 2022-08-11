@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Beat
 {
-    public Beat(double timestamp, int beatId)
+    public Beat(double timestamp, int beatId = -1)
     {
         this.timestamp = timestamp;
         this.beatId = beatId;
@@ -53,7 +53,6 @@ public class BeatManager : MonoBehaviour
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
-
     }
 
     public void Init(BeatMapData beatmapData) 
@@ -114,7 +113,8 @@ public class BeatManager : MonoBehaviour
 
     public bool IsBeatWithinRange(Beat beat, float range)
     {
-        double delta = beat.timestamp - timeIntoSong; 
+        double delta = beat.timestamp - timeIntoSong;
+        //Debug.Log($"beat time {beat.timestamp:0.000}, delta {delta:0.000} ");
         return delta < 0 ? false : delta < range; // false if missed in any case
     }
 

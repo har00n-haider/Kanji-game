@@ -125,26 +125,25 @@ public enum TargetType
     Reading,
 }
 
-public class SpawnData
+public abstract class SpawnData
 {
-    public Beat beat;
-    public TargetType type;
+    public abstract Beat GetFirstBeat();
+    public TargetType type = TargetType.Basic;
     public bool spawned = false;
     public int id = -1;
+    /// <summary>
+    /// Between 0 and 1
+    /// </summary>
+    public Vector3 normalisedPosition = Vector3.zero;
 }
 
 public class BasicTargetSpawnData : SpawnData
 {
-    public BasicTargetSpawnData(
-        Beat beat,
-        Vector3 position
-    )
+    public Beat beat;
+    public override Beat GetFirstBeat()
     {
-        this.position = position;
-        this.beat = beat;
-        type = TargetType.Basic;
+        return beat;
     }
-    public Vector3 position;
 }
 
 /// <summary>
@@ -152,71 +151,27 @@ public class BasicTargetSpawnData : SpawnData
 /// </summary>
 public class ReadTargetSpawnData : SpawnData
 {
-    public ReadTargetSpawnData(
-        Vector3 position,
-        Beat questionBeat,
-        Beat answerBeat,
-        Character character,
-        bool kanaToRomaji
-    )
-    {
-        this.position = position;
-        this.questionBeat = beat = questionBeat;
-        this.answerBeat =  answerBeat;
-        this.character = character;
-        this.kanaToRomaji = kanaToRomaji;
-        type = TargetType.Reading;
-
-        int correctAnswer = UnityEngine.Random.Range(0, 3);
-        for (int i = 0; i < 3; i++)
-        {
-            Character p;
-            if (i == correctAnswer)
-            {
-                p = Utils.Clone(this.character);
-            }
-            else
-            {
-                p = GameManager.Instance.Database.GetRandomCharacter(this.character, character.type);
-            }
-            p.DisplayType = !kanaToRomaji ? DisplayType.Hiragana : DisplayType.Romaji;
-            answers.Add(p);
-        }
-    }
-
-    public bool kanaToRomaji;
-    public Beat questionBeat;
-    public Beat answerBeat;
-    public Vector3 position;
+    public bool kanaToRomaji = true;
+    public Beat questionBeat = null;
+    public Beat answerBeat = null;
     public Character character;
     public List<Character> answers = new();
+    public override Beat GetFirstBeat()
+    {
+        return questionBeat;
+    }
+
 }
 
 public class CharacterTargetSpawnData : SpawnData
 {
-
-    public CharacterTargetSpawnData(
-        Vector3 position,
-        List<Tuple<Beat, Beat>> beats,
-        Character character,
-        Difficulty difficulty,
-        int id
-    )
+    public List<Beat> beats = new();
+    public Character character = null;
+    public Difficulty difficulty = Difficulty.Easy;
+    public override Beat GetFirstBeat()
     {
-        this.position = position;
-        this.beats = beats;
-        this.character = character;
-        this.difficulty = difficulty;
-        beat = StartBeat;
-        type = TargetType.Draw;
-        this.id = id;
+        return beats.Count > 0 ? beats[0]: null;
     }
-    public Vector3 position;
-    public List<Tuple<Beat, Beat>> beats;
-    public Character character;
-    public Difficulty difficulty;
-    public Beat StartBeat { get { return beats.First().Item1; } }
-    public Beat EndBeat { get { return beats.Last().Item2; } }
 }
 
 

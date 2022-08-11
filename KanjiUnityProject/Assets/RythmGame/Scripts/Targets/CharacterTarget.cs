@@ -48,10 +48,10 @@ public class CharacterTarget : MonoBehaviour
 
     // refs
     public CharacterStrokeTarget strokeTargetPrefab;
-    public List<Tuple<Beat, Beat>> Beats { get; private set; } = null;
+    public List<Beat> Beats { get; private set; } = null;
     private CharacterConfig config;
-    public Beat StartBeat { get { return Beats.First().Item1; } }
-    public Beat EndBeat { get { return Beats.Last().Item2; } }
+    public Beat StartBeat { get { return Beats.First(); } }
+    public Beat EndBeat { get { return Beats.Last(); } }
     [SerializeField]
     private TextMeshPro backgroundText;
     private BeatManager beatManager { get { return GameManager.Instance.BeatManager; } }
@@ -72,6 +72,13 @@ public class CharacterTarget : MonoBehaviour
         backgroundText.text = csd.character.romaji.ToUpper();
         backgroundText.gameObject.SetActive(false);
         this.difficulty = csd.difficulty;
+
+        string m = string.Empty;
+        foreach(Beat b in Beats) 
+        {
+            m += $"beat time: {b.timestamp:0.000} \n";
+        }
+        Debug.Log(m);
     }
 
     private void Update()
@@ -81,10 +88,11 @@ public class CharacterTarget : MonoBehaviour
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTime) gameObject.SetActive(false);
 
-        if (strokeCounter < Beats.Count && 
-            beatManager.IsBeatWithinRange(
-                Beats[strokeCounter].Item1, 
-                GameManager.Instance.Settings.spawnerConfig.spawnToBeatTimeOffset))
+        bool canSpawnStroke = strokeCounter < (Beats.Count / 2)  && // are there strokes left to spawn
+            beatManager.IsBeatWithinRange( 
+                Beats[strokeCounter * 2],
+                GameManager.Instance.Settings.spawnerConfig.spawnToBeatTimeOffset);
+        if (canSpawnStroke)
         {
            CreateNextStroke();
         }        
@@ -106,8 +114,8 @@ public class CharacterTarget : MonoBehaviour
                 Quaternion.identity,
                 transform).GetComponent<CharacterStrokeTarget>();
             characterStroke.Init(
-                Beats[strokeCounter].Item1,
-                Beats[strokeCounter].Item2,
+                Beats[strokeCounter * 2],
+                Beats[strokeCounter * 2 + 1],
                 CharacterSize,
                 strokeCounter,
                 this,
@@ -132,6 +140,7 @@ public class CharacterTarget : MonoBehaviour
 
             AppEvents.OnCharacterCompleted?.Invoke(this);
             timedDeactivate = true;
+            Debug.Log("Getting destroyed");
             Destroy(gameObject, 3);
         }
     }
@@ -148,7 +157,7 @@ public class CharacterTarget : MonoBehaviour
 
 #if UNITY_EDITOR
 
-    public bool drawDebug = false;
+    public bool drawDebug = true;
 
     private void OnDrawGizmos()
     {

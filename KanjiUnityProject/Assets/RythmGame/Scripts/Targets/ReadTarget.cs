@@ -40,9 +40,27 @@ public class ReadTarget : MonoBehaviour, ITarget
     {
         targetData = readTargetData;
 
+        // Set the answers up on the read target
+        // TODO: is the responsibility of this class to set up the answer data?
+        int correctAnswer = UnityEngine.Random.Range(0, 3);
+        for (int i = 0; i < 3; i++)
+        {
+            Character p;
+            if (i == correctAnswer)
+            {
+                p = Utils.Clone(readTargetData.character);
+            }
+            else
+            {
+                p = GameManager.Instance.Database.GetRandomCharacter(readTargetData.character, readTargetData.character.type);
+            }
+            p.DisplayType = !readTargetData.kanaToRomaji ? DisplayType.Hiragana : DisplayType.Romaji;
+            readTargetData.answers.Add(p);
+        }
+
         // create the question target
         question = Instantiate(readContainerTargetPrefab,
-            readTargetData.position,
+            readTargetData.normalisedPosition,
             Quaternion.identity,
             transform);
         question.Init(readTargetData.questionBeat,
@@ -85,6 +103,6 @@ public class ReadTarget : MonoBehaviour, ITarget
 
     public void HandleBeatResult(BeatResult hitResult)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 }
