@@ -74,12 +74,7 @@ public class CharacterTarget : MonoBehaviour
         backgroundText.gameObject.SetActive(false);
         this.difficulty = csd.difficulty;
 
-        //string m = string.Empty;
-        //foreach (Beat b in Beats)
-        //{
-        //    m += $"beat time: {b.timestamp:0.000} \n";
-        //}
-        //Debug.Log(m);
+
     }
 
     private void Update()
@@ -91,8 +86,6 @@ public class CharacterTarget : MonoBehaviour
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTime) gameObject.SetActive(false);
 
-
-        Debug.Log($"strokesSpawned: {strokesSpawned}, stroke count {Character.drawData.strokes.Count}, beats count: {Beats.Count}");
 
         bool canSpawnStroke = strokesSpawned < Character.drawData.strokes.Count && // are there strokes left to spawn
             beatManager.IsBeatWithinRange(

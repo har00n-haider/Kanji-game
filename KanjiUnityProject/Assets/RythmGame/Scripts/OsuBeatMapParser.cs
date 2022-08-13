@@ -54,8 +54,6 @@ public class OsuBeatMapParser
         // Read the file and display it line by line.  
         foreach (string line in System.IO.File.ReadLines(path))
         {
-            if (lineCount >= 100) break; // HACK: remove hard limit for testing
-
             if (line.Contains("AudioFilename"))
             {
                 string name = line.Split("AudioFilename:")[1].Trim();
