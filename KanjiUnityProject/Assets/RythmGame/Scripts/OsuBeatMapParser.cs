@@ -33,11 +33,13 @@ public class OsuBeatMapParser
     {
         public Vector2 normalizedPosition;
         public float timeSeconds;
+        public int timeMilliSeconds;
         public float? spinnerEndTime = null;
         public OsuBeatMapParser.LegacyHitObjectType type;
     }
 
     private static BeatMapData parsedData = new BeatMapData();
+    private static Dictionary<int, char> millisecToBeatText = new Dictionary<int, char>();
 
     /// <summary>
     /// https://osu.ppy.sh/wiki/en/Client/File_formats/Osu_%28file_format%29#hit-objects
@@ -52,7 +54,7 @@ public class OsuBeatMapParser
         // Read the file and display it line by line.  
         foreach (string line in System.IO.File.ReadLines(path))
         {
-            if (lineCount >= 96) break; // HACK: remove hard limit for testing
+            if (lineCount >= 100) break; // HACK: remove hard limit for testing
 
             if (line.Contains("AudioFilename"))
             {
@@ -67,6 +69,19 @@ public class OsuBeatMapParser
                 continue;
             }
 
+            // Using the tags section as a place to store the characters that will be used
+            // in the character based beat targets
+            // e.g. 14739|ざ,
+            if (line.Contains("Tags:"))
+            {
+                var beatTextStrings = line.Split("Tags:")[1].Split(',');
+                for (int i = 0; i < beatTextStrings.Length; i++)
+                {
+                    string[] textArray = beatTextStrings[i].Split("|");
+                    millisecToBeatText[int.Parse(textArray[0])] = textArray[1][0];
+                }
+            }
+
             if (StartParsingHitObjects)
             {
                 // parse all the details of this hit object
@@ -74,7 +89,8 @@ public class OsuBeatMapParser
                 HitObject hitObject = new HitObject();
                 hitObject.normalizedPosition =
                     new Vector2(float.Parse(lineArray[0]) / 512, (384 - float.Parse(lineArray[1])) / 384);
-                hitObject.timeSeconds = float.Parse(lineArray[2]) / 1000;
+                hitObject.timeMilliSeconds = int.Parse(lineArray[2]);
+                hitObject.timeSeconds = (float)hitObject.timeMilliSeconds / 1000;
                 hitObject.type = (LegacyHitObjectType)int.Parse(lineArray[3]);
 
                 // find out our beat target type using the hit sample data to represent the type
@@ -93,15 +109,15 @@ public class OsuBeatMapParser
                 }
 
                 // add to list out if finished populating last data
-                if (!populateLastData) 
+                if (!populateLastData)
                 {
                     parsedData.beatTargetData.Add(CreateNewData(type, hitObject, ref populateLastData));
                 }
-                else 
+                else
                 {
                     SpawnData lastData = parsedData.beatTargetData[parsedData.beatTargetData.Count - 1];
                     // continue populating the old type
-                    if (lastData.type == type) 
+                    if (lastData.type == type)
                     {
                         switch (lastData.type)
                         {
@@ -110,28 +126,35 @@ public class OsuBeatMapParser
                                 writeTargetData.beats.Add(new Beat(hitObject.timeSeconds));
                                 break;
                             case TargetType.Reading:
-                                var readTargetData = lastData as ReadTargetSpawnData; 
+                                var readTargetData = lastData as ReadTargetSpawnData;
                                 readTargetData.answerBeat = new Beat(hitObject.timeSeconds);
+                                populateLastData = false; // only ever add two beats to a reading input
                                 break;
                         }
                     }
                     // last data is complete we need to create new data
-                    else 
+                    else
                     {
                         parsedData.beatTargetData.Add(CreateNewData(type, hitObject, ref populateLastData));
                     }
                 }
 
-                
+
             }
             lineCount++;
         }
+
+        foreach (SpawnData s in parsedData.beatTargetData) 
+        {
+            ValidateData(s);
+        }
+
         Debug.Log($"Parsed {lineCount} lines, with {parsedData.beatTargetData.Count} beat objects");
         return parsedData;
 
     }
 
-    private static SpawnData CreateNewData(TargetType type, HitObject hitObject, ref bool populatingLastData) 
+    private static SpawnData CreateNewData(TargetType type, HitObject firstHitObject, ref bool populatingLastData)
     {
         SpawnData data = null;
         // start populating with new data
@@ -140,8 +163,8 @@ public class OsuBeatMapParser
             case TargetType.Basic:
                 var basicTargetSpawnData = new BasicTargetSpawnData();
                 basicTargetSpawnData.type = TargetType.Basic;
-                basicTargetSpawnData.beat = new Beat(hitObject.timeSeconds);
-                basicTargetSpawnData.normalisedPosition = hitObject.normalizedPosition;
+                basicTargetSpawnData.beat = new Beat(firstHitObject.timeSeconds);
+                basicTargetSpawnData.normalisedPosition = firstHitObject.normalizedPosition;
                 data = basicTargetSpawnData;
                 populatingLastData = false; // will only ever have one hitobject worth of data
                 break;
@@ -149,17 +172,16 @@ public class OsuBeatMapParser
                 // we don't currently manually position the character in the middle of the screen
                 var writeTargetData = new CharacterTargetSpawnData();
                 writeTargetData.type = TargetType.Draw;
-                writeTargetData.beats.Add(new Beat(hitObject.timeSeconds));
-                // TODO: need to pull this from a seperate list
-                writeTargetData.character = GameManager.Instance.Database.GetCharacter('ざ');
+                writeTargetData.beats.Add(new Beat(firstHitObject.timeSeconds));
+                writeTargetData.character = GameManager.Instance.Database.GetCharacter(millisecToBeatText[firstHitObject.timeMilliSeconds]);
                 data = writeTargetData;
                 populatingLastData = true;
                 break;
             case TargetType.Reading:
                 var readTargetData = new ReadTargetSpawnData();
                 readTargetData.type = TargetType.Reading;
-                readTargetData.questionBeat = new Beat(hitObject.timeSeconds);
-                readTargetData.normalisedPosition = hitObject.normalizedPosition;
+                readTargetData.questionBeat = new Beat(firstHitObject.timeSeconds);
+                readTargetData.normalisedPosition = firstHitObject.normalizedPosition;
                 // TODO: need to pull this from a seperate list
                 readTargetData.character = GameManager.Instance.Database.GetRandomCharacter();
                 data = readTargetData;
@@ -169,7 +191,7 @@ public class OsuBeatMapParser
         return data;
     }
 
-    private static void ValidateDataAndAddToList(SpawnData data) 
+    private static void ValidateData(SpawnData data)
     {
         // were finished populating the old type, so add it to the list
         // some validation to the completed type

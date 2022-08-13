@@ -34,12 +34,12 @@ public class CharacterTarget : MonoBehaviour
     public List<CharacterStrokeTarget> Strokes = new List<CharacterStrokeTarget>();
     public bool Completed { get { return Strokes.TrueForAll(s => s.Completed); } }
     public bool Pass { get { return Strokes.TrueForAll(s => s.Pass); } }
-    private int strokeCounter = 0;
+    private int strokesSpawned = 0;
     private bool playedPassEffect = false;
     private bool timedDeactivate = false;
     private float timedDeactivateTimer = 0.0f;
     public bool StrokesVisible { get; private set; } = false;
-    public bool AllStrokesVisible  { get { return strokeCounter == Beats.Count; } }
+    public bool AllStrokesVisible { get { return strokesSpawned == Beats.Count; } }
     [SerializeField]
     private Difficulty difficulty;
 
@@ -52,6 +52,7 @@ public class CharacterTarget : MonoBehaviour
     private CharacterConfig config;
     public Beat StartBeat { get { return Beats.First(); } }
     public Beat EndBeat { get { return Beats.Last(); } }
+
     [SerializeField]
     private TextMeshPro backgroundText;
     private BeatManager beatManager { get { return GameManager.Instance.BeatManager; } }
@@ -63,7 +64,7 @@ public class CharacterTarget : MonoBehaviour
 
     public void Init(CharacterTargetSpawnData csd, CharacterConfig config)
     {
-        Assert.IsFalse(csd.beats.Count == csd.character.drawData.strokes.Count * 2);
+        Assert.IsTrue(csd.beats.Count == csd.character.drawData.strokes.Count * 2);
         Beats = csd.beats;
         Character = csd.character;
         this.CharacterSize = config.CharacterSize;
@@ -73,29 +74,35 @@ public class CharacterTarget : MonoBehaviour
         backgroundText.gameObject.SetActive(false);
         this.difficulty = csd.difficulty;
 
-        string m = string.Empty;
-        foreach(Beat b in Beats) 
-        {
-            m += $"beat time: {b.timestamp:0.000} \n";
-        }
-        Debug.Log(m);
+        //string m = string.Empty;
+        //foreach (Beat b in Beats)
+        //{
+        //    m += $"beat time: {b.timestamp:0.000} \n";
+        //}
+        //Debug.Log(m);
     }
 
     private void Update()
     {
         float yOffset = 0.3f * CharacterSize.y;
         backgroundText.transform.localPosition = new Vector3(CharacterCenter.x, CharacterCenter.y + yOffset, CharacterSize.z);
+
+        // activation timeout
         if (timedDeactivate) timedDeactivateTimer += Time.deltaTime;
         if (timedDeactivateTimer > config.hangaboutTime) gameObject.SetActive(false);
 
-        bool canSpawnStroke = strokeCounter < (Beats.Count / 2)  && // are there strokes left to spawn
-            beatManager.IsBeatWithinRange( 
-                Beats[strokeCounter * 2],
+
+        Debug.Log($"strokesSpawned: {strokesSpawned}, stroke count {Character.drawData.strokes.Count}, beats count: {Beats.Count}");
+
+        bool canSpawnStroke = strokesSpawned < Character.drawData.strokes.Count && // are there strokes left to spawn
+            beatManager.IsBeatWithinRange(
+                Beats[(strokesSpawned) * 2], // next strokes first beat 
                 GameManager.Instance.Settings.spawnerConfig.spawnToBeatTimeOffset);
+
         if (canSpawnStroke)
         {
-           CreateNextStroke();
-        }        
+            CreateNextStroke();
+        }
     }
 
     public void CreateNextStroke()
@@ -106,7 +113,7 @@ public class CharacterTarget : MonoBehaviour
             backgroundText.gameObject.SetActive(true);
         }
 
-        if (strokeCounter < Beats.Count)
+        if (strokesSpawned < Character.drawData.strokes.Count)
         {
             CharacterStrokeTarget characterStroke = Instantiate(
                 strokeTargetPrefab,
@@ -114,16 +121,16 @@ public class CharacterTarget : MonoBehaviour
                 Quaternion.identity,
                 transform).GetComponent<CharacterStrokeTarget>();
             characterStroke.Init(
-                Beats[strokeCounter * 2],
-                Beats[strokeCounter * 2 + 1],
+                Beats[(strokesSpawned) * 2],
+                Beats[(strokesSpawned) * 2 + 1],
                 CharacterSize,
-                strokeCounter,
+                strokesSpawned,
                 this,
                 config,
                 difficulty);
             Strokes.Add(characterStroke);
             characterStroke.OnStrokeCompleted += UpdateStrokes;
-            strokeCounter++;
+            strokesSpawned++;
         }
     }
 
@@ -140,7 +147,6 @@ public class CharacterTarget : MonoBehaviour
 
             AppEvents.OnCharacterCompleted?.Invoke(this);
             timedDeactivate = true;
-            Debug.Log("Getting destroyed");
             Destroy(gameObject, 3);
         }
     }
